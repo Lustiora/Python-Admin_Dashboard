@@ -6,7 +6,7 @@ count = 3 # count의 기본값 선언
 
 while count > 0: # count값이 0이 보다 클때까지 반복
     print("please enter your username :")
-    username = input() or "postgres"# ID 입력란
+    username = input() or "lus"# ID 입력란
     print("please enter your password :")
     user_password = input() or "tiger"# PW 입력란
     count = count - 1 # 입력마다 count 감소 -1
@@ -38,8 +38,24 @@ while scan > 0:
             cursor.execute("select * from rental where customer_id = %s and return_date is null", (customer,)) # 조회된 customer_id의 return_date 여부 조회
             rental_data = cursor.fetchone()
             if rental_data: # return_date is null
-                print(f"customer ID : {customer}. Please Return DVD")
-                # Return DVD List 추가
+                today = datetime.now().date()
+                print("Please Return DVD")
+                cursor.execute("""select r.customer_id , f.title , r.rental_date , f.rental_rate 
+                                  from rental r 
+                                  inner join inventory i 
+                                      on r.inventory_id = i.inventory_id 
+                                  inner join film f 
+                                      on i.film_id = f.film_id
+                                  where customer_id = %s 
+                                  and r.return_date is null""", (customer,))
+                return_dvd = cursor.fetchone()
+                return_date = return_dvd[2].date()
+                print(
+                    f"Customer Id : {return_dvd[0]} | "
+                    f"Title : {return_dvd[1]} | "
+                    f"Rental Date : {(today - return_date).days} days  | "
+                    f"Over Rate : {(today - return_date).days * return_dvd[3] * int(1.1)}")
+                # Return DVD List
                 break
             else: # return_date is not null
                 # print("Rental Please")
@@ -66,7 +82,7 @@ while scan > 0:
                             rental_days = timedelta(days=rental) # timedelta 함수를 사용하여 rental_days을 days로 지정
                             rental_rate = dvd_data[2] * rental
                             print(f"Barcode : {dvd_data[0]} | Title : {dvd_data[1]} | Rate : {dvd_data[2]}")  # Query Column 기반 위치에 따른 값 출력
-                            print(f"Return Date : {today + rental_days} Rate : {rental_rate}") # today와 timedelta 변환된 rental_days 합산하여 Return Date 출력
+                            print(f"Today : {today} Return Date : {today + rental_days} Rate : {rental_rate}") # today와 timedelta 변환된 rental_days 합산하여 Return Date 출력
                             break
                         else:
                             print("---존재하지않는 바코드---")
