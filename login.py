@@ -48,14 +48,18 @@ while scan > 0:
                                       on i.film_id = f.film_id
                                   where customer_id = %s 
                                   and r.return_date is null""", (customer,))
-                return_dvd = cursor.fetchone()
-                return_date = return_dvd[2].date()
-                print(
-                    f"Customer Id : {return_dvd[0]} | "
-                    f"Title : {return_dvd[1]} | "
-                    f"Rental Date : {(today - return_date).days} days  | "
-                    f"Over Rate : {(today - return_date).days * return_dvd[3] * int(1.1)}")
-                # Return DVD List
+                return_dvd = cursor.fetchall()
+                total_rate = 0
+                for dvdbarcode in return_dvd:
+                    return_date = dvdbarcode[2].date()
+                    all_rate = float((today - return_date).days * dvdbarcode[3]) * float(1.1)
+                    total_rate += all_rate # 전체값 누적
+                    print(
+                        f"Customer Id : {dvdbarcode[0]} | "
+                        f"Title : {dvdbarcode[1]} | "
+                        f"Rental Date : {(today - return_date).days} days | "
+                        f"Over Rate : {all_rate:.2f}") # 소수점 2번째 자리까지만 출력 :.2f
+                print(f"Total Rate : {total_rate:.2f}")
                 break
             else: # return_date is not null
                 # print("Rental Please")
