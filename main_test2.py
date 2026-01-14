@@ -5,10 +5,10 @@ def connect_db():
     conn = None  # conn의 기본값 선언
     count = 3  # count의 기본값 선언
     while count > 0:  # count값이 0이 보다 클때까지 반복
-        print("-" * 10)
+        print("-" * 50)
         print("please enter your username :")
         username = input() or "lus"  # ID 입력란
-        print("-" * 10)
+        print("-" * 50)
         print("please enter your password :")
         user_password = input() or "tiger"  # PW 입력란
         count = count - 1  # 입력마다 count 감소 -1
@@ -19,7 +19,7 @@ def connect_db():
                                     port='5432',
                                     user=username,  # 입력된 ID가 작성되는곳
                                     password=user_password)  # 입력된 PW가 작성되는곳
-            print("-" * 10)
+            print("-" * 50)
             print("connection established")  # 연결 성공시 출력
             break  # 연결 성공시 while 탈출
         except:  # 실패시
@@ -32,7 +32,7 @@ def check_customers(conn):
     cursor = conn.cursor()
     scan = 1
     while scan > 0:
-        print("-" * 10)
+        print("-" * 50)
         print("Scan customer ID or Quit > 'q'")
         customer = input().strip()  # 입력란에 strip()를 추가하여 앞뒤 공백 제거하고 제출
         if customer == 'q':  # 종료 커맨트 지정
@@ -43,7 +43,7 @@ def check_customers(conn):
             if customer_data:  # 쿼리값 존재시
                 return customer, customer_data
             else:  # 쿼리값 미존재시
-                print("-" * 10)
+                print("-" * 50)
                 print(f"Not Customer ID {customer}")
         except Exception as e:  # 에러 체크
             print(f"Error: {e}")
@@ -57,7 +57,7 @@ def process_return(conn,customer):
     rental_data = cursor.fetchone()
     if rental_data:  # return_date is null
         today = datetime.now().date()
-        print("-" * 10)
+        print("-" * 50)
         print("Please Return DVD")
         cursor.execute("""
                        select 
@@ -71,18 +71,18 @@ def process_return(conn,customer):
                          and r.return_date is null
                        """, (customer,))
         return_dvd = cursor.fetchall()
-        total_rate = 0
+        total_charge = 0
         for barcode in return_dvd:
             return_date = barcode[2].date()
-            all_rate = float((today - return_date).days * barcode[3]) * float(1.1)
-            total_rate += all_rate  # 전체값 누적
+            all_charge = float((today - return_date).days * barcode[3]) * float(1.1)
+            total_charge += all_charge  # 전체값 누적
             print(
                 f"Customer Id : {barcode[0]} | "
                 f"Title : {barcode[1]} | "
                 f"Rental Date : {(today - return_date).days} days | "
-                f"Over Rate : {all_rate:.2f}")  # 소수점 2번째 자리까지만 출력 :.2f
-        print(f"\nTotal Rate : {total_rate:.2f}")
-        print("-" * 10)
+                f"Charge : {all_charge:.2f}")  # 소수점 2번째 자리까지만 출력 :.2f
+        print(f"\nTotal Charge : {total_charge:.2f}")
+        print("-" * 50)
         return True
     else:
         return False
@@ -93,7 +93,7 @@ def process_rental(conn):
     rental_cart = []
     total_fee = 0
     while scan > 0:
-        print("-" * 10)
+        print("-" * 50)
         print("Please DVD Barcode or Quit > 'q'")
         barcode = input().strip()
         if barcode == 'q': break
@@ -105,7 +105,7 @@ def process_rental(conn):
             dvd_data = cursor.fetchone()
             if dvd_data:
                 today = datetime.now().date()  # 현재 날짜
-                print("-" * 10)
+                print("-" * 50)
                 print("Please Rental Date (1 , 3 , 7) :")
                 while scan > 0:
                     input_date = input().strip()
@@ -113,35 +113,35 @@ def process_rental(conn):
                         rental = int(input_date)  # 입력받은 값을 int로 변환
                         break
                     else:
-                        print("-" * 10)
+                        print("-" * 50)
                         print("Please Rental Date (1 , 3 , 7) :")
                 rental_days = timedelta(days=rental)  # timedelta 함수를 사용하여 rental_days을 days로 지정
-                rental_rate = dvd_data[2] * rental
+                rental_fee = dvd_data[2] * rental
                 inventory_id = dvd_data[0]
                 return_date = today + rental_days
                 rental_date = today
                 title = dvd_data[1]
-                print("-" * 10)
+                print("-" * 50)
                 print(
-                    f"Barcode : {inventory_id} | Title : {title} | Rate : {dvd_data[2]}") # Query Column 기반 위치에 따른 값 출력
+                    f"Barcode : {inventory_id} | Title : {title} | Rental : {dvd_data[2]}") # Query Column 기반 위치에 따른 값 출력
                 print(
-                    f"\nToday : {rental_date} | Return Date : {return_date} | Rate : {rental_rate}") # today와 timedelta 변환된 rental_days 합산하여 Return Date 출력
-                rental_cart.append((inventory_id, title, rental_date, rental_rate)) # 출력이 필요한 정보 포장
-                total_fee += rental_rate # 대여료 합산
+                    f"\nToday : {rental_date} | Return Date : {return_date} | Rental : {rental_fee}") # today와 timedelta 변환된 rental_days 합산하여 Return Date 출력
+                rental_cart.append((inventory_id, title, rental_date, rental_fee)) # 출력이 필요한 정보 포장
+                total_fee += rental_fee # 대여료 합산
                 # return inventory_id , rental_date , return_date
             else:
-                print("---존재하지않는 바코드---")
+                print("Not DVD Barcode")
         except Exception as e:  # 에러 체크
             print(f"Error: {e}")
-            print("-" * 10)
+            print("-" * 50)
             conn.rollback()  # 에러 발생시 롤백
             print("---Rolled Back---")
     if rental_cart:
-        print("-" * 10)
-        print("<-- Title --> | <-- Rate -->")
+        print("-" * 50)
+        print("<-- Title --> | <-- Rental -->")
         for item in rental_cart:
-            print(f"Title : {item[1]} | Rate : {item[3]}")
-        print(f"\nCart Rate : {total_fee}")
+            print(f"Title : {item[1]} | Rental : {item[3]}")
+        print(f"\nTotal Fee : {total_fee}")
         return rental_cart , total_fee
     return None , 0
 
@@ -153,10 +153,10 @@ while True:
         break
     is_return = process_return(conn, customer) # 고객의 미반납 이력 확인
     if is_return:
-        input("Total Return Rate : (Enter)") # 연체료 납입을 확인
+        input("Return Fee Calculation : (Enter)") # 연체료 납입을 확인
     else:
         rental_cart , total_fee = process_rental(conn) # 대여 정보 출력
         if total_fee:
-            input(f"Rental Rate : (Enter)")
+            input(f"Rental Fee Calculation : (Enter)")
 
 conn.close()
