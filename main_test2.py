@@ -35,7 +35,7 @@ def check_customers(conn):
         print("-" * 10)
         print("Scan customer ID or Quit > 'q'")
         customer = input().strip()  # 입력란에 strip()를 추가하여 앞뒤 공백 제거하고 제출
-        if customer == 'q':  # 쿼리값 존재시
+        if customer == 'q':  # 종료 커맨트 지정
             return None, None
         try:
             cursor.execute("select * from customer where customer_id = %s", (customer,))  # DB에 질의 전송 , customer_id 존재여부
@@ -81,23 +81,69 @@ def process_return(conn,customer):
                 f"Title : {barcode[1]} | "
                 f"Rental Date : {(today - return_date).days} days | "
                 f"Over Rate : {all_rate:.2f}")  # 소수점 2번째 자리까지만 출력 :.2f
-        print(f"Total Rate : {total_rate:.2f}")
+        print(f"\nTotal Rate : {total_rate:.2f}")
         print("-" * 10)
         return True
     else:
         return False
 
+def process_rental(conn):
+    cursor = conn.cursor()
+    scan = 1
+    while scan > 0:
+        print("-" * 10)
+        print("Please DVD Barcode")
+        barcode = input().strip()
+        try:
+            cursor.execute("""SELECT inventory.inventory_id, film.title, film.rental_rate
+                              FROM inventory
+                                       INNER JOIN film ON inventory.film_id = film.film_id
+                              WHERE inventory.inventory_id = %s""", (barcode,))
+            dvd_data = cursor.fetchone()
+            if dvd_data:
+                today = datetime.now().date()  # 현재 날짜
+                print("-" * 10)
+                print("Please Rental Date (1 , 3 , 7) :")
+                while scan > 0:
+                    input_date = input().strip()
+                    if input_date in ['1', '3', '7']:  # 1 , 3 , 7 강제
+                        rental = int(input_date)  # 입력받은 값을 int로 변환
+                        break
+                    else:
+                        print("-" * 10)
+                        print("Please Rental Date (1 , 3 , 7) :")
+                rental_days = timedelta(days=rental)  # timedelta 함수를 사용하여 rental_days을 days로 지정
+                rental_rate = dvd_data[2] * rental
+                inventory_id = dvd_data[0]
+                return_date = today + rental_days
+                rental_date = today
+                print("-" * 10)
+                print(
+                    f"Barcode : {inventory_id} | Title : {dvd_data[1]} | Rate : {dvd_data[2]}") # Query Column 기반 위치에 따른 값 출력
+                print(
+                    f"\nToday : {rental_date} | Return Date : {return_date} | Rate : {rental_rate}") # today와 timedelta 변환된 rental_days 합산하여 Return Date 출력
+                print("-" * 10)
+                return inventory_id , rental_date , return_date
+            else:
+                print("---존재하지않는 바코드---")
+        except Exception as e:  # 에러 체크
+            print(f"Error: {e}")
+            print("-" * 10)
+            conn.rollback()  # 에러 발생시 롤백
+            print("---Rolled Back---")
+
 conn = connect_db() # DB 접속
 
 while True:
     customer, customer_data = check_customers(conn) # 고객정보 호출 (기본화면)
-    if customer is None:
+    if customer is None: # 받은 값 = None 종료
         break
     is_return = process_return(conn, customer) # 고객의 미반납 이력 확인
     if is_return:
-        input("Total Rental Rate : (Enter)")
+        input("Total Return Rate : (Enter)") # 연체료 납입을 확인
     else:
-        print("-" * 10)
-        print("Please DVD Barcode")
+        is_rental = process_rental(conn) # 대여 정보 출력
+        if is_rental:
+            input("Rental Rate : (Enter)")
 
 conn.close()
