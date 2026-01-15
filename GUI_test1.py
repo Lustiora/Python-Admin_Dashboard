@@ -16,7 +16,7 @@ def user_login(event=None): # event=None을 추가하여 event값 입력 받음�
     try:
         # 연결 함수가 성공해서 반환값을 주면, conn은 더 이상 None이 아님
         conn = psycopg2.connect(dbname='DVD Rental',
-                                host='localhost',
+                                host='192.168.0.44', # Kosmo Computer IP
                                 port='5432',
                                 user=login_id,  # 입력된 ID가 작성되는곳
                                 password=login_pw)  # 입력된 PW가 작성되는곳
@@ -46,7 +46,7 @@ def run_main(conn):
     validation = main.register(check_digit)
     ######################################
     # DB 조회 모듈
-    def search_db():
+    def search_db(event=None):
         customer = customer_date.get() # .get().strip() > 입력받은 customer_date를 가져오고 앞뒤 공백 제거 > 앞뒤 공백 제거 부분은 검사 모듈과 겹치기에 삭제
         print(f"Customer ID Check ... {customer}")
         cursor = conn.cursor()
@@ -117,6 +117,7 @@ def run_main(conn):
     customer_date = tkinter.Entry(search_frame, validate="key", validatecommand=(validation, '%P'))
     # validate="key" > 입력값 상시확인 / validatecommand=(validation, '%P') > check_digit 모듈을 통과하는 입력값(%p)만 허용
     customer_date.pack(side="left", padx=5, pady=5)
+    customer_date.bind("<Return>", search_db)
     tkinter.Button(search_frame, text="Search", command=search_db).pack(side="left", padx=5, pady=5)
     ######################################
     ## Log Area
