@@ -24,11 +24,11 @@ Sakila DB > Read POS (Point of Sales) Simulator
 
 ### Workflow
 * 2026-01-13 (CLI)
-1. 존재하는 사용자인지 아닌지를 확인하며 미반납 이력을 확인 > customer / main_test1.py
-2. 존재하는 영화 여부 확인 및 대여기간을 지정하여 대여기간에 따른 대여료 출력 > inventory , film / main_test1.py
+1. 존재하는 사용자인지 아닌지를 확인하며 미반납 이력을 확인 > customer / CLI_test1.py
+2. 존재하는 영화 여부 확인 및 대여기간을 지정하여 대여기간에 따른 대여료 출력 > inventory , film / CLI_test1.py
 * 2026-01-13 (CLI)
-1. 미반납 이력이 존재하는 경우 미반납 이력과 연체 목록, 전체 연체료 출력 , 계산 > rental , film / main_test1.py
-2. 스파게티 코드의 모듈화 / main_test2.py
-3. 사용자 확인 구간에서 종료 커맨드 추가 / main_test2.py
-4. 장바구니 기능 추가 및 종료 시 장바구니 목록, 전체 대여료 출력 , 계산 / main_test2.py
+1. 미반납 이력이 존재하는 경우 미반납 이력과 연체 목록, 전체 연체료 출력 , 계산 > rental , film / CLI_test1.py
+2. 스파게티 코드의 모듈화 / CLI_test2.py
+3. 사용자 확인 구간에서 종료 커맨드 추가 / CLI_test2.py
+4. 장바구니 기능 추가 및 종료 시 장바구니 목록, 전체 대여료 출력 , 계산 / CLI_test2.py
 5. 데이터 오염 방지를 위해 DB 직접 저장 **Cancel**
