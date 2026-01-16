@@ -2,6 +2,7 @@ import tkinter # Python 기본 GUI Package
 from tkinter import messagebox # 팝업창 GUI Package
 import psycopg2  # postgresql Connect Package
 from tkinter import scrolledtext # Log Window Print Package
+from tkinter import simpledialog # Number 팝업창 Window Print Package
 from datetime import datetime, timedelta # Date Module
 ######################################
 # Login 모듈 (from tkinter import messagebox)
@@ -75,9 +76,9 @@ def run_main(conn):
         log_area.configure(state="normal")
         if rental_data:  # return_date is null
             today = datetime.now().date()
-            print("-" * 50)
+            print("-" * 93)
             print("Please Return DVD")
-            log_area.insert(tkinter.END,"-" * 50 + "\n"
+            log_area.insert(tkinter.END,"-" * 93 + "\n"
                                         "Please Return DVD\n")
             cursor.execute("""
                            select r.customer_id,
@@ -106,11 +107,74 @@ def run_main(conn):
                 log_area.insert(tkinter.END,f"Title : {barcode[1]} | Rental Date : {(today - return_date).days} days | Charge : {all_charge:.2f}\n")
             print(f"\nTotal Charge : {total_charge:.2f}")
             log_area.insert(tkinter.END, f"\nTotal Charge : {total_charge:.2f}")
-            print("-" * 50)
+            print("-" * 93)
             log_area.configure(state="disabled")
         else:
-            log_area.insert(tkinter.END, "-" * 50 + "\nNo overdue items.\n")
+            print("-" * 93)
+            print("Please DVD Barcode")
+            log_area.insert(tkinter.END, "-" * 93 + "\nNo overdue items.\n")
+            log_area.insert(tkinter.END, "-" * 93 + "\nPlease DVD Barcode.\n")
             log_area.configure(state="disabled")
+    ######################################
+    def process_rental(event = None):  # 대여 정의
+        cursor = conn.cursor()
+        barcode = dvd_barcode.get()
+        rental_cart = []
+        total_fee = 0
+        log_area.configure(state="normal")
+        if not barcode:
+            print("-" * 93)
+            print("Please Input Barcode")
+            log_area.insert(tkinter.END, "-" * 93 +"Please Input Barcode\n")
+            log_area.see(tkinter.END)
+            return
+        try:
+            cursor.execute("""SELECT inventory.inventory_id, film.title, film.rental_rate
+                              FROM inventory
+                                       INNER JOIN film ON inventory.film_id = film.film_id
+                              WHERE inventory.inventory_id = %s""", (barcode,))
+            dvd_data = cursor.fetchone()
+            # today = datetime.now().date()  # 현재 날짜
+            # print("-" * 50)
+            # print("Please Rental Date (1 , 3 , 7) :")
+            # input_date = input().strip()
+            # if input_date in ['1', '3', '7']:  # 1 , 3 , 7 강제
+            #     rental = int(input_date)  # 입력받은 값을 int로 변환
+            # else:
+            #     print("-" * 50)
+            #     print("Please Rental Date (1 , 3 , 7) :")
+            # rental_days = timedelta(days=rental)  # timedelta 함수를 사용하여 rental_days을 days로 지정
+            # rental_fee = dvd_data[2] * rental
+            inventory_id = dvd_data[0]
+            # return_date = today + rental_days
+            # rental_date = today
+            title = dvd_data[1]
+            print("-" * 93)
+            print(f"Barcode : {inventory_id} | Title : {title} | Rental : {dvd_data[2]}")  # Query Column 기반 위치에 따른 값 출력
+            log_area.insert(tkinter.END, "-" * 93 + f"\nBarcode : {inventory_id} | Title : {title} | Rental : {dvd_data[2]}\n")
+            log_area.see(tkinter.END)
+            # print(
+            #     f"\nToday : {rental_date} | Return Date : {return_date} | Rental : {rental_fee}")  # today와 timedelta 변환된 rental_days 합산하여 Return Date 출력
+            # rental_cart.append((inventory_id, title, rental_date, rental_fee))  # 출력이 필요한 정보 포장
+            # total_fee += rental_fee  # 대여료 합산
+            # return inventory_id , rental_date , return_date
+        except Exception as e:  # 에러 체크
+            log_area.insert(tkinter.END, "-" * 93 + f"Not DVD Barcode\n")
+            log_area.see(tkinter.END)
+            print(f"Error: {e}")
+            print("-" * 93)
+            conn.rollback()  # 에러 발생시 롤백
+            print("---Rolled Back---")
+        if rental_cart:
+            print("-" * 93)
+            print("<-- Title --> | <-- Rental -->")
+            for item in rental_cart:
+                print(f"Title : {item[1]} | Rental : {item[3]}")
+            print(f"\nTotal Fee : {total_fee}")
+            return rental_cart, total_fee
+        log_area.configure(state="disabled")
+        dvd_barcode.delete(0, tkinter.END) # dvd_barcode 입력값 삭제
+        return None, 0
     ######################################
     ### 화면 구성
     ## Customer Search
@@ -121,13 +185,24 @@ def run_main(conn):
     # validate="key" > 입력값 상시확인 / validatecommand=(validation, '%P') > check_digit 모듈을 통과하는 입력값(%p)만 허용
     customer_date.pack(side="left", padx=5, pady=5)
     customer_date.bind("<Return>", search_db)
-    tkinter.Button(search_frame, text="Search", command=search_db).pack(side="left", padx=5, pady=5)
+    tkinter.Button(search_frame, text="Search", command=search_db, takefocus=0).pack(side="left", padx=5, pady=5) # takefocus=0 > Tap Key 선택 제외
+    ## DVD Search
+    tkinter.Button(search_frame, text="Search", command=process_rental, takefocus=0).pack(side="right", padx=5, pady=5)
+    dvd_barcode = tkinter.Entry(search_frame, validate="key", validatecommand=(validation, '%P'))
+    # validate="key" > 입력값 상시확인 / validatecommand=(validation, '%P') > check_digit 모듈을 통과하는 입력값(%p)만 허용
+    dvd_barcode.pack(side="right", padx=5, pady=5)
+    dvd_barcode.bind("<Return>", process_rental)
+    tkinter.Label(search_frame, text="DVD Barcode :").pack(side="right", padx=5, pady=5) # grid 대신 pack 사용 / side="left" > 읽는 순서대로 좌측 정렬
     ######################################
     ## Log Area
     log_frame = tkinter.LabelFrame(main, text="Customer Details")
     log_frame.pack(fill="both", expand=True, padx=5, pady=5) # fill="both", expand=True > 잔여 공간 전부 할당
     log_area = scrolledtext.ScrolledText(log_frame, height=10, state="disabled") # Log 출력 공간
     log_area.pack(fill="both", expand=True, padx=5, pady=5)
+    ## Calculation
+    calculation = tkinter.LabelFrame(main)
+    calculation.pack(fill="x", padx=5, pady=5)
+    tkinter.Button(calculation, text="Calculation", width=500).pack(padx=5, pady=5)  # takefocus=0 > Tap Key 선택 제외
     ######################################
     # DB 조회 종료창 모듈
     def on_closing():
@@ -172,7 +247,9 @@ user_pw = tkinter.Entry(login, show="*") # show="*" > 유출 방지 : 입력값 
 user_pw.grid(row=1, column=1, padx=10, pady=5)
 user_pw.bind("<Return>", user_login) # Enter key 입력으로 Login 모듈 동작 ("[입력키]", [모듈])
 login.grid_columnconfigure(1, weight=1)
-tkinter.Button(login, text="Login", command=user_login).grid(row=2, column=0, columnspan=2, padx=10, pady=3, sticky="ew") # command=[클릭시 동작내용] | sticky="e" > 우측 정렬
+login_but = (tkinter.Button(login, text="Login", command=user_login))
+login_but.grid(row=2, column=0, columnspan=2, padx=10, pady=3, sticky="ew") # command=[클릭시 동작내용] | sticky="e" > 우측 정렬
+login_but.bind("<Return>", user_login)
 # row=[행], column=[열]) > 0행 0열 = 좌측 상단 / 행과 열이 겹치는 경우 덮어씌워짐
 # padx=[좌측우측외부여백], pady=[상단하단외부여백], ipa~=[내부여백]
 # 상세 정리 : https://puliseul.tistory.com/81
