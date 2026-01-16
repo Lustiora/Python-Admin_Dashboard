@@ -114,7 +114,7 @@ def run_main(conn):
             print("Please DVD Barcode")
             log_area.insert(tkinter.END, "-" * 93 + "\nNo overdue items.\n")
             log_area.insert(tkinter.END, "-" * 93 + "\nPlease DVD Barcode.\n")
-            log_area.configure(state="disabled")
+            log_area.configure(state="normal")
     ######################################
     def process_rental(event = None):  # 대여 정의
         cursor = conn.cursor()
@@ -176,6 +176,13 @@ def run_main(conn):
         dvd_barcode.delete(0, tkinter.END) # dvd_barcode 입력값 삭제
         return None, 0
     ######################################
+    def fee_calculation(event = None): # 정산 기능
+        log_area.configure(state="normal")
+        messagebox.showinfo("Calculation", "Is the bill paid?")
+        log_area.insert(tkinter.END,"-" * 93 + "Settlement Completed")
+        log_area.see(tkinter.END)
+        log_area.configure(state="disabled")
+    ######################################
     ### 화면 구성
     ## Customer Search
     search_frame = tkinter.LabelFrame(main, text="Customer Search")
@@ -202,7 +209,9 @@ def run_main(conn):
     ## Calculation
     calculation = tkinter.LabelFrame(main)
     calculation.pack(fill="x", padx=5, pady=5)
-    tkinter.Button(calculation, text="Calculation", width=500).pack(padx=5, pady=5)  # takefocus=0 > Tap Key 선택 제외
+    calculation_key = tkinter.Button(calculation, text="Calculation", width=500, command=fee_calculation)
+    calculation_key.pack(padx=5, pady=5)
+    calculation_key.bind("<Return>", fee_calculation)
     ######################################
     # DB 조회 종료창 모듈
     def on_closing():
