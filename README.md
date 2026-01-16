@@ -35,10 +35,13 @@ Sakila DB > Read POS (Point of Sales) Simulator
 * 2026-01-15 (GUI)
 1. 로그인 화면 구현 및 DB 연결 / GUI_test1.py
 2. 고객검색 화면 구현 및 미반납 로그 출력 / GUI_test1.py
-3. exe file 생성 `pyinstaller` 및 테스트 / GUI_test1.py
+3. exe file 생성 `pyinstaller` 및 테스트 / GUI_test1.exe
 4. `방화벽 포트 개방 5432` 
 5. `QUERY Tool` > `SHOW hba_file;` > `IPv4 local connections 모든 IP 접속 허용`
 6. **성공**
 * 2026-01-16 (GUI)
-1. DVD 목록 검색기능 + 계산 버튼 추가 / GUI_test1.py
+1. DVD 목록 검색기능 + 결제 버튼 추가 / GUI_test1.py
 2. 키보드 입력 최적화 / GUI_test1.py
+3. 결제기능 구현 + 연체료와 대여료를 합산하여 결제도 가능 / GUI_test1.py
+4. 전역변수로 필요 데이터 수거 기능 추가 / GUI_test1.py
+5. exe file 생성 `pyinstaller` 및 테스트 / GUI_test1 - 1.exe

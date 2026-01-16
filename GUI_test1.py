@@ -37,7 +37,7 @@ def run_main(conn):
     global current_customer_id # 전역 변수로 지정하여 입력 여부 확인
     current_customer_id = None # 변수값 지정
     main = tkinter.Tk()
-    main.title("Sakila DB")
+    main.title("Sakila Manager")
     center_window(main, 700, 400)
     ######################################
     # 입력값 검사 모듈
@@ -51,6 +51,12 @@ def run_main(conn):
     # DB 조회 모듈
     def search_db(event=None):
         global current_customer_id
+        global rental_cart
+        global total_fee
+        global total_charge
+        rental_cart = []
+        total_fee = 0
+        total_charge = 0
         current_customer_id = None
         customer = customer_date.get() # .get().strip() > 입력받은 customer_date를 가져오고 앞뒤 공백 제거 > 앞뒤 공백 제거 부분은 검사 모듈과 겹치기에 삭제
         print(f"Customer ID Check ... {customer}")
@@ -61,7 +67,7 @@ def run_main(conn):
             customer_data = cursor.fetchone()  # 결과 데이터 가져오기 cursor.fetchone()
             log_area.delete(1.0, tkinter.END) # 로그창 초기화
             if customer_data:  # 쿼리값 존재시
-                log_area.insert(tkinter.END, f"ID : {customer_data[0]} | Name : {customer_data[1]} | Email : {customer_data[2]}\n")
+                log_area.insert(tkinter.END, "-" * 93 + f"\nID : {customer_data[0]} | Name : {customer_data[1]} | Email : {customer_data[2]}\n")
                 process_return(conn,customer)
                 current_customer_id = customer_data[0]
             else:  # 쿼리값 미존재시
@@ -69,6 +75,7 @@ def run_main(conn):
                 print(f"Customer Not Found {customer}")
                 log_area.insert(tkinter.END, "Customer Not Found\n")
         except Exception as e:  # 에러 체크
+            log_area.insert(tkinter.END, f"Customer Not Found {customer}\n")
             current_customer_id = None
             print(f"Error: {e}")
             conn.rollback()  # 에러 발생시 롤백
@@ -76,6 +83,7 @@ def run_main(conn):
         log_area.configure(state="disabled")
         ######################################
     def process_return(conn, customer):  # 반납 정의
+        global total_charge
         cursor = conn.cursor()
         cursor.execute("select * from rental where customer_id = %s and return_date is null",
                        (customer,))  # 조회된 customer_id의 return_date 여부 조회
@@ -113,7 +121,7 @@ def run_main(conn):
                     f"Charge : {all_charge:.2f}")  # 소수점 2번째 자리까지만 출력 :.2f
                 log_area.insert(tkinter.END,f"Title : {barcode[1]} | Rental Date : {(today - return_date).days} days | Charge : {all_charge:.2f}\n")
             print(f"\nTotal Charge : {total_charge:.2f}")
-            log_area.insert(tkinter.END, f"\nTotal Charge : {total_charge:.2f}")
+            log_area.insert(tkinter.END, f"\nTotal Charge : {total_charge:.2f}\n")
             print("-" * 93)
             log_area.configure(state="disabled")
         else:
@@ -125,11 +133,12 @@ def run_main(conn):
     ######################################
     def process_rental(event = None):  # 대여 정의
         global current_customer_id
+        global rental_cart
+        global total_fee
+        global total_charge
         cursor = conn.cursor()
         barcode = dvd_barcode.get()
         rental = []
-        rental_cart = []
-        total_fee = 0
         log_area.configure(state="normal")
         if current_customer_id is None:
             print("Please Input Customer ID")
@@ -170,45 +179,62 @@ def run_main(conn):
             return_date = today + rental_days
             rental_date = today
             title = dvd_data[1]
+            total_fee += rental_fee  # 대여료 합산
             print("-" * 93)
             print(f"Barcode : {inventory_id} | Title : {title} | Rental : {dvd_data[2]}")  # Query Column 기반 위치에 따른 값 출력
-            log_area.insert(tkinter.END, "-" * 93 + f"\nBarcode : {inventory_id} | Title : {title} | Rental : ${dvd_data[2]} x {rental}days\n")
+            log_area.insert(tkinter.END, "-" * 93 + f"\nBarcode : {inventory_id} | Title : {title} | Rental : ${dvd_data[2]} x {rental}days | Total Fee : {rental_fee}\n")
             log_area.see(tkinter.END)
             print(f"\nToday : {rental_date} | Return Date : {return_date} | Rental : {rental_fee}")  # today와 timedelta 변환된 rental_days 합산하여 Return Date 출력
             rental_cart.append((inventory_id, title, rental_date, rental_fee))  # 출력이 필요한 정보 포장
-            total_fee += rental_fee  # 대여료 합산
-            log_area.insert(tkinter.END,"-" * 93 + f"\nTotal Fee : {total_fee}\n")
+            dvd_barcode.delete(0, tkinter.END)  # dvd_barcode 입력값 삭제
+            dvd_barcode.focus_set()
+        except Exception as e:  # 에러 체크
+            log_area.insert(tkinter.END, "-" * 93 + "Not DVD Barcode\n")
             log_area.see(tkinter.END)
             dvd_barcode.delete(0, tkinter.END)  # dvd_barcode 입력값 삭제
             dvd_barcode.focus_set()
-            return inventory_id , rental_date , return_date
-        except Exception as e:  # 에러 체크
             print(f"Error: {e}")
             print("-" * 93)
             conn.rollback()  # 에러 발생시 롤백
             print("---Rolled Back---")
-        if rental_cart:
-            print("-" * 93)
-            print("<-- Title --> | <-- Rental -->")
-            for item in rental_cart:
-                print(f"Title : {item[1]} | Rental : {item[3]}")
-            print(f"\nTotal Fee : {total_fee}")
-            return rental_cart, total_fee
         log_area.configure(state="disabled")
         return None, 0
     ######################################
     def fee_calculation(event = None): # 정산 기능
         global current_customer_id
+        global total_fee
+        global rental_cart
+        global total_charge
+        grand_total = float(total_fee) + float(total_charge)
         log_area.configure(state="normal")
+        if rental_cart:
+            print("-" * 93)
+            print("<-- Title --> | <-- Rental -->")
+            for item in rental_cart:
+                print(f"Title : {item[1]} | Rental : {item[3]}")
+                log_area.insert(tkinter.END, "-" * 93 + f"Title : {item[1]} | Rental : {item[3]}\n")
+                log_area.see(tkinter.END)
+            print(f"\nTotal Fee : {total_fee}")
+            log_area.insert(tkinter.END, "-" * 93 + f"\n\nTotal Fee : {total_fee}\n\n" + "-" * 93)
+            log_area.see(tkinter.END)
+        if total_charge > 0:
+            print("-" * 93)
+            print(f"\nGrand Total : {grand_total}\n")
+            log_area.insert(tkinter.END,f"\n\nGrand Fee : {grand_total:.2f}\n\n" + "-" * 93)
+            log_area.see(tkinter.END)
         print("-" * 93)
         print("Is the bill paid?")
         messagebox.showinfo("Calculation", "Is the bill paid?")
         print("-" * 93)
         print("Settlement Completed")
         log_area.delete(1.0, tkinter.END)  # 로그창 초기화
+        ## 결제 완료
         log_area.insert(tkinter.END,"Settlement Completed\n")
         log_area.configure(state="disabled")
         current_customer_id = None
+        total_fee = 0
+        total_charge = 0
+        rental_cart = []
     ######################################
     ### 화면 구성
     ## Customer Search
