@@ -15,10 +15,10 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
     appdata = os.getenv("APPDATA") # %appdata% 경로 변환
     config_dir = os.path.join(appdata, "sakila", "db") # 변환된 경로 -> "sakila" -> "db"
     config_file = os.path.join(config_dir, "config.ini") # config_dir -> "config.ini"
-    print(f"Root : {config_dir}")
-    if os.path.exists(config_dir): # 경로내 파일 유무 확인
-        # load_config()
-        db.destroy()
+    print(f"\nRoot : {config_file}")
+    if os.path.exists(config_file): # 경로내 파일 유무 확인
+        print("Save Load INI")
+        load_config()
     else:
         os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
         config = configparser.ConfigParser() # ini Editor 호출
@@ -30,26 +30,28 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
                                 }
         with open(config_file, "w") as configfile: # Export ini
             config.write(configfile)
+            print("Config.ini Created")
+        # https://docs.python.org/ko/3/library/configparser.html
 # ---------------------------------------------------------
-# Load Config Module -- 작성중 --
+# Load Config Module
 # ---------------------------------------------------------
-# def load_config():
-#     appdata = os.getenv("APPDATA")  # %appdata% 경로 변환
-#     config_dir = os.path.join(appdata, "sakila", "db")  # 변환된 경로 -> "sakila" -> "db"
-#     config_file = os.path.join(config_dir, "config.ini")  # config_dir -> "config.ini"
-#     config = configparser.ConfigParser()
-#     config.read(config_file) # Read ini
-#     # db_db.delete(0, tkinter.END)
-#     # db_host.delete(0, tkinter.END)
-#     # db_port.delete(0, tkinter.END)
-#     # db_id.delete(0, tkinter.END)
-#     # db_pw.delete(0, tkinter.END)
-#     db_db = config['dbname']['login_db']
-#     db_host = config['host']['login_host']
-#     db_port = config['port']['login_port']
-#     db_id = config['user']['login_id']
-#     db_pw = config['password']['login_pw']
-#     # db_connect(db_db, db_host, db_port, db_id, db_pw, event=None)
+def load_config():
+    appdata = os.getenv("APPDATA")  # %appdata% 경로 변환
+    config_dir = os.path.join(appdata, "sakila", "db")  # 변환된 경로 -> "sakila" -> "db"
+    config_file = os.path.join(config_dir, "config.ini")  # config_dir -> "config.ini"
+    config = configparser.ConfigParser()
+    if config.read(config_file): # Read ini
+        print(f"Load root : {config_file}")
+        db_db.delete(0, tkinter.END)
+        db_db.insert(0, config['DB Connect']['dbname'])
+        db_host.delete(0, tkinter.END)
+        db_host.insert(0, config['DB Connect']['host'])
+        db_port.delete(0, tkinter.END)
+        db_port.insert(0, config['DB Connect']['port'])
+        db_id.delete(0, tkinter.END)
+        db_id.insert(0, config['DB Connect']['user'])
+        db_pw.delete(0, tkinter.END)
+        db_pw.insert(0, config['DB Connect']['password'])
 # ---------------------------------------------------------
 # Database Connect Module
 # ---------------------------------------------------------
@@ -125,6 +127,8 @@ db_login_but = tkinter.Button(db, text="DB Connect", command=db_connect)
 db_login_but.grid(row=5, column=0, padx=10, pady=3, columnspan=2, sticky="ew")
 db_login_but.bind("<Return>", db_connect)
 
+load_config()
+
 db_db.focus_set() # DB Name Focus
-# load_config()
+
 db.mainloop()
