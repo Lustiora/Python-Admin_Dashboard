@@ -16,22 +16,18 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
     config_dir = os.path.join(appdata, "sakila", "db") # 변환된 경로 -> "sakila" -> "db"
     config_file = os.path.join(config_dir, "config.ini") # config_dir -> "config.ini"
     print(f"\nRoot : {config_file}")
-    if os.path.exists(config_file): # 경로내 파일 유무 확인
-        print("Save Load INI")
-        load_config()
-    else:
-        os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
-        config = configparser.ConfigParser() # ini Editor 호출
-        config["DB Connect"] = {"dbname": login_db, # 분류 생성
-                                "host": login_host, # "key" : value
-                                "port": login_port,
-                                "user": login_id,
-                                "password": login_pw
-                                }
-        with open(config_file, "w") as configfile: # Export ini
-            config.write(configfile)
-            print("Config.ini Created")
-        # https://docs.python.org/ko/3/library/configparser.html
+    os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
+    config = configparser.ConfigParser() # ini Editor 호출
+    config["DB Connect"] = {"dbname": login_db, # 분류 생성
+                            "host": login_host, # "key" : value
+                            "port": login_port,
+                            "user": login_id,
+                            "password": login_pw
+                            }
+    with open(config_file, "w") as configfile: # Export ini
+        config.write(configfile)
+        print("Config.ini Created")
+    # https://docs.python.org/ko/3/library/configparser.html
 # ---------------------------------------------------------
 # Load Config Module
 # ---------------------------------------------------------
