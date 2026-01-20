@@ -200,6 +200,13 @@
 
 ## Workflow
 
+* **2026-01-19**
+  1. Basic Logic 2.0 설계
+  2. DB Connect, INI File Create
+
+<details>
+<summary>Old Workflow</summary>
+
 * **2026-01-16 (GUI)**
   1. DVD 목록 검색기능 + 결제 버튼 추가 / `GUI_test1.py`
   2. 키보드 입력 최적화 / `GUI_test1.py`
@@ -208,9 +215,6 @@
   5. exe file 생성 `pyinstaller` 및 테스트 / `GUI_test1 - 1.exe`
   6. **성공**
   7. 구조 변경을 통한 동작 흐름 최적화 / `GUI_test2.py`
-
-<details>
-<summary>Old Workflow</summary>
 
 * **2026-01-15 (GUI)**
   1. 로그인 화면 구현 및 DB 연결 / `GUI_test1.py`

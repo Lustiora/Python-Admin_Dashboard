@@ -17,8 +17,8 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
     config_file = os.path.join(config_dir, "config.ini") # config_dir -> "config.ini"
     print(f"Root : {config_dir}")
     if os.path.exists(config_dir): # 경로내 파일 유무 확인
-        # load_config(db_db, db_host, db_port, db_id, db_pw)
-        load_config()
+        # load_config()
+        db.destroy()
     else:
         os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
         config = configparser.ConfigParser() # ini Editor 호출
@@ -33,28 +33,28 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
 # ---------------------------------------------------------
 # Load Config Module -- 작성중 --
 # ---------------------------------------------------------
-def load_config(db_db, db_host, db_port, db_id, db_pw):
-    appdata = os.getenv("APPDATA")  # %appdata% 경로 변환
-    config_dir = os.path.join(appdata, "sakila", "db")  # 변환된 경로 -> "sakila" -> "db"
-    config_file = os.path.join(config_dir, "config.ini")  # config_dir -> "config.ini"
-    config = configparser.ConfigParser()
-    config.read(config_file) # Read ini
-    db_db.delete(0, tkinter.END)
-    db_host.delete(0, tkinter.END)
-    db_port.delete(0, tkinter.END)
-    db_id.delete(0, tkinter.END)
-    db_pw.delete(0, tkinter.END)
-    db_db = config['dbname']['login_db']
-    db_host = config['host']['login_host']
-    db_port = config['port']['login_port']
-    db_id = config['user']['login_id']
-    db_pw = config['password']['login_pw']
-    # db_connect(db_db, db_host, db_port, db_id, db_pw, event=None)
+# def load_config():
+#     appdata = os.getenv("APPDATA")  # %appdata% 경로 변환
+#     config_dir = os.path.join(appdata, "sakila", "db")  # 변환된 경로 -> "sakila" -> "db"
+#     config_file = os.path.join(config_dir, "config.ini")  # config_dir -> "config.ini"
+#     config = configparser.ConfigParser()
+#     config.read(config_file) # Read ini
+#     # db_db.delete(0, tkinter.END)
+#     # db_host.delete(0, tkinter.END)
+#     # db_port.delete(0, tkinter.END)
+#     # db_id.delete(0, tkinter.END)
+#     # db_pw.delete(0, tkinter.END)
+#     db_db = config['dbname']['login_db']
+#     db_host = config['host']['login_host']
+#     db_port = config['port']['login_port']
+#     db_id = config['user']['login_id']
+#     db_pw = config['password']['login_pw']
+#     # db_connect(db_db, db_host, db_port, db_id, db_pw, event=None)
 # ---------------------------------------------------------
 # Database Connect Module
 # ---------------------------------------------------------
 count = 3
-def db_connect():
+def db_connect(event=None):
     global count
     login_db = db_db.get()
     login_host = db_host.get()
