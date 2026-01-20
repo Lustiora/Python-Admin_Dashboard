@@ -46,20 +46,19 @@ def load_config():
         print(f"Load root : {config_file}")
         try:
             # -- Password Base64 Decode --
-            db_id.insert(0, config['DB Connect']['user'])
+            db_pw.delete(0, tkinter.END)
             encrypted_pw = config['DB Connect']['password'] # Encode Text Call
             pw_bytes = base64.b64decode(encrypted_pw) # base64.b64decode Decode
             decrypted_pw = pw_bytes.decode('utf-8') # utf-8 Decode
-            db_pw.delete(0, tkinter.END)
             db_pw.insert(0, decrypted_pw) # Decode utf-8 Password
             db_db.delete(0, tkinter.END)
             db_host.delete(0, tkinter.END)
             db_port.delete(0, tkinter.END)
             db_id.delete(0, tkinter.END)
-            db_pw.delete(0, tkinter.END)
             db_db.insert(0, config['DB Connect']['dbname'])
             db_host.insert(0, config['DB Connect']['host'])
             db_port.insert(0, config['DB Connect']['port'])
+            db_id.insert(0, config['DB Connect']['user'])
         except Exception as e:
             print(f"Error : {e}")
             messagebox.showinfo("DB Connect", f"The saved account information does not match.")

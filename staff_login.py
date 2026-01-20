@@ -96,11 +96,12 @@ def check_login_process(event = None):
                 messagebox.showinfo("Staff Login", "Connected")
                 login.destroy()
             else:  # 쿼리값 미존재시
-                print(f"Login Failed | Count (3) : {count}")
-                messagebox.showinfo("Staff Login", f"Connect Failed\nChance (3) : {count}")
+                if count <= 0:
+                    print(f"Login Failed")
+                    messagebox.showinfo("Staff Login", "Please Contact the Administrator\nPhone : 010-1234-5678")
+                    login.destroy()
+                else:
+                    print(f"Login Failed | Count (3) : {count}")
+                    messagebox.showinfo("Staff Login", f"Connect Failed\nChance (3) : {count}")
         except Exception as e:
             print(f"error : {e}")
-            if count == 0:
-                print(f"Login Failed")
-                messagebox.showinfo("Staff Login", "Please Contact the Administrator\nPhone : 010-1234-5678")
-                login.destroy()
