@@ -12,11 +12,9 @@
         - 1-1. 해당 정보로 연결시도
             - 일치 print _DB Connect_ > `2`
             - 불일치 >> Count **-1** Print _Not Connected_
-                - Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ > `1-2`
-        - 1-2. 새로운 정보 정의 화면 출력
-            - dbname, host(domain), port, user, password > Save INI File > `1-1`
+                - Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ _End_
 
-2. **직원 ID를 확인 (Barcode) (Staff-Table)**
+2. **직원 ID를 확인 (Staff-Table)**
     - Login Count = **3**
     - DB (Staff Table)에 해당하는 로그인 정보(username, password, active == `True`) 확인
         - 일치 >> `DB Access`

@@ -4,10 +4,11 @@
 import psycopg2
 import tkinter
 from tkinter import messagebox
-import staff_Login
+from staff_login import staff_login_gui
 from window import center_window
 import os # ls %appdata%\sakila\db / mkdir %appdata%\sakila\db
 import configparser # ini Editor
+# import hashlib
 # ---------------------------------------------------------
 # Save Config Module
 # ---------------------------------------------------------
@@ -15,7 +16,6 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
     appdata = os.getenv("APPDATA") # %appdata% 경로 변환
     config_dir = os.path.join(appdata, "sakila", "db") # 변환된 경로 -> "sakila" -> "db"
     config_file = os.path.join(config_dir, "config.ini") # config_dir -> "config.ini"
-    print(f"\nRoot : {config_file}")
     os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
     config = configparser.ConfigParser() # ini Editor 호출
     config["DB Connect"] = {"dbname": login_db, # 분류 생성
@@ -26,7 +26,7 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
                             }
     with open(config_file, "w") as configfile: # Export ini
         config.write(configfile)
-        print("Config.ini Created")
+        print(f"{config_file} Save")
     # https://docs.python.org/ko/3/library/configparser.html
 # ---------------------------------------------------------
 # Load Config Module
@@ -71,7 +71,7 @@ def db_connect(event=None):
         print("Connection Established")
         save_config(login_db, login_host, login_port, login_id, login_pw) # 연결 성공 시 저장
         db.destroy()
-        staff_Login.login_gui()
+        staff_login_gui()
     except Exception as e:
         print(f"Not Connected | Chance(3) : {count}\nError : {e}")
         messagebox.showinfo("DB Connect", f"Not Connected\nChance(3) : {count}")
