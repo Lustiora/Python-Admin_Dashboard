@@ -107,7 +107,7 @@ def db_connect(event=None):
 if __name__ == "__main__":
     db = tkinter.Tk()
     db.title("DB Connect")
-    center_window(db, 260, 220)
+    center_window(db, 260, 220, resizable=False)
 
 # DB Name
 tkinter.Label(db, text="DB Name").grid(row=0, column=0, pady=5, padx=5, sticky="e")

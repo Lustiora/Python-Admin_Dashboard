@@ -10,6 +10,7 @@ import os
 import configparser
 import hashlib # 해시값 Encoding
 import base64
+from main_window import main_check_login_process
 # ---------------------------------------------------------
 # Variable
 # ---------------------------------------------------------
@@ -27,7 +28,7 @@ def staff_login_gui():
     global password
     login = tkinter.Tk() # 표사되는 Window(tkinter.Tk())에 변수명을 지정하여 변수명을 기준으로 속성을 추가
     login.title("Staff Login")
-    center_window(login, 260, 100)
+    center_window(login, 260, 100, resizable=False)
 
     tkinter.Label(login, text="Username").grid(row=0, column=0, padx=5, pady=5, sticky="e")
     username = tkinter.Entry(login) # Entry -> 입력칸 | 입력된 값을 사용하기 위해 변수명 지정 필요
@@ -94,6 +95,7 @@ def check_login_process(event = None):
             if user_data:  # 쿼리값 존재시
                 print(f"ID : {user_data[0]} | PW : {user_data[1]}")
                 messagebox.showinfo("Staff Login", "Connected")
+                main_check_login_process()
                 login.destroy()
             else:  # 쿼리값 미존재시
                 print(f"Login Failed | Count (3) : {count}")
