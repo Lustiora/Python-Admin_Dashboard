@@ -5,7 +5,7 @@
 
 ### 1. Login Logic
 
-1. **DB 연결정보를 확인**
+1. [x] **DB 연결정보를 확인**
     - 연결정보가 저장된 INI File 유무 확인
     - 화이트 리스트만 연결 가능
         - DB Connect Count = **3**
@@ -15,10 +15,8 @@
                 - Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ _End_
         
         <img width="674" height="257" alt="스크린샷 2026-01-20 170736" src="https://github.com/user-attachments/assets/1e3ad08c-defb-48db-92ae-0b0bb70a7929" />
-        
-        <img width="265" height="256" alt="스크린샷 2026-01-20 170435" src="https://github.com/user-attachments/assets/86fd1671-5353-4f13-a85b-c828d5bac7f2" />
 
-2. **직원 ID를 확인 (Staff-Table)**
+2. [x] **직원 ID를 확인 (Staff-Table)**
     - Login Count = **3**
     - DB (Staff Table)에 해당하는 로그인 정보(username, password, active == `True`) 확인
         - 일치 >> `DB Access`
@@ -29,7 +27,7 @@
 
 ### 2. Customer Check / Return / Rental / Calculation Logic
 
-1. **회원 여부 확인 (Barcode) (Customer-Table)**
+1. [ ] **회원 여부 확인 (Barcode) (Customer-Table)**
     - 1-1. 고객 ID를 확인 (customer_id)
         - 확인 `1 End`
         - 미확인 `1-2`
@@ -45,7 +43,7 @@
         - first_name, last_name, email
         - address_id = Address-Table > Last address_id +1 (DB -> SERIAL 혹은 SEQUENCE) / New Rows
 
-2. **재고 확인 (Barcode) (Inventory-Table)**
+2. [ ] **재고 확인 (Barcode) (Inventory-Table)**
     - 2-1. 상품 Barcode 확인 (inventory_id, Connect Staff ID = store_id)
         - 확인 `2-2`
         - 미확인 `2-4`
@@ -82,7 +80,7 @@
         - actor_id = Last actor_id +1 (DB -> SERIAL 혹은 SEQUENCE)
         - first_name , last_name
 
-3. **반납 (Rental-Table)**
+3. [ ] **반납 (Rental-Table)**
     - `1` = %s > customer_id = %s, return_date is null
         - Film List 출력 (film_id > Film-Table)
         - Columns `film_id`, `title`, `rental_rate`, `rental_date`, `return_date`, `replacement_cost`
@@ -92,7 +90,7 @@
             - `over_rate` = (`return_date` - 현재 날짜) * (`rental_rate` / `rental_duration`) * 1.1
             - (반납 and `over_rate` + `5`) or (반납 + `4` + `over_rate` + `5`) > _End_
 
-4. **대여 (Rental-Table) & 결제**
+4. [ ] **대여 (Rental-Table) & 결제**
     - Rental-Table
         - `1` = %s // customer_id = %s (Customer-Table)
         - `2` > `5` or (Rental_Cart > `5`) else `2-2` Global Fee, Cart Reset, print _이미 대여중인 dvd입니다._
