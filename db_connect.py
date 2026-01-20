@@ -6,9 +6,10 @@ import tkinter
 from tkinter import messagebox
 from staff_login import staff_login_gui
 from window import center_window
+from window import set_focus_force
 import os # ls %appdata%\sakila\db / mkdir %appdata%\sakila\db
 import configparser # ini Editor
-# import hashlib
+import base64
 # ---------------------------------------------------------
 # Save Config Module
 # ---------------------------------------------------------
@@ -18,11 +19,16 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
     config_file = os.path.join(config_dir, "config.ini") # config_dir -> "config.ini"
     os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
     config = configparser.ConfigParser() # ini Editor 호출
+    # -- Password Base64 Encode --
+    pw_bytes = login_pw.encode('utf-8') # Encode utf-8
+    base64_bytes = base64.b64encode(pw_bytes) # base64.b64encode Encode
+    encrypted_pw = base64_bytes.decode('utf-8') # Encode utf-8 Decode
+    # --
     config["DB Connect"] = {"dbname": login_db, # 분류 생성
                             "host": login_host, # "key" : value
                             "port": login_port,
                             "user": login_id,
-                            "password": login_pw
+                            "password": encrypted_pw
                             }
     with open(config_file, "w") as configfile: # Export ini
         config.write(configfile)
@@ -46,8 +52,23 @@ def load_config():
         db_port.insert(0, config['DB Connect']['port'])
         db_id.delete(0, tkinter.END)
         db_id.insert(0, config['DB Connect']['user'])
-        db_pw.delete(0, tkinter.END)
-        db_pw.insert(0, config['DB Connect']['password'])
+        try:
+            # -- Password Base64 Decode --
+            encrypted_pw = config['DB Connect']['password'] # Encode Text Call
+            pw_bytes = base64.b64decode(encrypted_pw) # base64.b64decode Decode
+            decrypted_pw = pw_bytes.decode('utf-8') # utf-8 Decode
+            # --
+            db_pw.delete(0, tkinter.END)
+            db_pw.insert(0, decrypted_pw) # Decode utf-8 Password
+        except Exception as e:
+            print(f"Error : {e}")
+            messagebox.showinfo("DB Connect", f"The saved account information does not match.")
+            db_db.delete(0, tkinter.END)
+            db_host.delete(0, tkinter.END)
+            db_port.delete(0, tkinter.END)
+            db_id.delete(0, tkinter.END)
+            db_pw.delete(0, tkinter.END)
+            db.after(200, set_focus_force, db, db_db)
 # ---------------------------------------------------------
 # Database Connect Module
 # ---------------------------------------------------------
