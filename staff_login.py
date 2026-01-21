@@ -10,7 +10,6 @@ import os
 import configparser
 import hashlib # 해시값 Encoding
 import base64
-from main_window import main_check_login_process
 # ---------------------------------------------------------
 # Variable
 # ---------------------------------------------------------
@@ -95,12 +94,17 @@ def check_login_process(event = None):
             print("User Login ...")
             if user_data:  # 쿼리값 존재시
                 print(f"ID : {user_data[0]} | PW : {user_data[1]}")
-                messagebox.showinfo("Staff Login", "Connected")
                 login.destroy()
+                from main_window import main_check_login_process
                 main_check_login_process()
             else:  # 쿼리값 미존재시
-                print(f"Login Failed | Count (3) : {count}")
-                messagebox.showinfo("Staff Login", f"Connect Failed\nChance (3) : {count}")
+                if count <= 0:
+                    print(f"Login Failed")
+                    messagebox.showerror("Staff Login", "Please Contact the Administrator\nPhone : 010-1234-5678")
+                    login.destroy()
+                else:
+                    print(f"Login Failed | Count (3) : {count}")
+                    messagebox.showerror("Staff Login", f"Connect Failed\nChance (3) : {count}")
         except Exception as e:
             print(f"error : {e}")
             if count == 0:
