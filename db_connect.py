@@ -2,6 +2,7 @@
 # Import Package
 # ---------------------------------------------------------
 import psycopg2
+import sys
 import tkinter
 from tkinter import messagebox
 from window import center_window
@@ -13,7 +14,10 @@ import base64 # base64 Encode/Decode
 # Save Config Module
 # ---------------------------------------------------------
 def save_config(login_db, login_host, login_port, login_id, login_pw):
-    appdata = os.getenv("APPDATA") # %appdata% 경로 변환
+    if sys.platform == "win32":
+        appdata = os.getenv("APPDATA") # %appdata% 경로 변환
+    else:
+        appdata = os.path.expanduser("~/.config")
     config_dir = os.path.join(appdata, "sakila", "db") # 변환된 경로 -> "sakila" -> "db"
     config_file = os.path.join(config_dir, "config.ini") # config_dir -> "config.ini"
     os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
@@ -37,7 +41,10 @@ def save_config(login_db, login_host, login_port, login_id, login_pw):
 # Load Config Module
 # ---------------------------------------------------------
 def load_config():
-    appdata = os.getenv("APPDATA")  # %appdata% 경로 변환
+    if sys.platform == "win32":
+        appdata = os.getenv("APPDATA") # %appdata% 경로 변환
+    else:
+        appdata = os.path.expanduser("~/.config")
     config_dir = os.path.join(appdata, "sakila", "db")  # 변환된 경로 -> "sakila" -> "db"
     config_file = os.path.join(config_dir, "config.ini")  # config_dir -> "config.ini"
     config = configparser.ConfigParser()

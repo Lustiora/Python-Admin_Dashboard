@@ -2,6 +2,7 @@
 # Import Package
 # ---------------------------------------------------------
 import psycopg2
+import sys
 import tkinter
 from tkinter import messagebox
 from window import center_window
@@ -52,7 +53,10 @@ def check_login_process(event = None):
     global count
     global login
     # -- Load Config --
-    appdata = os.getenv("APPDATA")
+    if sys.platform == "win32":
+        appdata = os.getenv("APPDATA")  # %appdata% 경로 변환
+    else:
+        appdata = os.path.expanduser("~/.config")
     config_dir = os.path.join(appdata, "sakila", "db")
     config_file = os.path.join(config_dir, "config.ini")
     print(f"\nConfig Load : {config_file}")
