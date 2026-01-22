@@ -3,45 +3,43 @@ import sys
 import os
 import subprocess
 
-def connect_test(conn, status, main, target_file):
+def connect_test(conn, status, main, target_file): # DB 연결 확인
     try:
-        # print("Test Connected 5s") # 디버깅용
         with conn.cursor() as cursor:
             cursor.execute("select 1")
-        # print("DB Connect Test : Connected")
-        status.config(text="Connected", fg="#2ecc71")  # 녹색
+        status.config(text="Connected", fg="green")
     except Exception as e:
-        status.config(text="Disconnected", fg="#e74c3c")  # 빨간색
+        status.config(text="Disconnected", fg="red")
         print(f"Error: {e}")
         if messagebox.askokcancel("Error", "Disconnected\nProgram Restart?"):
             main.destroy()
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            if not target_file:
-                target_file = os.path.join(current_dir, "db_connect.py")
-            my_env = os.environ.copy() # 환경변수 설정 (리눅스용)
-            if "PYTHONPATH" in my_env:
-                my_env["PYTHONPATH"] = current_dir + os.pathsep + my_env["PYTHONPATH"]
-            else:
-                my_env["PYTHONPATH"] = current_dir
+            if getattr(sys, 'frozen', False): # [Windows EXE]
+                current_executable = sys.executable
+                current_dir = os.path.dirname(current_executable)
+            else: # [개발 환경]
+                current_executable = sys.executable
+                current_dir = os.path.dirname(os.path.abspath(__file__))
             print("Restarting Process...")
-            if sys.platform == 'win32': # [Windows]
+            if sys.platform == 'win32': # explorer.exe "실행파일경로" 명령 실행
                 if getattr(sys, 'frozen', False):
-                    # 1. EXE 배포 환경 (Windows)
-                    print("Restarting Executable (Frozen)...")
-                    subprocess.Popen([sys.executable], cwd=current_dir)
-                else:
+                    print("Restarting via Windows Explorer...")
+                    subprocess.Popen(['explorer', current_executable])
+                else: # [Windows 개발 환경]
                     print("Restarting via os.system...")
                     os.chdir(current_dir)
                     os.system("python db_connect.py")
-                sys.exit()  # 현재 프로세스 종료
+                sys.exit() # 파이썬 종료
             else: # [Linux / Mac]
+                my_env = os.environ.copy()
+                if "PYTHONPATH" in my_env:
+                    my_env["PYTHONPATH"] = current_dir + os.pathsep + my_env["PYTHONPATH"]
+                else:
+                    my_env["PYTHONPATH"] = current_dir
                 os.environ.update(my_env)
                 if getattr(sys, 'frozen', False):
-                    print("Restarting Executable (Linux Frozen)...")
                     os.execv(sys.executable, [sys.executable])
                 else:
-                    print("Restarting Python Script (Linux)...")
                     os.execv(sys.executable, [sys.executable, target_file])
-        return  # 재시작 로직 진입 시 함수 종료
+        return
     if main.winfo_exists():
         main.after(5000, lambda: connect_test(conn, status, main, target_file))
