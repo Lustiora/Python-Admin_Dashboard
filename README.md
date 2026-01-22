@@ -242,7 +242,7 @@
   
   Linux Compile Test 필요
   ```
-  7. Windows Sandbox Test >> **Clear**
+  7. Windows Sandbox Test >> **Clear** 
 
 
 <details>
