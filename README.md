@@ -215,6 +215,8 @@
   3. pyinstaller > Package Compile `pyinstaller -F -w -n Sakila_Basic_Logic_2_3 db_connect.py`
   Linux 실행 **성공** 확장자 **X**
   Window 별도 Package Compile 필요 (pyinstaller Cross-Compile 지원하지 않음)
+  4. Linux에서 재시작에 성공하고 Windows에서 실패하는 현상 debug (분기 추가)
+  5. db_connect.py > config.ini 파일 유무에 따른 동작 로직 변경 (파일 존재시 바로 접속 시도)
 
 <details>
 <summary>Old Workflow</summary>
