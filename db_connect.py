@@ -7,78 +7,115 @@ import tkinter
 from tkinter import messagebox
 from window import center_window
 from window import center_window_delayed
-from window import set_focus_force
-import os # ls %appdata%\sakila\db / mkdir %appdata%\sakila\db
-import configparser # ini Editor
-import base64 # base64 Encode/Decode
+import os
+import configparser
+import base64
 # ---------------------------------------------------------
 # Save Config Module
 # ---------------------------------------------------------
 def save_config(login_db, login_host, login_port, login_id, login_pw):
     if sys.platform == "win32":
-        appdata = os.getenv("APPDATA") # %appdata% 경로 변환
+        appdata = os.getenv("APPDATA")
     else:
         appdata = os.path.expanduser("~/.config")
-    config_dir = os.path.join(appdata, "sakila", "db") # 변환된 경로 -> "sakila" -> "db"
-    config_file = os.path.join(config_dir, "config.ini") # config_dir -> "config.ini"
-    os.makedirs(config_dir, exist_ok=True) # 폴더 생성 | exist_ok=True > 폴더 존재 시 Cancel
-    config = configparser.ConfigParser() # ini Editor 호출
-    # -- Password Base64 Encode --
-    pw_bytes = login_pw.encode('utf-8') # Encode utf-8
-    base64_bytes = base64.b64encode(pw_bytes) # base64.b64encode Encode
-    encrypted_pw = base64_bytes.decode('utf-8') # Encode utf-8 Decode
-    # --
-    config["DB Connect"] = {"dbname": login_db, # 분류 생성
-                            "host": login_host, # "key" : value
-                            "port": login_port,
-                            "user": login_id,
-                            "password": encrypted_pw
-                            }
-    with open(config_file, "w") as configfile: # Export ini
+    config_dir = os.path.join(appdata, "sakila", "db")
+    config_file = os.path.join(config_dir, "config.ini")
+    os.makedirs(config_dir, exist_ok=True)
+    config = configparser.ConfigParser()
+
+    pw_bytes = login_pw.encode('utf-8')
+    base64_bytes = base64.b64encode(pw_bytes)
+    encrypted_pw = base64_bytes.decode('utf-8')
+
+    config["DB Connect"] = {
+        "dbname": login_db,
+        "host": login_host,
+        "port": login_port,
+        "user": login_id,
+        "password": encrypted_pw
+    }
+    with open(config_file, "w") as configfile:
         config.write(configfile)
         print(f"{config_file} Save")
-    # https://docs.python.org/ko/3/library/configparser.html
 # ---------------------------------------------------------
-# Load Config Module
+# Load Config Helper (GUI용)
 # ---------------------------------------------------------
-def load_config():
+def load_config_to_gui():
     if sys.platform == "win32":
-        appdata = os.getenv("APPDATA") # %appdata% 경로 변환
+        appdata = os.getenv("APPDATA")
     else:
         appdata = os.path.expanduser("~/.config")
-    config_dir = os.path.join(appdata, "sakila", "db")  # 변환된 경로 -> "sakila" -> "db"
-    config_file = os.path.join(config_dir, "config.ini")  # config_dir -> "config.ini"
+    config_dir = os.path.join(appdata, "sakila", "db")
+    config_file = os.path.join(config_dir, "config.ini")
     config = configparser.ConfigParser()
-    if config.read(config_file): # Read ini
+
+    if config.read(config_file):
         print(f"Load root : {config_file}")
         try:
-            # -- Password Base64 Decode --
             db_pw.delete(0, tkinter.END)
-            encrypted_pw = config['DB Connect']['password'] # Encode Text Call
-            pw_bytes = base64.b64decode(encrypted_pw) # base64.b64decode Decode
-            decrypted_pw = pw_bytes.decode('utf-8') # utf-8 Decode
-            db_pw.insert(0, decrypted_pw) # Decode utf-8 Password
+            encrypted_pw = config['DB Connect']['password']
+            pw_bytes = base64.b64decode(encrypted_pw)
+            decrypted_pw = pw_bytes.decode('utf-8')
+            db_pw.insert(0, decrypted_pw)
+
             db_db.delete(0, tkinter.END)
             db_host.delete(0, tkinter.END)
             db_port.delete(0, tkinter.END)
             db_id.delete(0, tkinter.END)
+
             db_db.insert(0, config['DB Connect']['dbname'])
             db_host.insert(0, config['DB Connect']['host'])
             db_port.insert(0, config['DB Connect']['port'])
             db_id.insert(0, config['DB Connect']['user'])
         except Exception as e:
             print(f"Error : {e}")
-            messagebox.showerror("DB Connect", f"The saved account information does not match.")
-            db_db.delete(0, tkinter.END)
-            db_host.delete(0, tkinter.END)
-            db_port.delete(0, tkinter.END)
-            db_id.delete(0, tkinter.END)
-            db_pw.delete(0, tkinter.END)
-            db.after(200, set_focus_force, db, db_db)
 # ---------------------------------------------------------
-# Database Connect Module
+# Auto Login Logic (Launcher)
 # ---------------------------------------------------------
-# -- Variable --
+def auto_login_start():
+    if sys.platform == "win32": # windows OS 의 경우
+        appdata = os.getenv("APPDATA")
+    else: # 그외 OS(Linux)의 경우
+        appdata = os.path.expanduser("~/.config")
+    config_dir = os.path.join(appdata, "sakila", "db")
+    config_file = os.path.join(config_dir, "config.ini")
+    config = configparser.ConfigParser()
+    # 1. 설정 파일이 없으면 -> 설정창(run_db_connect) 실행
+    if not config.read(config_file):
+        print("No Config File Found. Starting Setup...")
+        run_db_connect()
+        return
+    # 2. 설정 파일이 있으면 -> 연결 시도
+    try:
+        login_db = config['DB Connect']['dbname']
+        login_host = config['DB Connect']['host']
+        login_port = config['DB Connect']['port']
+        login_id = config['DB Connect']['user']
+        encrypted_pw = config['DB Connect']['password']
+
+        pw_bytes = base64.b64decode(encrypted_pw)
+        decrypted_pw = pw_bytes.decode('utf-8')
+
+        conn = psycopg2.connect(
+            dbname=login_db,
+            host=login_host,
+            port=login_port,
+            user=login_id,
+            password=decrypted_pw
+        )
+        print("Auto-Login Successful. Launching Main Window...")
+
+        from staff_login import staff_login_gui # 연결 성공 시 staff_login_gui로 바로 진입
+        staff_login_gui()
+
+    except Exception as e:
+        print(f"Auto-Login Failed: {e}")
+        messagebox.showerror("Auto-Login Failed",f"{e}")
+        # 연결 실패 시 -> 설정창(run_db_connect) 실행
+        run_db_connect()
+# ---------------------------------------------------------
+# Database Connect Module (Button Event)
+# ---------------------------------------------------------
 count = 3
 db = []
 db_db = []
@@ -86,8 +123,7 @@ db_host = []
 db_port = []
 db_id = []
 db_pw = []
-# --
-def db_connect(event=None):
+def db_connect_event(event=None):
     global count
     global db, db_db, db_host, db_port, db_id, db_pw
     login_db = db_db.get()
@@ -95,29 +131,28 @@ def db_connect(event=None):
     login_port = db_port.get()
     login_id = db_id.get()
     login_pw = db_pw.get()
-    print(f"ID : {login_id} | PW : {login_pw}")
-    print("DB Connected ...")
+    print(f"Connecting to {login_host}...")
     count = count - 1
     try:
         conn = psycopg2.connect(dbname=login_db,
-                                host=login_host, # Default : localhost
-                                port=login_port, # Default : 5432
+                                host=login_host,
+                                port=login_port,
                                 user=login_id,
                                 password=login_pw)
         print("Connection Established")
-        save_config(login_db, login_host, login_port, login_id, login_pw) # 연결 성공 시 저장
+        save_config(login_db, login_host, login_port, login_id, login_pw)
         db.destroy()
         from staff_login import staff_login_gui
         staff_login_gui()
     except Exception as e:
-        print(f"Not Connected | Chance(3) : {count}\nError : {e}")
-        messagebox.showerror("DB Connect", f"Not Connected\nChance(3) : {count}")
-        if count == 0:
-            messagebox.showerror("DB Connect", "Please Contact the Administrator\nPhone : 010-1234-5678")
-            print("Not Connected Time Out")
+        print(f"Connection Failed: {e}")
+        if count > 0:
+            messagebox.showerror("DB Connect", f"Not Connected\nChance(3) : {count}")
+        else:
+            messagebox.showerror("DB Connect", "Please Contact Administrator")
             db.destroy()
 # ---------------------------------------------------------
-# DB Connect GUI
+# DB Connect GUI (Setup Screen)
 # ---------------------------------------------------------
 def run_db_connect():
     global db, db_db, db_host, db_port, db_id, db_pw
@@ -128,49 +163,44 @@ def run_db_connect():
 
     tkinter.Label(db).grid(row=0, column=0, pady=0, padx=0)
 
-    # DB Name
+    # UI Components
     tkinter.Label(db, text="DB Name").grid(row=1, column=0, pady=5, padx=5, sticky="e")
     db_db = tkinter.Entry(db)
     db_db.grid(row=1, column=1, pady=5, padx=5)
 
-    # DB Host
     tkinter.Label(db, text="DB Host").grid(row=2, column=0, pady=5, padx=5, sticky="e")
     db_host = tkinter.Entry(db)
     db_host.grid(row=2, column=1, pady=5, padx=5)
 
-
-    # DB Port
     tkinter.Label(db, text="DB Port").grid(row=3, column=0, pady=5, padx=5, sticky="e")
     db_port = tkinter.Entry(db)
     db_port.grid(row=3, column=1, pady=5, padx=5)
 
-    # DB Username
     tkinter.Label(db, text="DB Username").grid(row=4, column=0, pady=5, padx=5, sticky="e")
     db_id = tkinter.Entry(db)
     db_id.grid(row=4, column=1, pady=5, padx=5)
 
-    # DB Password
     tkinter.Label(db, text="DB Password").grid(row=5, column=0, pady=5, padx=5, sticky="e")
     db_pw = tkinter.Entry(db, show="*")
     db_pw.grid(row=5, column=1, pady=5, padx=5)
-    db_pw.bind("<Return>", db_connect)
 
-    # DB Connect Button
-    db_login_but = tkinter.Button(db, text="DB Connect", command=db_connect)
+    db_pw.bind("<Return>", db_connect_event)
+
+    db_login_but = tkinter.Button(db, text="DB Connect", command=db_connect_event)
     db_login_but.grid(row=6, column=0, pady=5, padx=10, columnspan=2, sticky="ew")
-    db_login_but.bind("<Return>", db_connect)
+    db_login_but.bind("<Return>", db_connect_event)
 
-    # Array Middle
     db.grid_columnconfigure(0, weight=1)
     db.grid_columnconfigure(1, weight=1)
 
-    load_config()
+    load_config_to_gui()  # 기존 저장된 값 불러오기
 
     db.after(10, lambda: center_window_delayed(db, 300, 240))
-
-    db_db.focus_set() # DB Name Focus
-    # db.deiconify() # Window OS 동작 이상 시 주석 해제
+    db_db.focus_set()
     db.mainloop()
-
+# ---------------------------------------------------------
+# Entry Point
+# ---------------------------------------------------------
 if __name__ == "__main__":
-    run_db_connect()
+    # [중요] 직접 실행 시 자동 로그인 로직부터 시작
+    auto_login_start()

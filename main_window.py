@@ -7,9 +7,10 @@ import tkinter
 from tkinter import messagebox
 from window import center_window
 from window import center_window_delayed
-import os
+import os, subprocess
 import configparser
 import base64
+from db_monitor import connect_test
 # ---------------------------------------------------------
 # Variable
 # ---------------------------------------------------------
@@ -428,38 +429,12 @@ def run_main(conn, login_db, login_host, login_port):
     status = tkinter.Label(status_frame, text="Status", fg="white", bg="gainsboro") # 하단 모듈에서 status 값을 인자로 받아서 출력하기에 동일하게 명명해야 혼란방지
     status.pack(side="right")
     # ---------------------------------------------------------
-    def connect_test(conn, status):
-        try:
-            print("Test Connected 5s")
-            with conn.cursor() as cursor:
-                cursor.execute("select 1")
-            print("DB Connect Test : Connected")
-            status.config(text = "Connected", fg = "green") # .config를 사용하여 Label 값 교체 / status 값을 외부로 반출
-        except Exception as e:
-            status.config(text="Disconnected", fg="red")
-            print(f"Error: {e}")
-            if messagebox.askokcancel("Error", "Disconnected\nProgram Restart?"):
-                main.destroy()
-                if getattr(sys, 'frozen', False): # exe 패키지 구동시 실행 조건
-                    print("Restarting Executable...")
-                    application_path = sys.executable
-                    os.execv(application_path, [application_path])
-                else: # 개발 환경 실행 조건
-                    current_dir = os.path.dirname(os.path.abspath(__file__))
-                    target_file = os.path.join(current_dir, "db_connect.py")
-                    my_env = os.environ.copy() # 환경변수 설정
-                    if "PYTHONPATH" in my_env:
-                        my_env["PYTHONPATH"] = current_dir + os.pathsep + my_env["PYTHONPATH"]
-                    else:
-                        my_env["PYTHONPATH"] = current_dir
-                    os.environ.update(my_env) # 현재 환경변수 업데이트
-                    print("Restarting via os.execv...")
-                    os.execv(sys.executable, [sys.executable, target_file]) # 현재 프로세스를 죽이고, 그 자리에서 새 파이썬을 실행 / 인자: (실행파일 경로, [실행파일경로, 스크립트파일])
-            return  # 종료
-        if main.winfo_exists():  # 창이 켜져 있을 때만 예약
-            main.after(5000, lambda: connect_test(conn, status))
+    # Connect Test Module
     # ---------------------------------------------------------
-    connect_test(conn,status)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    target_file = os.path.join(current_dir, "db_connect.py")
+    connect_test(conn, status, main, target_file)
+    # ---------------------------------------------------------
     # main.deiconify() # Window OS 동작 이상 시 주석 해제
     main.after(10, lambda: center_window_delayed(main, 1024, 768))
     main.mainloop()
@@ -498,3 +473,6 @@ def main_check_login_process(event = None):
             run_main(conn, login_db, login_host, login_port)
         except Exception as e:
             print(f"Sakila DB Not Connected : {e}")
+
+if __name__ == "__main__":
+    print("Please run 'db_connect.py' to start the application.")

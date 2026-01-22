@@ -112,9 +112,9 @@
     - _End_
 
 ### Window
-1. DB Connect Window `1`
-2. Staff Login Window `2`
-3. Main Window
+1. [x] DB Connect Window `1`
+2. [x] Staff Login Window `2`
+3. [x] Main Window
     - Menubar
         - 메뉴
             - 상태 (DB 연결, 직원 정보)
