@@ -112,6 +112,9 @@
     - _End_
 
 ### Window
+
+<img width="1026" height="820" alt="스크린샷 2026-01-22 172434" src="https://github.com/user-attachments/assets/04d5c636-2aa7-487c-b883-01ac260df8c9" />
+
 1. [x] DB Connect Window `1`
 2. [x] Staff Login Window `2`
 3. [x] Main Window
