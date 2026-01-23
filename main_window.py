@@ -1,12 +1,8 @@
 # ---------------------------------------------------------
 # Import Package
 # ---------------------------------------------------------
+import sys, os, configparser, base64
 import psycopg2
-import sys
-import os
-import configparser
-import hashlib # 해시값 Encoding
-import base64
 import tkinter
 from tkinter import messagebox
 from window import (center_window,

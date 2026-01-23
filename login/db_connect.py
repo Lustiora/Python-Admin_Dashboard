@@ -1,16 +1,13 @@
 # ---------------------------------------------------------
 # Import Package
 # ---------------------------------------------------------
+import sys, os, configparser, base64
 import psycopg2
-import sys
 import tkinter
 from tkinter import messagebox
 from window import (center_window,
                     center_window_delayed,
                     Colors)
-import os
-import configparser
-import base64
 # ---------------------------------------------------------
 # Save Config Module
 # ---------------------------------------------------------

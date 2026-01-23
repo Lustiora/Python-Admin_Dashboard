@@ -1,8 +1,6 @@
+import sys, os, subprocess
 from tkinter import messagebox
-import sys
-import os
-import subprocess
-from window import Colors
+from window import (Colors)
 
 def connect_test(conn, status, main, target_file): # DB 연결 확인
     try:
