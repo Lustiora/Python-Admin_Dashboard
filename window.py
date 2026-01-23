@@ -84,3 +84,72 @@ def on_drag(event, window): # 마우스가 움직인 절대 좌표에서, 아까
     if y + window_h > parent_h: y = parent_h - window_h
 
     window.place(x=x, y=y)
+
+
+# -- Color Palette --
+class Corporate_Blue:
+    # Corporate Blue
+    primary = "#243b55"  # 타이틀 바 (어두운 네이비)
+    title_text = "#ffffff"  # 타이틀 텍스트 (흰색)
+    point = "#141e30"  # 강조
+    action = "#00b4db"  # 버튼/검색
+    alert = "#ff6b6b"  # 경고/닫기
+    background = "#f8f9fa"  # 배경색 (밝은 회색)
+    success = "#27ae60"  # 성공 메시지
+    text = "#2c3e50"  # 일반 글자색 (어두운 회색)
+    status_bar = "#dfe6e9"
+    status_text = "#2d3436"
+
+class Dark_Pro:
+    # Theme: Dark Pro (VS Code Style)
+    primary = "#1e1e1e"  # 아주 어두운 회색
+    title_text = "#ffffff"  # 타이틀 텍스트 (흰색)
+    point = "#252526"  # 서브 배경
+    action = "#007acc"  # 선명한 파랑
+    alert = "#f44336"  # 밝은 빨강
+    background = "#2d2d2d"  # 짙은 회색
+    success = "#4ec9b0"  # 민트색
+    text = "#d4d4d4"  # 일반 글자색 (밝은 회색)
+    status_bar = "#333333"
+    status_text = "#cccccc"
+
+class Warm_Latte:
+    # Theme: Warm Latte
+    primary = "#6d4c41"  # 커피 브라운
+    title_text = "#fff3e0"  # 타이틀 텍스트 (크림색 - 부드러운 느낌)
+    point = "#5d4037"  # 진한 브라운
+    action = "#d84315"  # 번트 오렌지
+    alert = "#c62828"  # 진한 빨강
+    background = "#efebe9"  # 연한 베이지
+    success = "#2e7d32"  # 숲 녹색
+    text = "#3e2723"  # 일반 글자색 (진한 고동색)
+    status_bar = "#d7ccc8"
+    status_text = "#4e342e"
+
+class Forest_Calm:
+    # Theme: Forest Calm
+    primary = "#2e7d32"  # 포레스트 그린
+    title_text = "#ffffff"  # 타이틀 텍스트 (흰색)
+    point = "#1b5e20"  # 짙은 녹색
+    action = "#00897b"  # 틸(Teal) 색상
+    alert = "#e53935"  # 붉은색
+    background = "#f1f8e9"  # 아주 연한 연두색
+    success = "#43a047"  # 밝은 녹색
+    text = "#1c2331"  # 일반 글자색 (진한 남색)
+    status_bar = "#c8e6c9"
+    status_text = "#1b5e20"
+
+class Modern_Mono:
+    # Theme: Modern Mono
+    primary = "#263238"  # 블루 그레이
+    title_text = "#ffffff"  # 타이틀 텍스트 (흰색)
+    point = "#37474f"  # 옅은 블루 그레이
+    action = "#6200ea"  # 강렬한 보라색
+    alert = "#d50000"  # 선명한 빨강
+    background = "#eceff1"  # 밝은 회색
+    success = "#00c853"  # 비비드 그린
+    text = "#212121"  # 일반 글자색 (검정)
+    status_bar = "#cfd8dc"
+    status_text = "#37474f"
+    
+Colors = Forest_Calm

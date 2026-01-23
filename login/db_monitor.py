@@ -2,14 +2,15 @@ from tkinter import messagebox
 import sys
 import os
 import subprocess
+from window import Colors
 
 def connect_test(conn, status, main, target_file): # DB 연결 확인
     try:
         with conn.cursor() as cursor:
             cursor.execute("select 1")
-        status.config(text="Connected", fg="green")
+        status.config(text="Connected", fg=Colors.success)
     except Exception as e:
-        status.config(text="Disconnected", fg="red")
+        status.config(text="Disconnected", fg=Colors.alert)
         print(f"Error: {e}")
         if messagebox.askokcancel("Error", "Disconnected\nProgram Restart?"):
             main.destroy()

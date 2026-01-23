@@ -2,7 +2,7 @@
 # Import Package
 # ---------------------------------------------------------
 import tkinter
-from window import start_move, on_drag
+from window import start_move, on_drag, Colors
 # ---------------------------------------------------------
 # Variable
 # ---------------------------------------------------------
@@ -25,24 +25,27 @@ def search_customer_frame(main):
         current_search_customer.lift()
         return
     # -- Frame --
-    search_customer_frame = tkinter.Frame(main, width=300, height=300, bg="white", relief="raised", bd=3)
+    search_customer_frame = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
     search_customer_frame.place(x=30, y=30)
     current_search_customer = search_customer_frame
     # -- Title Bar --
-    title_bar = tkinter.Frame(current_search_customer, bg="#2c3e50", height=30)
+    title_bar = tkinter.Frame(current_search_customer, bg=Colors.primary, height=30)
     title_bar.pack(fill="x", side="top")
-    title_label = tkinter.Label(title_bar, text="Customer", bg="#2c3e50", fg="white", font=("Arial", 11, "bold"))
+    title_label = tkinter.Label(title_bar, text="Customer", bg=Colors.primary, fg=Colors.title_text, font=("Arial", 11, "bold"))
     title_label.pack(side="left", padx=5)
     # -- Close --
-    close_btn = tkinter.Label(title_bar, text="X", bg="#e74c3c", fg="white", width=4)
+    close_btn = tkinter.Label(title_bar, text="X", bg=Colors.alert, fg=Colors.background, width=4)
     close_btn.pack(side="right")
     close_btn.bind("<Button-1>", close_search_customer_frame)
     # -- Body --
-    content_frame = tkinter.Frame(current_search_customer, bg="white")
+    content_frame = tkinter.Frame(current_search_customer, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg="white").pack(pady=5)
+    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
-    tkinter.Button(content_frame, text="검색").pack(pady=5)
+    tkinter.Button(content_frame, text="검색",
+                   bg=Colors.action, fg="white",
+                   activebackground=Colors.primary, activeforeground="white",
+                   relief="flat").pack(pady=5)
     # -- Click Event --
     content_frame.bind("<Button-1>", lambda e: current_search_customer.lift())
     for widget in content_frame.winfo_children():
@@ -65,25 +68,28 @@ def search_inventory_frame(main):
         current_search_inventory.lift()
         return
     # -- Frame --
-    search_inventory_frame = tkinter.Frame(main, width=300, height=300, bg="white", relief="raised", bd=3)
+    search_inventory_frame = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
     search_inventory_frame.place(x=30, y=30)
     current_search_inventory = search_inventory_frame
     # -- Title Bar --
-    title_bar = tkinter.Frame(current_search_inventory, bg="#2c3e50", height=30)
+    title_bar = tkinter.Frame(current_search_inventory, bg=Colors.primary, height=30)
     title_bar.pack(fill="x", side="top")
-    title_label = tkinter.Label(title_bar, text="Inventory", bg="#2c3e50", fg="white", font=("Arial", 11, "bold"))
+    title_label = tkinter.Label(title_bar, text="Inventory", bg=Colors.primary, fg=Colors.title_text, font=("Arial", 11, "bold"))
     title_label.pack(side="left", padx=5)
     title_label.bind("<Button-1>", current_search_inventory.lift)
     # -- Close --
-    close_btn = tkinter.Label(title_bar, text="X", bg="#e74c3c", fg="white", width=4)
+    close_btn = tkinter.Label(title_bar, text="X", bg=Colors.alert, fg=Colors.background, width=4)
     close_btn.pack(side="right")
     close_btn.bind("<Button-1>", close_search_inventory_frame)
     # -- Body --
-    content_frame = tkinter.Frame(current_search_inventory, bg="white")
+    content_frame = tkinter.Frame(current_search_inventory, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg="white").pack(pady=5)
+    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
-    tkinter.Button(content_frame, text="검색").pack(pady=5)
+    tkinter.Button(content_frame, text="검색",
+                   bg=Colors.action, fg="white",
+                   activebackground=Colors.primary, activeforeground="white",
+                   relief="flat").pack(pady=5)
     # -- Click Event --
     content_frame.bind("<Button-1>", lambda e: current_search_inventory.lift())
     for widget in content_frame.winfo_children():
@@ -106,25 +112,28 @@ def search_film_frame(main):
         current_search_film.lift()
         return
     # -- Frame --
-    search_film_frame = tkinter.Frame(main, width=300, height=300, bg="white", relief="raised", bd=3)
+    search_film_frame = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
     search_film_frame.place(x=30, y=30)
     current_search_film = search_film_frame
     # -- Title Bar --
-    title_bar = tkinter.Frame(current_search_film, bg="#2c3e50", height=30)
+    title_bar = tkinter.Frame(current_search_film, bg=Colors.primary, height=30)
     title_bar.pack(fill="x", side="top")
-    title_label = tkinter.Label(title_bar, text="Film", bg="#2c3e50", fg="white", font=("Arial", 11, "bold"))
+    title_label = tkinter.Label(title_bar, text="Film", bg=Colors.primary, fg=Colors.title_text, font=("Arial", 11, "bold"))
     title_label.pack(side="left", padx=5)
     title_label.bind("<Button-1>", current_search_film.lift)
     # -- Close --
-    close_btn = tkinter.Label(title_bar, text="X", bg="#e74c3c", fg="white", width=4)
+    close_btn = tkinter.Label(title_bar, text="X", bg=Colors.alert, fg=Colors.background, width=4)
     close_btn.pack(side="right")
     close_btn.bind("<Button-1>", close_search_film_frame)
     # -- Body --
-    content_frame = tkinter.Frame(current_search_film, bg="white")
+    content_frame = tkinter.Frame(current_search_film, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg="white").pack(pady=5)
+    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
-    tkinter.Button(content_frame, text="검색").pack(pady=5)
+    tkinter.Button(content_frame, text="검색",
+                   bg=Colors.action, fg="white",
+                   activebackground=Colors.primary, activeforeground="white",
+                   relief="flat").pack(pady=5)
     # -- Click Event --
     content_frame.bind("<Button-1>", lambda e: current_search_film.lift())
     for widget in content_frame.winfo_children():
@@ -147,25 +156,28 @@ def search_rental_frame(main):
         current_search_rental.lift()
         return
     # -- Frame --
-    search_rental_frame = tkinter.Frame(main, width=300, height=300, bg="white", relief="raised", bd=3)
+    search_rental_frame = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
     search_rental_frame.place(x=30, y=30)
     current_search_rental = search_rental_frame
     # -- Title Bar --
-    title_bar = tkinter.Frame(current_search_rental, bg="#2c3e50", height=30)
+    title_bar = tkinter.Frame(current_search_rental, bg=Colors.primary, height=30)
     title_bar.pack(fill="x", side="top")
-    title_label = tkinter.Label(title_bar, text="Rental", bg="#2c3e50", fg="white", font=("Arial", 11, "bold"))
+    title_label = tkinter.Label(title_bar, text="Rental", bg=Colors.primary, fg=Colors.title_text, font=("Arial", 11, "bold"))
     title_label.pack(side="left", padx=5)
     title_label.bind("<Button-1>", current_search_rental.lift)
     # -- Close --
-    close_btn = tkinter.Label(title_bar, text="X", bg="#e74c3c", fg="white", width=4)
+    close_btn = tkinter.Label(title_bar, text="X", bg=Colors.alert, fg=Colors.background, width=4)
     close_btn.pack(side="right")
     close_btn.bind("<Button-1>", close_search_rental_frame)
     # -- Body --
-    content_frame = tkinter.Frame(current_search_rental, bg="white")
+    content_frame = tkinter.Frame(current_search_rental, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg="white").pack(pady=5)
+    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
-    tkinter.Button(content_frame, text="검색").pack(pady=5)
+    tkinter.Button(content_frame, text="검색",
+                   bg=Colors.action, fg="white",
+                   activebackground=Colors.primary, activeforeground="white",
+                   relief="flat").pack(pady=5)
     # -- Click Event --
     content_frame.bind("<Button-1>", lambda e: current_search_rental.lift())
     for widget in content_frame.winfo_children():
@@ -188,25 +200,28 @@ def search_payment_frame(main):
         current_search_payment.lift()
         return
     # -- Frame --
-    search_payment_frame = tkinter.Frame(main, width=300, height=300, bg="white", relief="raised", bd=3)
+    search_payment_frame = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
     search_payment_frame.place(x=30, y=30)
     current_search_payment = search_payment_frame
     # -- Title Bar --
-    title_bar = tkinter.Frame(current_search_payment, bg="#2c3e50", height=30)
+    title_bar = tkinter.Frame(current_search_payment, bg=Colors.primary, height=30)
     title_bar.pack(fill="x", side="top")
-    title_label = tkinter.Label(title_bar, text="Payment", bg="#2c3e50", fg="white", font=("Arial", 11, "bold"))
+    title_label = tkinter.Label(title_bar, text="Payment", bg=Colors.primary, fg=Colors.title_text, font=("Arial", 11, "bold"))
     title_label.pack(side="left", padx=5)
     title_label.bind("<Button-1>", current_search_payment.lift)
     # -- Close --
-    close_btn = tkinter.Label(title_bar, text="X", bg="#e74c3c", fg="white", width=4)
+    close_btn = tkinter.Label(title_bar, text="X", bg=Colors.alert, fg=Colors.background, width=4)
     close_btn.pack(side="right")
     close_btn.bind("<Button-1>", close_search_payment_frame)
     # -- Body --
-    content_frame = tkinter.Frame(current_search_payment, bg="white")
+    content_frame = tkinter.Frame(current_search_payment, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg="white").pack(pady=5)
+    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
-    tkinter.Button(content_frame, text="검색").pack(pady=5)
+    tkinter.Button(content_frame, text="검색",
+                   bg=Colors.action, fg="white",
+                   activebackground=Colors.primary, activeforeground="white",
+                   relief="flat").pack(pady=5)
     # -- Click Event --
     content_frame.bind("<Button-1>", lambda e: current_search_payment.lift())
     for widget in content_frame.winfo_children():

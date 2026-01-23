@@ -5,8 +5,9 @@ import psycopg2
 import sys
 import tkinter
 from tkinter import messagebox
-from window import center_window
-from window import center_window_delayed
+from window import (center_window,
+                    center_window_delayed,
+                    Colors)
 import os
 import configparser
 import base64
@@ -159,34 +160,37 @@ def run_db_connect():
     db = tkinter.Tk()
     db.withdraw()
     db.title("DB Connect")
+    db.configure(bg=Colors.background)
     center_window(db, 300, 240, resizable=False)
 
-    tkinter.Label(db).grid(row=0, column=0, pady=0, padx=0)
+    tkinter.Label(db, bg=Colors.background).grid(row=0, column=0, pady=0, padx=0)
 
     # UI Components
-    tkinter.Label(db, text="DB Name").grid(row=1, column=0, pady=5, padx=5, sticky="e")
+    tkinter.Label(db, text="DB Name", bg=Colors.background, fg=Colors.text).grid(row=1, column=0, pady=5, padx=5, sticky="e")
     db_db = tkinter.Entry(db)
     db_db.grid(row=1, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Host").grid(row=2, column=0, pady=5, padx=5, sticky="e")
+    tkinter.Label(db, text="DB Host", bg=Colors.background, fg=Colors.text).grid(row=2, column=0, pady=5, padx=5, sticky="e")
     db_host = tkinter.Entry(db)
     db_host.grid(row=2, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Port").grid(row=3, column=0, pady=5, padx=5, sticky="e")
+    tkinter.Label(db, text="DB Port", bg=Colors.background, fg=Colors.text).grid(row=3, column=0, pady=5, padx=5, sticky="e")
     db_port = tkinter.Entry(db)
     db_port.grid(row=3, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Username").grid(row=4, column=0, pady=5, padx=5, sticky="e")
+    tkinter.Label(db, text="DB Username", bg=Colors.background, fg=Colors.text).grid(row=4, column=0, pady=5, padx=5, sticky="e")
     db_id = tkinter.Entry(db)
     db_id.grid(row=4, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Password").grid(row=5, column=0, pady=5, padx=5, sticky="e")
+    tkinter.Label(db, text="DB Password", bg=Colors.background, fg=Colors.text).grid(row=5, column=0, pady=5, padx=5, sticky="e")
     db_pw = tkinter.Entry(db, show="*")
     db_pw.grid(row=5, column=1, pady=5, padx=5)
 
     db_pw.bind("<Return>", db_connect_event)
 
-    db_login_but = tkinter.Button(db, text="DB Connect", command=db_connect_event)
+    db_login_but = tkinter.Button(db, text="DB Connect", command=db_connect_event,
+                                  bg=Colors.action, fg="white",
+                                  activebackground=Colors.primary, activeforeground="white")
     db_login_but.grid(row=6, column=0, pady=5, padx=10, columnspan=2, sticky="ew")
     db_login_but.bind("<Return>", db_connect_event)
 

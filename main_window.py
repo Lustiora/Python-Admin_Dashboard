@@ -11,7 +11,8 @@ from tkinter import messagebox
 from window import (center_window,
                     center_window_delayed,
                     start_move,
-                    on_drag)
+                    on_drag,
+                    Colors)
 from login.db_monitor import connect_test
 from sub_frame.sub_frame_search import (search_customer_frame,
                                         search_inventory_frame,
@@ -60,6 +61,7 @@ def run_main(conn, login_db, login_host, login_port):
     main = tkinter.Tk()
     main.withdraw()
     main.title("Sakila")
+    main.configure(bg=Colors.background)
     center_window(main, 1024, 768, min_size=(1024,768))# -- DB 유령 연결 방지 --
     def on_closing():
         if messagebox.askokcancel("Quit", "Exit?"):
@@ -81,43 +83,43 @@ def run_main(conn, login_db, login_host, login_port):
             current_status.lift()
             return
         # -- Frame --
-        status_frame = tkinter.Frame(main, width=300, height=300, bg="white", relief="raised", bd=3)
+        status_frame = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
         status_frame.place(x=30, y=30)
         current_status = status_frame
         # -- Title Bar --
-        title_bar = tkinter.Frame(current_status, bg="#2c3e50", height=30)
+        title_bar = tkinter.Frame(current_status, bg=Colors.primary, height=30)
         title_bar.pack(fill="x", side="top")
-        title_label = tkinter.Label(title_bar, text="Connect Status", bg="#2c3e50", fg="white", font=("Arial", 11, "bold"))
+        title_label = tkinter.Label(title_bar, text="Connect Status", bg=Colors.primary, fg=Colors.title_text, font=("Arial", 11, "bold"))
         title_label.pack(side="left", padx=5)
         title_label.bind("<Button-1>", current_status.lift)
         # -- Close --
-        close_btn = tkinter.Label(title_bar, text="X", bg="#e74c3c", fg="white", width=4)
+        close_btn = tkinter.Label(title_bar, text="X", bg=Colors.alert, fg=Colors.background, width=4)
         close_btn.pack(side="right")
         close_btn.bind("<Button-1>", close_status_frame)
         # -- Body --
-        content_frame = tkinter.Frame(current_status, bg="white")
+        content_frame = tkinter.Frame(current_status, bg=Colors.background)
         content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-        tkinter.Label(content_frame, text="Database :", bg="white").grid(row=0, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Host :", bg="white").grid(row=1, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Port :", bg="white").grid(row=2, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Login Staff :", bg="white").grid(row=3, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Connect Status :", bg="white").grid(row=4, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text=login_db, bg="white").grid(row=0, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=login_host, bg="white").grid(row=1, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=login_port, bg="white").grid(row=2, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=staff_user_id(staff_user), bg="white").grid(row=3, column=1, pady=5, sticky="w")
+        tkinter.Label(content_frame, text="Database :", bg=Colors.background, fg=Colors.text).grid(row=0, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text="Host :", bg=Colors.background, fg=Colors.text).grid(row=1, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text="Port :", bg=Colors.background, fg=Colors.text).grid(row=2, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text="Login Staff :", bg=Colors.background, fg=Colors.text).grid(row=3, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text="Connect Status :", bg=Colors.background, fg=Colors.text).grid(row=4, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text=login_db, bg=Colors.background, fg=Colors.text).grid(row=0, column=1, pady=5, sticky="w")
+        tkinter.Label(content_frame, text=login_host, bg=Colors.background, fg=Colors.text).grid(row=1, column=1, pady=5, sticky="w")
+        tkinter.Label(content_frame, text=login_port, bg=Colors.background, fg=Colors.text).grid(row=2, column=1, pady=5, sticky="w")
+        tkinter.Label(content_frame, text=staff_user_id(staff_user), bg=Colors.background, fg=Colors.text).grid(row=3, column=1, pady=5, sticky="w")
 
-        check_status = tkinter.Label(content_frame, text="Check_Status", fg="white", bg="white")
+        check_status = tkinter.Label(content_frame, text="Check_Status", fg="white", bg=Colors.background)
         check_status.grid(row=4, column=1, pady=5, sticky="w")
         def check_db(conn, check_status):
             try:
                 with conn.cursor() as cursor:
                     cursor.execute("select 1")
                     # print("DB Connect Check : Connected")
-                    check_status.config(text="Connected", fg="green")
+                    check_status.config(text="Connected", fg=Colors.success)
             except Exception as e:
                 print(e)
-                check_status.config(text = "Disconnected", fg="red")
+                check_status.config(text = "Disconnected", fg=Colors.alert)
             if status_frame.winfo_exists():  # 창이 켜져 있을 때만 예약
                 status_frame.after(5000, lambda: check_db(conn, check_status))
         check_db(conn, check_status)
@@ -132,70 +134,75 @@ def run_main(conn, login_db, login_host, login_port):
     # ---------------------------------------------------------
     # Main Window Menubar
     # ---------------------------------------------------------
+    menu_theme = {"bg": Colors.background, "fg": Colors.text,
+                  "activebackground": Colors.action, #마우스 올렸을 때 배경 (버튼색)
+                  "activeforeground": "white", # 마우스 올렸을 때 글자
+                  "tearoff": 0 # 점선 제거
+                  }
     menubar = tkinter.Menu(main)
-    # -- Menubar 1 --
-    menu1 = tkinter.Menu(menubar, tearoff=0) # tearoff : 하위 메뉴 사용시 활성화
+    # -- Menubar 1 (Menu) --
+    menu1 = tkinter.Menu(menubar, **menu_theme)
     menu1.add_command(label="상태", command=status_frame)
-    menu1.add_separator() # 구분선
+    menu1.add_separator()
     menu1.add_command(label="종료", command=on_closing)
     menubar.add_cascade(label="메뉴", menu=menu1)
-    # -- Menubar 2 --
-    menu2 = tkinter.Menu(menubar, tearoff=0)
-    menu2.add_command(label="고객", command=lambda :search_customer_frame(main))
-                                         # lambda : 실행 대기 필요시 사용 (즉시 실행 방지)
+    # -- Menubar 2 (Search) --
+    menu2 = tkinter.Menu(menubar, **menu_theme)
+    menu2.add_command(label="고객", command=lambda: search_customer_frame(main))
     menu2.add_separator()
-    menu2.add_command(label="재고", command=lambda :search_inventory_frame(main))
+    menu2.add_command(label="재고", command=lambda: search_inventory_frame(main))
     menu2.add_separator()
-    menu2.add_command(label="영화", command=lambda :search_film_frame(main))
+    menu2.add_command(label="영화", command=lambda: search_film_frame(main))
     menu2.add_separator()
-    menu2.add_command(label="대여", command=lambda :search_rental_frame(main))
+    menu2.add_command(label="대여", command=lambda: search_rental_frame(main))
     menu2.add_separator()
-    menu2.add_command(label="결제", command=lambda :search_payment_frame(main))
+    menu2.add_command(label="결제", command=lambda: search_payment_frame(main))
     menubar.add_cascade(label="조회", menu=menu2)
-    # -- Menubar 3 --
-    menu3 = tkinter.Menu(menubar, tearoff=0)
-    menu3.add_command(label="고객", command=lambda :change_customer_frame(main))
+    # -- Menubar 3 (Change) --
+    menu3 = tkinter.Menu(menubar, **menu_theme)
+    menu3.add_command(label="고객", command=lambda: change_customer_frame(main))
     menu3.add_separator()
-    menu3.add_command(label="재고", command=lambda :change_inventory_frame(main))
+    menu3.add_command(label="재고", command=lambda: change_inventory_frame(main))
     menu3.add_separator()
-    menu3.add_command(label="영화", command=lambda :change_film_frame(main))
+    menu3.add_command(label="영화", command=lambda: change_film_frame(main))
     menu3.add_separator()
-    menu3.add_command(label="대여", command=lambda :change_rental_frame(main))
+    menu3.add_command(label="대여", command=lambda: change_rental_frame(main))
     menu3.add_separator()
-    menu3.add_command(label="결제", command=lambda :change_payment_frame(main))
+    menu3.add_command(label="결제", command=lambda: change_payment_frame(main))
     menubar.add_cascade(label="변경", menu=menu3)
-    # -- Menubar 4 --
-    menu4 = tkinter.Menu(menubar, tearoff=0)
-    menu4.add_command(label="고객", command=lambda :delete_customer_frame(main))
+    # -- Menubar 4 (Delete) --
+    menu4 = tkinter.Menu(menubar, **menu_theme)
+    menu4.add_command(label="고객", command=lambda: delete_customer_frame(main))
     menu4.add_separator()
-    menu4.add_command(label="재고", command=lambda :delete_inventory_frame(main))
+    menu4.add_command(label="재고", command=lambda: delete_inventory_frame(main))
     menu4.add_separator()
-    menu4.add_command(label="영화", command=lambda :delete_film_frame(main))
+    menu4.add_command(label="영화", command=lambda: delete_film_frame(main))
     menu4.add_separator()
-    menu4.add_command(label="대여", command=lambda :delete_rental_frame(main))
+    menu4.add_command(label="대여", command=lambda: delete_rental_frame(main))
     menu4.add_separator()
-    menu4.add_command(label="결제", command=lambda :delete_payment_frame(main))
+    menu4.add_command(label="결제", command=lambda: delete_payment_frame(main))
     menubar.add_cascade(label="삭제", menu=menu4)
-    # -- Menubar 5 --
-    menu5 = tkinter.Menu(menubar, tearoff=0)
-    menu5.add_command(label="고객", command=lambda :add_customer_frame(main))
+    # -- Menubar 5 (Add) --
+    menu5 = tkinter.Menu(menubar, **menu_theme)
+    menu5.add_command(label="고객", command=lambda: add_customer_frame(main))
     menu5.add_separator()
-    menu5.add_command(label="재고", command=lambda :add_inventory_frame(main))
+    menu5.add_command(label="재고", command=lambda: add_inventory_frame(main))
     menu5.add_separator()
-    menu5.add_command(label="영화", command=lambda :add_film_frame(main))
+    menu5.add_command(label="영화", command=lambda: add_film_frame(main))
     menu5.add_separator()
-    menu5.add_command(label="배우", command=lambda :add_actor_frame(main))
+    menu5.add_command(label="배우", command=lambda: add_actor_frame(main))
     menu5.add_separator()
-    menu5.add_command(label="장르", command=lambda :add_category_frame(main))
+    menu5.add_command(label="장르", command=lambda: add_category_frame(main))
     menubar.add_cascade(label="추가", menu=menu5)
-    # -- Menubar 6 --
-    menu6 = tkinter.Menu(menubar, tearoff=0)
+    # -- Menubar 6 (Stats) --
+    menu6 = tkinter.Menu(menubar, **menu_theme)
     menubar.add_cascade(label="통계", menu=menu6)
-    # -- Menubar 7 --
-    menu7 = tkinter.Menu(menubar, tearoff=0)
+    # -- Menubar 7 (Manage) --
+    menu7 = tkinter.Menu(menubar, **menu_theme)
     menu7.add_command(label="직원")
     menubar.add_cascade(label="관리", menu=menu7)
     # -- Menubar End --
+    menubar.config(bg=Colors.primary, fg="white")
     main.config(menu=menubar)
     # ---------------------------------------------------------
     # Focus Force
@@ -211,8 +218,8 @@ def run_main(conn, login_db, login_host, login_port):
     # ---------------------------------------------------------
     status_frame = tkinter.Frame(main)
     status_frame.pack(side="bottom", fill="x", padx=5, pady=5)
-    status_frame.configure(bg="gainsboro")
-    status = tkinter.Label(status_frame, text="Status", fg="white", bg="gainsboro") # 하단 모듈에서 status 값을 인자로 받아서 출력하기에 동일하게 명명해야 혼란방지
+    status_frame.configure(bg=Colors.status_bar)
+    status = tkinter.Label(status_frame, text="Status", fg="white", bg=Colors.status_bar) # 하단 모듈에서 status 값을 인자로 받아서 출력하기에 동일하게 명명해야 혼란방지
     status.pack(side="right")
     # ---------------------------------------------------------
     # Connect Test Module
