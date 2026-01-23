@@ -85,7 +85,6 @@ def on_drag(event, window): # 마우스가 움직인 절대 좌표에서, 아까
 
     window.place(x=x, y=y)
 
-
 # -- Color Palette --
 class Corporate_Blue:
     # Corporate Blue
@@ -152,4 +151,4 @@ class Modern_Mono:
     status_bar = "#cfd8dc"
     status_text = "#37474f"
     
-Colors = Forest_Calm
+Colors = Dark_Pro
