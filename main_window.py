@@ -13,27 +13,27 @@ from window import (center_window,
                     center_window_delayed,
                     start_move,
                     on_drag)
-from db_monitor import connect_test
-from sub_frame_search import (search_customer_frame,
-                              search_inventory_frame,
-                              search_film_frame,
-                              search_rental_frame,
-                              search_payment_frame)
-from sub_frame_change import (change_customer_frame,
-                              change_inventory_frame,
-                              change_film_frame,
-                              change_rental_frame,
-                              change_payment_frame)
-from sub_frame_delete import (delete_customer_frame,
-                              delete_inventory_frame,
-                              delete_film_frame,
-                              delete_rental_frame,
-                              delete_payment_frame)
-from sub_frame_add import (add_customer_frame,
-                           add_inventory_frame,
-                           add_film_frame,
-                           add_actor_frame,
-                           add_category_frame)
+from login.db_monitor import connect_test
+from sub_frame.sub_frame_search import (search_customer_frame,
+                                        search_inventory_frame,
+                                        search_film_frame,
+                                        search_rental_frame,
+                                        search_payment_frame)
+from sub_frame.sub_frame_change import (change_customer_frame,
+                                        change_inventory_frame,
+                                        change_film_frame,
+                                        change_rental_frame,
+                                        change_payment_frame)
+from sub_frame.sub_frame_delete import (delete_customer_frame,
+                                        delete_inventory_frame,
+                                        delete_film_frame,
+                                        delete_rental_frame,
+                                        delete_payment_frame)
+from sub_frame.sub_frame_add import (add_customer_frame,
+                                     add_inventory_frame,
+                                     add_film_frame,
+                                     add_actor_frame,
+                                     add_category_frame)
 # ---------------------------------------------------------
 # Variable
 # ---------------------------------------------------------
@@ -208,7 +208,7 @@ def run_main(conn, login_db, login_host, login_port):
     # Connect Test Module
     # ---------------------------------------------------------
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    target_file = os.path.join(current_dir, "db_connect.py")
+    target_file = os.path.join(current_dir, "login/db_connect.py")
     connect_test(conn, status, main, target_file)
     # ---------------------------------------------------------
     # main.deiconify() # Window OS 동작 이상 시 주석 해제
