@@ -38,13 +38,16 @@ current_login_data = None
 current_status = None
 check_status = []
 staff_user = None
+staff_store = None
 # ---------------------------------------------------------
 # Main Window Module
 # ---------------------------------------------------------
-def staff_user_id(user_id):
+def staff_user_id(user_id, store):
     global staff_user
+    global staff_store
+    staff_store = store
     staff_user = user_id
-    return staff_user
+    return staff_user, staff_store
 
 def run_main(conn, login_db, login_host, login_port):
     # -- Variable --
@@ -99,15 +102,18 @@ def run_main(conn, login_db, login_host, login_port):
         tkinter.Label(content_frame, text="Database :", bg=Colors.background, fg=Colors.text).grid(row=0, column=0, pady=5, sticky="e")
         tkinter.Label(content_frame, text="Host :", bg=Colors.background, fg=Colors.text).grid(row=1, column=0, pady=5, sticky="e")
         tkinter.Label(content_frame, text="Port :", bg=Colors.background, fg=Colors.text).grid(row=2, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Login Staff :", bg=Colors.background, fg=Colors.text).grid(row=3, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Connect Status :", bg=Colors.background, fg=Colors.text).grid(row=4, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text="Store :", bg=Colors.background, fg=Colors.text).grid(row=3, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text="Login Staff :", bg=Colors.background, fg=Colors.text).grid(row=4, column=0, pady=5, sticky="e")
+        tkinter.Label(content_frame, text="Connect Status :", bg=Colors.background, fg=Colors.text).grid(row=5, column=0, pady=5, sticky="e")
+
         tkinter.Label(content_frame, text=login_db, bg=Colors.background, fg=Colors.text).grid(row=0, column=1, pady=5, sticky="w")
         tkinter.Label(content_frame, text=login_host, bg=Colors.background, fg=Colors.text).grid(row=1, column=1, pady=5, sticky="w")
         tkinter.Label(content_frame, text=login_port, bg=Colors.background, fg=Colors.text).grid(row=2, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=staff_user_id(staff_user), bg=Colors.background, fg=Colors.text).grid(row=3, column=1, pady=5, sticky="w")
+        tkinter.Label(content_frame, text=staff_store, bg=Colors.background, fg=Colors.text).grid(row=3, column=1, pady=5, sticky="w")
+        tkinter.Label(content_frame, text=staff_user, bg=Colors.background, fg=Colors.text).grid(row=4, column=1, pady=5, sticky="w")
 
         check_status = tkinter.Label(content_frame, text="Check_Status", fg="white", bg=Colors.background)
-        check_status.grid(row=4, column=1, pady=5, sticky="w")
+        check_status.grid(row=5, column=1, pady=5, sticky="w")
         def check_db(conn, check_status):
             try:
                 with conn.cursor() as cursor:

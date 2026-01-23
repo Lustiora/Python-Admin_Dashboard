@@ -97,18 +97,23 @@ def check_login_process(event = None):
             # 2. sha1 알고리즘 적용
             # 3. 16진수 문자열로 변환 (.hexdigest())
         try:
-            cursor.execute(""" select s.username, s.password, s.active
-                               from staff s
-                               where s.username = %s
-                                 and s.password = %s
-                                 and s.active is true""", (input_id, input_pw,))
+            cursor.execute(""" 
+               select s.username, s.password, a.address , s.active
+               from staff s
+               inner join store s2 
+                  on s.store_id = s2.store_id 
+               inner join address a
+                  on s2.address_id = a.address_id 
+               where s.username = %s
+                 and s.password = %s
+                 and s.active is true""", (input_id, input_pw,))
             user_data = cursor.fetchone()
             print("User Login ...")
             if user_data:  # 쿼리값 존재시
                 print(f"ID : {user_data[0]} | PW : {user_data[1]}")
                 login.destroy()
                 from main_window import staff_user_id
-                staff_user_id(user_data[0])
+                staff_user_id(user_data[0], user_data[2])
                 from main_window import main_check_login_process
                 main_check_login_process()
 

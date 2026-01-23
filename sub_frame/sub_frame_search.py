@@ -2,6 +2,7 @@
 # Import Package
 # ---------------------------------------------------------
 import tkinter
+from tkinter import messagebox
 from window import start_move, on_drag, Colors
 # ---------------------------------------------------------
 # Variable
@@ -18,6 +19,29 @@ def close_search_customer_frame(event=None):
     global current_search_customer
     current_search_customer.destroy()
     current_search_customer = None
+
+def search_customer(main, conn, customer):
+    global current_search_customer
+    cursor = conn.cursor()
+    cursor.execute("""
+        select c.customer_id , c.first_name||' '||c.last_name as Name , c.email , r.rental_date , f.title , r.return_date 
+        from customer c 
+        inner join rental r 
+        on c.customer_id = r.customer_id
+        inner join inventory i 
+        on r.inventory_id = i.inventory_id
+        inner join film f 
+        on i.film_id = f.film_id
+        where c.customer_id = %s""", (customer,))
+    customer_data = cursor.fetchone()
+    if customer_data:
+        search_customer = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
+        search_customer.place(x=30, y=30)
+        current_customer = search_customer
+    else:
+        current_search_customer = None
+        print("Customer ID not found.")
+        messagebox.showerror("Error", "Customer ID not found")
 
 def search_customer_frame(main):
     global current_search_customer
@@ -84,7 +108,7 @@ def search_inventory_frame(main):
     # -- Body --
     content_frame = tkinter.Frame(current_search_inventory, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
+    tkinter.Label(content_frame, text="재고 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
     tkinter.Button(content_frame, text="검색",
                    bg=Colors.action, fg="white",
@@ -128,7 +152,7 @@ def search_film_frame(main):
     # -- Body --
     content_frame = tkinter.Frame(current_search_film, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
+    tkinter.Label(content_frame, text="영화 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
     tkinter.Button(content_frame, text="검색",
                    bg=Colors.action, fg="white",
@@ -172,7 +196,7 @@ def search_rental_frame(main):
     # -- Body --
     content_frame = tkinter.Frame(current_search_rental, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
+    tkinter.Label(content_frame, text="대여 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
     tkinter.Button(content_frame, text="검색",
                    bg=Colors.action, fg="white",
@@ -216,7 +240,7 @@ def search_payment_frame(main):
     # -- Body --
     content_frame = tkinter.Frame(current_search_payment, bg=Colors.background)
     content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-    tkinter.Label(content_frame, text="회원 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
+    tkinter.Label(content_frame, text="결제 번호 입력:", bg=Colors.background, fg=Colors.text).pack(pady=5)
     tkinter.Entry(content_frame).pack(pady=5)
     tkinter.Button(content_frame, text="검색",
                    bg=Colors.action, fg="white",
