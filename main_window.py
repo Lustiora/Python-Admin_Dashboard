@@ -3,14 +3,15 @@
 # ---------------------------------------------------------
 import sys, os, configparser, base64
 import psycopg2
-import tkinter
+import tkinter  # 메뉴바 구성을 위해 필요 (CTk에는 Menu 위젯이 없음)
+import customtkinter
 from tkinter import messagebox
 from window import (center_window,
                     center_window_delayed,
                     start_move,
                     on_drag,
                     Colors)
-from login.db_monitor import connect_test
+from db_monitor import connect_test
 from sub_frame.sub_frame_search import (search_customer_frame,
                                         search_inventory_frame,
                                         search_film_frame,
@@ -58,18 +59,26 @@ def run_main(conn, login_db, login_host, login_port):
     global staff_user
     current_login_data = None
     current_status = None
+
     # -- Main --
-    main = tkinter.Tk()
+    main = customtkinter.CTk()
     main.withdraw()
     main.title("Sakila")
-    main.configure(bg=Colors.background)
-    center_window(main, 1024, 768, min_size=(1024,768))# -- DB 유령 연결 방지 --
+    main.configure(fg_color=Colors.background)
+
+    # 윈도우 크기 설정
+    main_w, main_h = 1024, 768
+    center_window(main, main_w, main_h, min_size=(1024, 768))
+
+    # -- DB 유령 연결 방지 --
     def on_closing():
         if messagebox.askokcancel("Quit", "Exit?"):
             print("Sakila Exit")
             # conn.close()  # DB 연결 종료
             main.destroy()
-    main.protocol("WM_DELETE_WINDOW", on_closing)  # 메인 윈도우의 닫기 프로토콜에 연결
+
+    main.protocol("WM_DELETE_WINDOW", on_closing)
+
     # ---------------------------------------------------------
     # Sub Frame (Status)
     # ---------------------------------------------------------
@@ -83,73 +92,101 @@ def run_main(conn, login_db, login_host, login_port):
         if current_status is not None:
             current_status.lift()
             return
+
         # -- Frame --
-        status_frame = tkinter.Frame(main, width=300, height=300, bg=Colors.background, relief="raised", bd=3)
+        status_frame = customtkinter.CTkFrame(main, width=300, height=300,
+                                              fg_color=Colors.background,
+                                              border_width=2,
+                                              border_color=Colors.primary)
         status_frame.place(x=30, y=30)
         current_status = status_frame
+
         # -- Title Bar --
-        title_bar = tkinter.Frame(current_status, bg=Colors.primary, height=30)
+        title_bar = customtkinter.CTkFrame(current_status, fg_color=Colors.primary, height=30, corner_radius=0)
         title_bar.pack(fill="x", side="top")
-        title_label = tkinter.Label(title_bar, text="Connect Status", bg=Colors.primary, fg=Colors.title_text, font=("Arial", 11, "bold"))
-        title_label.pack(side="left", padx=5)
-        title_label.bind("<Button-1>", current_status.lift)
+
+        title_label = customtkinter.CTkLabel(title_bar, text="Connect Status",
+                                             fg_color=Colors.primary, text_color=Colors.title_text,
+                                             font=("Arial", 14, "bold"))  # CTk 폰트 크기 조정
+        title_label.pack(side="left", padx=10)
+        title_label.bind("<Button-1>", lambda e: current_status.lift)
+
         # -- Close --
-        close_btn = tkinter.Label(title_bar, text="X", bg=Colors.alert, fg=Colors.background, width=4)
+        close_btn = customtkinter.CTkLabel(title_bar, text=" X ",
+                                           fg_color=Colors.alert, text_color="white",
+                                           width=30, height=30)
         close_btn.pack(side="right")
         close_btn.bind("<Button-1>", close_status_frame)
+
         # -- Body --
-        content_frame = tkinter.Frame(current_status, bg=Colors.background)
+        content_frame = customtkinter.CTkFrame(current_status, fg_color=Colors.background)
         content_frame.pack(fill="both", expand=True, padx=10, pady=10)
-        tkinter.Label(content_frame, text="Database :", bg=Colors.background, fg=Colors.text).grid(row=0, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Host :", bg=Colors.background, fg=Colors.text).grid(row=1, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Port :", bg=Colors.background, fg=Colors.text).grid(row=2, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Store :", bg=Colors.background, fg=Colors.text).grid(row=3, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Login Staff :", bg=Colors.background, fg=Colors.text).grid(row=4, column=0, pady=5, sticky="e")
-        tkinter.Label(content_frame, text="Connect Status :", bg=Colors.background, fg=Colors.text).grid(row=5, column=0, pady=5, sticky="e")
 
-        tkinter.Label(content_frame, text=login_db, bg=Colors.background, fg=Colors.text).grid(row=0, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=login_host, bg=Colors.background, fg=Colors.text).grid(row=1, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=login_port, bg=Colors.background, fg=Colors.text).grid(row=2, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=staff_store, bg=Colors.background, fg=Colors.text).grid(row=3, column=1, pady=5, sticky="w")
-        tkinter.Label(content_frame, text=staff_user, bg=Colors.background, fg=Colors.text).grid(row=4, column=1, pady=5, sticky="w")
+        content_frame.grid_columnconfigure(0, weight=1)
+        content_frame.grid_columnconfigure(1, weight=1)
 
-        check_status = tkinter.Label(content_frame, text="Check_Status", fg="white", bg=Colors.background)
-        check_status.grid(row=5, column=1, pady=5, sticky="w")
+        # 그리드 배치 (bg -> fg_color, fg -> text_color)
+        labels = ["Database :", "Host :", "Port :", "Store :", "Login Staff :", "Connect Status :"]
+        for i, text in enumerate(labels):
+            customtkinter.CTkLabel(content_frame, text=text,
+                                   fg_color=Colors.background, text_color=Colors.text).grid(row=i, column=0, pady=5,
+                                                                                            sticky="e")
+
+        values = [login_db, login_host, login_port, staff_store, staff_user]
+        for i, val in enumerate(values):
+            customtkinter.CTkLabel(content_frame, text=val,
+                                   fg_color=Colors.background, text_color=Colors.text).grid(row=i, column=1, pady=5,
+                                                                                            padx=10, sticky="w")
+
+        check_status = customtkinter.CTkLabel(content_frame, text="Check_Status",
+                                              text_color=Colors.text, fg_color=Colors.background)
+        check_status.grid(row=5, column=1, pady=5, padx=10, sticky="w")
+
         def check_db(conn, check_status):
             try:
                 with conn.cursor() as cursor:
                     cursor.execute("select 1")
-                    # print("DB Connect Check : Connected")
-                    check_status.config(text="Connected", fg=Colors.success)
+                    # config -> configure
+                    check_status.configure(text="Connected", text_color=Colors.success)
             except Exception as e:
                 print(e)
-                check_status.config(text = "Disconnected", fg=Colors.alert)
-            if status_frame.winfo_exists():  # 창이 켜져 있을 때만 예약
+                check_status.configure(text="Disconnected", text_color=Colors.alert)
+
+            if status_frame.winfo_exists():
                 status_frame.after(5000, lambda: check_db(conn, check_status))
+
         check_db(conn, check_status)
+
         # -- Click Event --
         content_frame.bind("<Button-1>", lambda e: current_status.lift())
-        for widget in content_frame.winfo_children(): # 클릭 시 상단 표시, 하위 계층 전파
+        for widget in content_frame.winfo_children():
             widget.bind("<Button-1>", lambda e: current_status.lift(), add="+")
-        title_bar.bind("<Button-1>", lambda e:start_move(e, current_status))
-        title_bar.bind("<B1-Motion>", lambda e:on_drag(e, current_status))
-        title_label.bind("<Button-1>", lambda e:start_move(e,current_status))
-        title_label.bind("<B1-Motion>", lambda e:on_drag(e, current_status))
+
+        title_bar.bind("<Button-1>", lambda e: start_move(e, current_status))
+        title_bar.bind("<B1-Motion>", lambda e: on_drag(e, current_status))
+        title_label.bind("<Button-1>", lambda e: start_move(e, current_status))
+        title_label.bind("<B1-Motion>", lambda e: on_drag(e, current_status))
+
     # ---------------------------------------------------------
     # Main Window Menubar
     # ---------------------------------------------------------
-    menu_theme = {"bg": Colors.background, "fg": Colors.text,
-                  "activebackground": Colors.action, #마우스 올렸을 때 배경 (버튼색)
-                  "activeforeground": "white", # 마우스 올렸을 때 글자
-                  "tearoff": 0 # 점선 제거
-                  }
+    menu_theme = {
+        "bg": Colors.point,  # 윈도우 OS에 따라 적용 안될 수 있음
+        "fg": "white",
+        "activebackground": Colors.action,
+        "activeforeground": "white",
+        "tearoff": 0
+    }
+
     menubar = tkinter.Menu(main)
+
     # -- Menubar 1 (Menu) --
     menu1 = tkinter.Menu(menubar, **menu_theme)
     menu1.add_command(label="상태", command=status_frame)
     menu1.add_separator()
     menu1.add_command(label="종료", command=on_closing)
     menubar.add_cascade(label="메뉴", menu=menu1)
+
     # -- Menubar 2 (Search) --
     menu2 = tkinter.Menu(menubar, **menu_theme)
     menu2.add_command(label="고객", command=lambda: search_customer_frame(main))
@@ -162,6 +199,7 @@ def run_main(conn, login_db, login_host, login_port):
     menu2.add_separator()
     menu2.add_command(label="결제", command=lambda: search_payment_frame(main))
     menubar.add_cascade(label="조회", menu=menu2)
+
     # -- Menubar 3 (Change) --
     menu3 = tkinter.Menu(menubar, **menu_theme)
     menu3.add_command(label="고객", command=lambda: change_customer_frame(main))
@@ -174,6 +212,7 @@ def run_main(conn, login_db, login_host, login_port):
     menu3.add_separator()
     menu3.add_command(label="결제", command=lambda: change_payment_frame(main))
     menubar.add_cascade(label="변경", menu=menu3)
+
     # -- Menubar 4 (Delete) --
     menu4 = tkinter.Menu(menubar, **menu_theme)
     menu4.add_command(label="고객", command=lambda: delete_customer_frame(main))
@@ -186,6 +225,7 @@ def run_main(conn, login_db, login_host, login_port):
     menu4.add_separator()
     menu4.add_command(label="결제", command=lambda: delete_payment_frame(main))
     menubar.add_cascade(label="삭제", menu=menu4)
+
     # -- Menubar 5 (Add) --
     menu5 = tkinter.Menu(menubar, **menu_theme)
     menu5.add_command(label="고객", command=lambda: add_customer_frame(main))
@@ -198,55 +238,53 @@ def run_main(conn, login_db, login_host, login_port):
     menu5.add_separator()
     menu5.add_command(label="장르", command=lambda: add_category_frame(main))
     menubar.add_cascade(label="추가", menu=menu5)
+
     # -- Menubar 6 (Manage) --
     menu6 = tkinter.Menu(menubar, **menu_theme)
     menu6.add_command(label="직원")
     menu6.add_separator()
     menu6.add_command(label="통계")
     menubar.add_cascade(label="관리", menu=menu6)
-    # # -- Menubar 7 (Theme) --
-    # menu7 = tkinter.Menu(menubar, **menu_theme)
-    # menu7.add_command(label="Corporate_Blue")
-    # menu7.add_separator()
-    # menu7.add_command(label="Dark_Pro")
-    # menu7.add_separator()
-    # menu7.add_command(label="Warm_Latte")
-    # menu7.add_separator()
-    # menu7.add_command(label="Forest_Calm")
-    # menu7.add_separator()
-    # menu7.add_command(label="Modern_Mono")
-    # menubar.add_cascade(label="테마", menu=menu7)
-    # -- Menubar End --
-    menubar.config(bg=Colors.primary, fg="white")
-    main.config(menu=menubar)
+
+    # -- Menubar Apply --
+    menubar.configure(bg=Colors.primary, fg="white")
+    main.configure(menu=menubar)  # CTk 윈도우에 tkinter 메뉴 등록
+
+    # ---------------------------------------------------------
+    # Focus Force
+    # ---------------------------------------------------------
     def main_focus_force():
         main.lift()
         main.attributes('-topmost', True)
         main.attributes('-topmost', False)
-        main.focus_force() # 강제 포커스 (Entry or window 지정가능)
+        main.focus_force()
+
     main.after(200, main_focus_force)
     # ---------------------------------------------------------
     # Status Bar
     # ---------------------------------------------------------
-    status_frame = tkinter.Frame(main)
-    status_frame.pack(side="bottom", fill="x", padx=5, pady=5)
-    status_frame.configure(bg=Colors.status_bar)
-    status = tkinter.Label(status_frame, text="Status", fg="white", bg=Colors.status_bar) # 하단 모듈에서 status 값을 인자로 받아서 출력하기에 동일하게 명명해야 혼란방지
-    status.pack(side="right")
+    status_frame = customtkinter.CTkFrame(main, height=30, corner_radius=0)  # 하단바는 각진게 좋음
+    status_frame.pack(side="bottom", fill="x", padx=0, pady=0)
+    status_frame.configure(fg_color=Colors.status_bar)
+
+    status = customtkinter.CTkLabel(status_frame, text="Status",
+                                    text_color=Colors.status_text,
+                                    fg_color=Colors.status_bar)
+    status.pack(side="right", padx=10)
     # ---------------------------------------------------------
     # Connect Test Module
     # ---------------------------------------------------------
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    target_file = os.path.join(current_dir, "login/db_connect.py")
+    target_file = os.path.join(current_dir, "db_connect.py")
+
     connect_test(conn, status, main, target_file)
     # ---------------------------------------------------------
-    # main.deiconify() # Window OS 동작 이상 시 주석 해제
-    main.after(10, lambda: center_window_delayed(main, 1024, 768))
+    main.after(10, lambda: center_window_delayed(main, main_w, main_h))
     main.mainloop()
 # ---------------------------------------------------------
 # Check Login Process Module
 # ---------------------------------------------------------
-def main_check_login_process(event = None):
+def main_check_login_process(event=None):
     global current_login_data
     # -- Load Config --
     if sys.platform == "win32":
@@ -270,10 +308,10 @@ def main_check_login_process(event = None):
             decrypted_pw = pw_bytes.decode('utf-8')  # utf-8 Decode
             # --
             conn = psycopg2.connect(dbname=login_db,
-                                            host=login_host, # Default : localhost
-                                            port=login_port, # Default : 5432
-                                            user=login_id,
-                                            password=decrypted_pw)
+                                    host=login_host,  # Default : localhost
+                                    port=login_port,  # Default : 5432
+                                    user=login_id,
+                                    password=decrypted_pw)
             print("Sakila DB Connected")
             run_main(conn, login_db, login_host, login_port)
         except Exception as e:

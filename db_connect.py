@@ -4,6 +4,7 @@
 import sys, os, configparser, base64
 import psycopg2
 import tkinter
+import customtkinter
 from tkinter import messagebox
 from window import (center_window,
                     center_window_delayed,
@@ -153,45 +154,45 @@ def db_connect_event(event=None):
 # ---------------------------------------------------------
 def run_db_connect():
     global db, db_db, db_host, db_port, db_id, db_pw
-    db = tkinter.Tk()
+    db = customtkinter.CTk()
     db.withdraw()
     db.title("DB Connect")
-    db.configure(bg=Colors.background)
+    db.configure(fg_color=Colors.background)
     center_window(db, 300, 240, resizable=False)
 
-    tkinter.Label(db, bg=Colors.background).grid(row=0, column=0, pady=0, padx=0)
-
     # UI Components
-    tkinter.Label(db, text="DB Name", bg=Colors.background, fg=Colors.text).grid(row=1, column=0, pady=5, padx=5, sticky="e")
-    db_db = tkinter.Entry(db)
+    customtkinter.CTkLabel(db, text="DB Name", fg_color=Colors.background, text_color=Colors.text).grid(row=1, column=0, pady=5, padx=5, sticky="e")
+    db_db = customtkinter.CTkEntry(db)
     db_db.grid(row=1, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Host", bg=Colors.background, fg=Colors.text).grid(row=2, column=0, pady=5, padx=5, sticky="e")
-    db_host = tkinter.Entry(db)
+    customtkinter.CTkLabel(db, text="DB Host", fg_color=Colors.background, text_color=Colors.text).grid(row=2, column=0, pady=5, padx=5, sticky="e")
+    db_host = customtkinter.CTkEntry(db)
     db_host.grid(row=2, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Port", bg=Colors.background, fg=Colors.text).grid(row=3, column=0, pady=5, padx=5, sticky="e")
-    db_port = tkinter.Entry(db)
+    customtkinter.CTkLabel(db, text="DB Port", fg_color=Colors.background, text_color=Colors.text).grid(row=3, column=0, pady=5, padx=5, sticky="e")
+    db_port = customtkinter.CTkEntry(db)
     db_port.grid(row=3, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Username", bg=Colors.background, fg=Colors.text).grid(row=4, column=0, pady=5, padx=5, sticky="e")
-    db_id = tkinter.Entry(db)
+    customtkinter.CTkLabel(db, text="DB Username", fg_color=Colors.background, text_color=Colors.text).grid(row=4, column=0, pady=5, padx=5, sticky="e")
+    db_id = customtkinter.CTkEntry(db)
     db_id.grid(row=4, column=1, pady=5, padx=5)
 
-    tkinter.Label(db, text="DB Password", bg=Colors.background, fg=Colors.text).grid(row=5, column=0, pady=5, padx=5, sticky="e")
-    db_pw = tkinter.Entry(db, show="*")
+    customtkinter.CTkLabel(db, text="DB Password", fg_color=Colors.background, text_color=Colors.text).grid(row=5, column=0, pady=5, padx=5, sticky="e")
+    db_pw = customtkinter.CTkEntry(db, show="*")
     db_pw.grid(row=5, column=1, pady=5, padx=5)
 
     db_pw.bind("<Return>", db_connect_event)
 
-    db_login_but = tkinter.Button(db, text="DB Connect", command=db_connect_event,
-                                  bg=Colors.action, fg="white",
-                                  activebackground=Colors.primary, activeforeground="white")
+    db_login_but = customtkinter.CTkButton(db, text="DB Connect", command=db_connect_event,
+                                  fg_color=Colors.action, text_color="white",
+                                  hover_color=Colors.primary)
     db_login_but.grid(row=6, column=0, pady=5, padx=10, columnspan=2, sticky="ew")
     db_login_but.bind("<Return>", db_connect_event)
 
     db.grid_columnconfigure(0, weight=1)
     db.grid_columnconfigure(1, weight=1)
+    db.grid_rowconfigure(0, weight=1)
+    db.grid_rowconfigure(7, weight=1)
 
     load_config_to_gui()  # 기존 저장된 값 불러오기
 
