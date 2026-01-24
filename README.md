@@ -127,7 +127,11 @@
     
 3. [x] Main Window
     
+    `Tkinter`
     <img width="1026" height="820" alt="스크린샷 2026-01-22 172434" src="https://github.com/user-attachments/assets/04d5c636-2aa7-487c-b883-01ac260df8c9" />
+    
+    `Custom Tkinter`
+    <img width="1154" height="958" alt="Screenshot_20260124_145245" src="https://github.com/user-attachments/assets/3bdc3d49-7658-4f5d-a095-0d861697b2b0" />
 
     - Menubar
         - 메뉴
