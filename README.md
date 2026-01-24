@@ -8,11 +8,12 @@
 1. [x] **DB 연결정보를 확인**
     - 연결정보가 저장된 INI File 유무 확인
     - 화이트 리스트 [...\PostgreSQL\18\data\postgresql.conf, pg_hba.conf](https://github.com/Lustiora/Python-Sakila/wiki/PostgresSQL-Server-White-List)
-        - DB Connect Count = **3**
+        - ~DB Connect Count = **3**~
         - 1-1. 해당 정보로 연결시도
-            - 일치 print _DB Connect_ > `2`
-            - 불일치 >> Count **-1** Print _Not Connected_
-                - Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ _End_
+            - ~일치 print _DB Connect_ > `2`~
+            - ~불일치 >> Count **-1** Print _Not Connected_~
+                - ~Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ _End_~
+                - Count 제거 / 에러코드 출력으로도 충분
         <br>
         <img width="674" height="257" alt="스크린샷 2026-01-20 170736" src="https://github.com/user-attachments/assets/1e3ad08c-defb-48db-92ae-0b0bb70a7929" />
 
@@ -23,7 +24,7 @@
         - 불일치 >> Count **-1** Print _Login Failed / Chance(Count)_
             - Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ _End_
     <br>
-    <img width="782" height="214" alt="스크린샷 2026-01-20 170512" src="https://github.com/user-attachments/assets/956b66f3-7f8f-4fae-9522-c4fc8bfb394e" />
+    <img width="831" height="238" alt="Screenshot_20260124_142020" src="https://github.com/user-attachments/assets/98578567-67f3-49d1-b651-4901f262644b" />
 
 ### 2. Customer Check / Return / Rental / Calculation Logic
 
