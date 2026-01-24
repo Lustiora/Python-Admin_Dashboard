@@ -120,7 +120,7 @@
     <img width="302" height="272" alt="스크린샷 2026-01-22 172642" src="https://github.com/user-attachments/assets/91d2e611-533d-43be-9b15-11bd2f6412e3" />
 
 2. [x] Staff Login Window `2`
-    Left <Tkinter> -- Middle <Custom Tkinter> & Dark Theme -- Right <Custom Tkinter> & Basic Theme
+    -- Left `Tkinter` -- Middle `Custom Tkinter` & Dark Theme -- Right `Custom Tkinter` & Basic Theme --
 
     <img width="831" height="238" alt="Screenshot_20260124_142020" src="https://github.com/user-attachments/assets/98578567-67f3-49d1-b651-4901f262644b" />
     
