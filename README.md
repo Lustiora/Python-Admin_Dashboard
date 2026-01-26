@@ -227,15 +227,21 @@
 
 ## Workflow
 
+* **2026-01-26**
+  1. 기존 tkinter 구조에서 customtkinter로 변환하였으나 GUI 부분에서 아쉬운점이 많아 파기
+  2. flet(0.28.3)을 사용하여 웹, 앱 호환성 해결을 위한 변환작업 진행중 
+  <br>(0.80.3 >> Script End Monitor Brightness "0" Issue)
+  <br>https://flet-controls-gallery.fly.dev/
+
+<details>
+<summary>Old Workflow</summary>
+
 * **2026-01-23**
   1. Menubar Module 별도 py 분리 (Sub Frame search, change, delete, add)
   2. Window Module start_move, on_drag 이전
   3. Menubar Status_Frame Login Staff 표시 staff_login > main_window
-  4. 차후 테마 적용을 위한 Theme 
+  4. 차후 테마 적용을 위한 Theme 생성
   5. tkinter > customtkinter 변환
-
-<details>
-<summary>Old Workflow</summary>
 
 * **2026-01-22**
   1. Status Bar 구현 (DB 접속상태 5s 체크)
