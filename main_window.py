@@ -1,8 +1,17 @@
 # -- Import --
 import flet
 from menubar.menubar import menu_bar
+from db_monitor import connect_test
+staff_user = None
+staff_store = None
 # -- Module --
-def main_window(page: flet.Page):
+def staff_user_id(user_id, store):
+    global staff_user
+    global staff_store
+    staff_store = store
+    staff_user = user_id
+    return staff_user, staff_store
+def run_main(page: flet.Page, conn):
     # -- Frame --
     page.title = "Sakila"
     page.window.width = 1024
@@ -32,7 +41,12 @@ def main_window(page: flet.Page):
     # -- Menubar --
     page.add(menu_bar())
     # -- Statusbar --
-
+    status = flet.Text(value="status")
+    connect_test(conn, status, page)
+    page.add(flet.Container(
+        content=status,
+        expand=True,
+        alignment=flet.Alignment(1,1)))
     # -- Update --
     page.update()
 # -- Run Test --

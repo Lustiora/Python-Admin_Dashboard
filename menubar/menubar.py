@@ -15,6 +15,7 @@ def menu_bar():
         actions=[flet.TextButton("OK", on_click=close_main),
                  flet.TextButton("Cancel", on_click=close_pop)
                  ], actions_alignment=flet.MainAxisAlignment.END)
+
     def handle_menu_item_click(e):
         print(f"{e.control.content.value}.on_click")
 

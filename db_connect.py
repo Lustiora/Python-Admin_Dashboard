@@ -192,6 +192,8 @@ def run_db_connect(page: flet.Page):
     # -- Button --
     connect = flet.Button("Connect", on_click=db_connect_event, width=230, style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5)))
     # -- Layout --
+    page.vertical_alignment = flet.MainAxisAlignment.CENTER # 세로 중앙
+    page.horizontal_alignment = flet.CrossAxisAlignment.CENTER # 가로 중앙
     page.add(
         flet.Row([
             flet.Column(
@@ -203,7 +205,7 @@ def run_db_connect(page: flet.Page):
                     , flet.Row([db_username, username])
                     , flet.Row([db_password, password])
                     , flet.Row([connect])
-                ], horizontal_alignment=flet.CrossAxisAlignment.END
+                ], horizontal_alignment=flet.CrossAxisAlignment.END, alignment=flet.MainAxisAlignment.CENTER
             ),
         ], alignment=flet.MainAxisAlignment.CENTER,)
     )

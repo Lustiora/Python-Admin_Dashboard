@@ -227,6 +227,13 @@
 
 ## Workflow
 
+* **2026-01-27**
+  1. DB Connect ~ Main 까지 이어지는 과정 최적화
+  2. DB Monitor > Main Window 연결
+
+<details>
+<summary>Old Workflow</summary>
+
 * **2026-01-26**
   1. 기존 tkinter 구조에서 customtkinter로 변환하였으나 GUI 부분에서 아쉬운점이 많아 파기
   2. flet(0.28.3)을 사용하여 웹, 앱 호환성 해결을 위한 변환작업 진행중 (DB Connect > Main Window 연결 완료)
@@ -242,8 +249,6 @@
   4. Exit Popup 추가 `page.window.prevent_close = True ~ event`
   <br>Linux > `e.page.window.destroy()`
 
-<details>
-<summary>Old Workflow</summary>
 
 * **2026-01-23**
   1. Menubar Module 별도 py 분리 (Sub Frame search, change, delete, add)

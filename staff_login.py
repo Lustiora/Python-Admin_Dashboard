@@ -135,14 +135,12 @@ def check_login_process(e):
             print("User Login ...")
             if user_data:  # 쿼리값 존재시
                 print(f"ID : {user_data[0]} | PW : {user_data[1]}")
-                # login.destroy()
-                # from main_window import staff_user_id
-                # staff_user_id(user_data[0], user_data[2])
                 # from main_window import main_check_login_process
                 # main_check_login_process()
                 e.page.clean()
-                from main_window import main_window
-                main_window(e.page)
+                from main_window import run_main, staff_user_id
+                run_main(e.page, conn)
+                staff_user_id(user_data[0], user_data[2])
             else:  # 쿼리값 미존재시
                 if count <= 0:
                     print(f"Login Failed")
