@@ -229,7 +229,7 @@
 
 * **2026-01-26**
   1. 기존 tkinter 구조에서 customtkinter로 변환하였으나 GUI 부분에서 아쉬운점이 많아 파기
-  2. flet(0.28.3)을 사용하여 웹, 앱 호환성 해결을 위한 변환작업 진행중 
+  2. flet(0.28.3)을 사용하여 웹, 앱 호환성 해결을 위한 변환작업 진행중 (DB Connect > Main Window 연결 완료)
   <br>(0.80.3 >> Script End Monitor Brightness "0" Issue)
   <br>https://flet-controls-gallery.fly.dev/
 
