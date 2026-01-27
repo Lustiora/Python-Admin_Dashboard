@@ -47,16 +47,18 @@ def connect_test(conn, status, page: flet.Page):  # DB 연결 확인
     try:
         with conn.cursor() as cursor:
             cursor.execute("select 1")
-        status.value = "Connected"
-        status.color = "#27ae60"
-        page.update()
-        timer = threading.Timer(5.0, connect_test, args=[conn, status, page])
+        status.content.value = "Connected "
+        status.content.color = flet.Colors.PRIMARY
+        status.bgcolor = flet.Colors.PRIMARY_CONTAINER
+        status.update()
+        timer = threading.Timer(2.0, connect_test, args=[conn, status, page])
         timer.daemon = True  # 프로그램 꺼지면 타이머도 같이 꺼지게 설정
         timer.start()
     except Exception as err:
-        status.value ="Disconnected"
-        status.color = "#ff6b6b"
-        page.update()
+        status.content.value = "Disconnected "
+        status.content.color = flet.Colors.ERROR
+        status.bgcolor = flet.Colors.ERROR_CONTAINER
+        status.update()
         print(f"Error: {err}")
         open_pop(page)
-        return
+    status.update()

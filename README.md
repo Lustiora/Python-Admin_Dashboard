@@ -231,8 +231,10 @@
   1. DB Connect ~ Main 까지 이어지는 과정 최적화
   2. DB Monitor > Main Window 연결
   3. page.window.max_ 제거 (Windows OS Window Resize Error)
-  4. Auto Login 시작 시 `Connecting to Database Text` 추가
+  4. Auto Login 시작 시 `Connecting to Database` Text 추가
   5. db_connect, staff_login TextField `autofocus=True` 추가
+  6. Status Bar 연동상태 색상 강조
+  7. 
 
 <details>
 <summary>Old Workflow</summary>
