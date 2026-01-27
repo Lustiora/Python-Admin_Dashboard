@@ -171,6 +171,7 @@ def run_db_connect(page: flet.Page):
     page.title = "DB Connect" # 창 타이틀
     page.window.width = 400 # 창 가로
     page.window.height = 310 # 창 세로
+    page.bgcolor = flet.Colors.BLUE_GREY_50
     # -- Linux Window Force Size --
     page.window.min_width = page.window.width
     page.window.min_height = page.window.height

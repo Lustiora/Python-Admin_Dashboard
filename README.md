@@ -234,7 +234,7 @@
   4. Auto Login 시작 시 `Connecting to Database` Text 추가
   5. db_connect, staff_login TextField `autofocus=True` 추가
   6. Status Bar 연동상태 색상 강조
-  7. 
+  7. Status Bar 구조 생성 완료
 
 <details>
 <summary>Old Workflow</summary>
