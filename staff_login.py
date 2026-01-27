@@ -26,9 +26,6 @@ def run_staff_login(page: flet.Page):
     global user, password
     # -- Frame --
     page.title = "Staff Login"
-    print(page.window.resizable)
-    print(page.window.min_height)
-    print(page.window.min_width)
     page.window.width = 400
     page.window.height = 310
     # -- Linux Window Force Size --
