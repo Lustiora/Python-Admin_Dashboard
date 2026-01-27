@@ -25,6 +25,7 @@ dlg_connect_error = flet.AlertDialog(
 def run_staff_login(page: flet.Page):
     global user, password
     # -- Frame --
+    page.clean()
     page.title = "Staff Login"
     page.window.width = 400
     page.window.height = 310

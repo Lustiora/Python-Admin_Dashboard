@@ -2,6 +2,8 @@
 import sys, os, configparser, base64
 import psycopg2
 import flet
+from flet.core.types import MainAxisAlignment, CrossAxisAlignment
+
 from window import Font
 # -- Variable --
 db = []
@@ -75,6 +77,24 @@ def load_config_to_gui():
             print(f"Error : {e}")
 # -- Auto Login Logic (Launcher) --
 def auto_login_start(page: flet.Page):
+    page.title = "DB Connect"  # 창 타이틀
+    page.window.width = 400  # 창 가로
+    page.window.height = 310  # 창 세로
+    # -- Linux Window Force Size --
+    page.window.min_width = page.window.width
+    page.window.min_height = page.window.height
+    page.window.center()
+    page.update()
+    page.vertical_alignment = flet.MainAxisAlignment.CENTER  # 세로 중앙
+    page.horizontal_alignment = flet.CrossAxisAlignment.CENTER  # 가로 중앙
+    connect = flet.Text(value="Connecting to Database", theme_style=flet.TextThemeStyle.TITLE_LARGE)
+    page.add(
+        flet.Column([
+            flet.Row([connect], alignment=MainAxisAlignment.CENTER),
+            flet.Container(height=0),
+            flet.Row([flet.ProgressRing()], alignment=MainAxisAlignment.CENTER)
+        ], horizontal_alignment=MainAxisAlignment.CENTER)
+    )
     if sys.platform == "win32": # windows OS 의 경우
         appdata = os.getenv("APPDATA")
     else: # 그외 OS(Linux)의 경우
@@ -147,6 +167,7 @@ def db_connect_event(e):
 def run_db_connect(page: flet.Page):
     global db, host, port, username, password
     # -- Frame --
+    page.clean()
     page.title = "DB Connect" # 창 타이틀
     page.window.width = 400 # 창 가로
     page.window.height = 310 # 창 세로
