@@ -31,8 +31,8 @@ def run_staff_login(page: flet.Page):
     # -- Linux Window Force Size --
     page.window.min_width = page.window.width
     page.window.min_height = page.window.height
-    page.window.max_width = page.window.min_width
-    page.window.max_height = page.window.min_height
+    page.window.resizable = False
+    page.window.maximizable = False
     # -- Exit --
     page.window.prevent_close = True  # X 이벤트 옵션 추가
     def close_pop(e):
@@ -51,7 +51,6 @@ def run_staff_login(page: flet.Page):
             e.page.open(main_quit)
     page.window.on_event = window_event
     # -- -- -- -- -- -- -- -- -- --
-    page.window.resizable = False
     page.vertical_alignment = flet.MainAxisAlignment.CENTER
     page.window.center()
     # -- Label --
@@ -137,6 +136,11 @@ def check_login_process(e):
                 print(f"ID : {user_data[0]} | PW : {user_data[1]}")
                 # from main_window import main_check_login_process
                 # main_check_login_process()
+                e.page.window.min_width = None
+                e.page.window.min_height = None
+                e.page.window.resizable = True
+                e.page.window.maximizable = True
+                e.page.update()
                 e.page.clean()
                 from main_window import run_main, staff_user_id
                 run_main(e.page, conn)

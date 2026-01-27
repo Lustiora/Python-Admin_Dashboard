@@ -106,16 +106,19 @@ def auto_login_start(page: flet.Page):
             password=decrypted_pw
         )
         print("Auto-Login Successful. Launching Main Window...")
+        page.window.min_width = None
+        page.window.min_height = None
+        page.window.resizable = True
+        page.window.maximizable = True
         page.clean()
         from staff_login import run_staff_login
         run_staff_login(page)
-    except Exception as e:
-        print(f"Auto-Login Failed:\n{e}")
+    except Exception as err:
+        print(f"Auto-Login Failed:\n{err}")
         run_db_connect(page)
         dlg_connect_error.content.value = "Auto-Login Failed"
         page.open(dlg_connect_error)
         page.update()
-        # messagebox.showerror("Connection Failed",f"{e}")
 # -- Database Connect Module (Button Event) --
 def db_connect_event(e):
     global db, host, port, username, password
@@ -138,7 +141,6 @@ def db_connect_event(e):
         run_staff_login(e.page)
     except Exception as err:
         print(f"Connection Failed:\n{err}")
-        # messagebox.showerror("Connection Failed",f"{e}")
         e.page.open(dlg_connect_error)
         e.page.update()
 # -- DB Connect GUI (Setup Screen) --
@@ -151,8 +153,6 @@ def run_db_connect(page: flet.Page):
     # -- Linux Window Force Size --
     page.window.min_width = page.window.width
     page.window.min_height = page.window.height
-    page.window.max_width = page.window.min_width
-    page.window.max_height = page.window.min_height
     # -- Exit --
     page.window.prevent_close = True  # X X 이벤트 옵션 추가
     def close_pop(e):
@@ -172,6 +172,7 @@ def run_db_connect(page: flet.Page):
     page.window.on_event = window_event
     # -- -- -- -- -- -- -- -- -- --
     page.window.resizable = False # 창 크기 변환 금지
+    page.window.maximizable = False # 창 최대화 버튼 금지
     page.window.center() # 모니터 정중앙 출력
     # -- Label --
     db_name = flet.Text(value="Database")

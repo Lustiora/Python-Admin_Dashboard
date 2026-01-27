@@ -1,6 +1,5 @@
 # -- Import --
 import flet
-from menubar.menubar import menu_bar
 from db_monitor import connect_test
 staff_user = None
 staff_store = None
@@ -16,6 +15,7 @@ def run_main(page: flet.Page, conn):
     page.title = "Sakila"
     page.window.width = 1024
     page.window.height = 768
+    page.update()
     page.window.resizable = True
     page.window.min_width = page.window.width
     page.window.min_height = page.window.height
@@ -39,7 +39,7 @@ def run_main(page: flet.Page, conn):
             e.page.open(main_quit)
     page.window.on_event = window_event
     # -- Menubar --
-    page.add(menu_bar())
+    # page.add(menu_bar())
     # -- Statusbar --
     status = flet.Text(value="status")
     connect_test(conn, status, page)

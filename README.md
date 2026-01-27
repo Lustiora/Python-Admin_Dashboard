@@ -230,6 +230,7 @@
 * **2026-01-27**
   1. DB Connect ~ Main 까지 이어지는 과정 최적화
   2. DB Monitor > Main Window 연결
+  3. page.window.max_ 제거 (Windows OS Window Resize Error)
 
 <details>
 <summary>Old Workflow</summary>
