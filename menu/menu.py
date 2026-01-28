@@ -49,7 +49,7 @@ def c_status(login_db, login_host, login_port, staff_store, staff_user):
             flet.Row([
                 flet.Container(
                     bgcolor=flet.Colors.BLUE_GREY_100,
-                    border_radius=20,
+                    border_radius=10,
                     alignment=flet.alignment.center,
                     width=280,
                     height=250,
@@ -80,7 +80,7 @@ def c_status(login_db, login_host, login_port, staff_store, staff_user):
                     width=40
                 ),flet.Container(
                     bgcolor=flet.Colors.BLUE_GREY_100,
-                    border_radius=20,
+                    border_radius=10,
                     alignment=flet.alignment.center,
                     width=280,
                     height=250,
