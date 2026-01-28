@@ -7,7 +7,7 @@
 * Sakila Sample Database (MySQL)
 * Flet Library (Python)
 * Windows 11
-* Arch Linux
+* Arch Linux 
 
 ## Workflow
 
