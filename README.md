@@ -152,6 +152,7 @@
         - 통계 (대여 / 반납 , 대여 Top 10 (영화, 장르, 등급 Count))
         - 관리
             - 직원 (Staff-Table)
+            - 작업 로그
 
 ### Old Basic Logic 1.0
 
@@ -225,12 +226,21 @@
     * Rank Window > (현재 시간 기준 Week Rank, Month Rank, Year Rank) 추가
       * Columns (Rank , Title , Description (설명), Rating (관람등급), category(장르)(film > film_category > category Table)
 
+## Hot Reload 실행 구성
+* `flet run -r ./main_window.py` 해당 명령어로 실행은 flet가 정지되는 경우가 잦음
+* script : ~/Python-Sakila/.venv/Scripts/flet.exe
+* 변수 : run -r ./main_window.py
+* 작업 디렉터리 : ~/Python-Sakila
+
 ## Workflow
+
+Hot Reload Check
 
 * **2026-01-28**
   1. Tile Menu 생성 (홈, 조회, ~, 접속상태)
   2. Main Home 작성
   3. System Dashboard (접속 정보) 작성
+  4. Search Customer 작성중
 
 <details>
 <summary>Old Workflow</summary>
