@@ -1,7 +1,19 @@
-# Python-Sakila
-> Sakila DB > Read POS (Point of Sales) Simulator
+# Sakila Shop Management Tools
+
+## Assets
+
+* PostgreSQL
+* Python
+* Sakila Sample Database (MySQL)
+* Flet Library (Python)
+* Windows 11
+* Arch Linux
 
 ## Workflow
+
+* 예정 : 
+  * 조회된 목록을 export 하는 기능 
+  * 조회된 목록에서 선택을 하여 수정, 삭제 기능으로 연결
 
 * **2026-01-29**
   1. Search Customer 검색 모듈 분할
