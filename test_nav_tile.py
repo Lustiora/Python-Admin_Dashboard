@@ -33,9 +33,9 @@ def nav(page: flet.Page): # test
             # basic_content.content = search_customer(page, conn) 작업 완료
             pass # test
         elif index == 1.2: # 재고 조회
-            basic_content.content = search_inventory()
+            # basic_content.content = search_inventory(page, conn)
         elif index == 1.3: # 영화 조회
-            basic_content.content = search_film()
+            # basic_content.content = search_film(page, conn)
         elif index == 1.4: # 대여상태 조회
             basic_content.content = search_rental()
         elif index == 1.5: # 결제이력 조회
