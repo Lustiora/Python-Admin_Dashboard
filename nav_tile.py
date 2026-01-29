@@ -4,7 +4,7 @@ from menu.menu_edit import *
 from menu.menu_delete import *
 from menu.menu_add import *
 
-def nav(page: flet.Page, login_db, login_host, login_port, staff_store, staff_user, conn):
+def nav(page: flet.Page, login_db, login_host, login_port, store_address, staff_user, store_id, conn):
     basic_content = flet.Container(
         content=c_home(),
         alignment=flet.alignment.center,
@@ -30,7 +30,7 @@ def nav(page: flet.Page, login_db, login_host, login_port, staff_store, staff_us
         if index == 0: # 메인화면
             basic_content.content = c_home()
         elif index == 1.1: # 고객 조회
-            basic_content.content = search_customer(page, conn)
+            basic_content.content = search_customer(page, store_id, conn)
         elif index == 1.2: # 재고 조회
             basic_content.content = search_inventory(page, conn)
         elif index == 1.3: # 영화 조회
@@ -74,7 +74,7 @@ def nav(page: flet.Page, login_db, login_host, login_port, staff_store, staff_us
         elif index == 6: # 관리
             basic_content.content = c_manager()
         elif index == 7: # 접속 상태
-            basic_content.content = c_status(login_db, login_host, login_port, staff_store, staff_user)
+            basic_content.content = c_status(login_db, login_host, login_port, store_address, staff_user)
 
         basic_content.update()
     tile_column = flet.Column(

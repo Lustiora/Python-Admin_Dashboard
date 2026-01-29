@@ -74,7 +74,7 @@ def search_customer_id(page, conn):
     )
     return customer_id_text, search_id, customer_id
 
-def search_customer_name(page, conn):
+def search_customer_name(page, store_id, conn):
     def customer_name_module(e):
         customer_name_value = f"%{customer_name_text.value}%"
         def close_pop(e):
@@ -87,19 +87,19 @@ def search_customer_name(page, conn):
         cursor = conn.cursor()
         try:
             cursor.execute(
-                """ select 
-                        c.customer_id , 
-                        c.create_date  , 
-                        c.first_name , 
-                        c.last_name , 
-                        c.email ,
-                        a.address
-                    from customer c 
-                    inner join address a 
-                        on c.address_id = a.address_id
-                    where c.activebool is true
-                        and c.first_name Ilike %s
-                        or c.last_name Ilike %s""",(customer_name_value,customer_name_value,)
+                """ select
+                        id ,
+                        name ,
+                        address ,
+                        "zip code" ,
+                        phone ,
+                        city ,
+                        country ,
+                        notes
+                    from customer_list
+                    where name Ilike %s
+                        and sid = %s
+                    order by id , name """,(customer_name_value,store_id,)
             )
             customer_data = cursor.fetchall()
             if customer_data:
@@ -113,6 +113,8 @@ def search_customer_name(page, conn):
                             flet.DataCell(flet.Text(sc_row[3])),
                             flet.DataCell(flet.Text(sc_row[4])),
                             flet.DataCell(flet.Text(sc_row[5])),
+                            flet.DataCell(flet.Text(sc_row[6])),
+                            flet.DataCell(flet.Text(sc_row[7])),
                         ])
                     )
                 customer_name_data.update()
@@ -124,12 +126,14 @@ def search_customer_name(page, conn):
     search_name = flet.Button("Search", on_click=customer_name_module, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
     customer_name_data = flet.DataTable(
         columns=[
-            flet.DataColumn(flet.Text("ID", width=25)),
-            flet.DataColumn(flet.Text("Create Date", width=74)),
-            flet.DataColumn(flet.Text("First Name", width=80)),
-            flet.DataColumn(flet.Text("Last Name", width=80)),
-            flet.DataColumn(flet.Text("Email",width=235)),
-            flet.DataColumn(flet.Text("Address",width=156)),
+            flet.DataColumn(flet.Text("ID")),
+            flet.DataColumn(flet.Text("Name")),
+            flet.DataColumn(flet.Text("Address")),
+            flet.DataColumn(flet.Text("Zip Code")),
+            flet.DataColumn(flet.Text("Phone")),
+            flet.DataColumn(flet.Text("City")),
+            flet.DataColumn(flet.Text("Country")),
+            flet.DataColumn(flet.Text("Notes")),
         ],
         rows=[],
         border=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar

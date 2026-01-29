@@ -15,24 +15,19 @@ def search_film_title(page, conn):
         try:
             cursor.execute(
                 """ select 
-                        f.film_id ,
-                        f.release_year ,
-                        f.title ,
-                        l."name" ,
-                        f.rental_duration ,
-                        f.rental_rate ,
-                        f.replacement_cost ,
-                        f.rating ,
-                        f.description
-                    from film f 
-                    inner join "language" l 
-                        on f.language_id = l.language_id
-                    where f.title Ilike %s or f.description ILike %s
+                        fid , 
+                        title , 
+                        description , 
+                        category , 
+                        price , 
+                        length , 
+                        rating , 
+                        actors  
+                    from film_list
+                    where title Ilike %s or description ILike %s or actors ILike %s 
                     order by
-                        f.film_id ,
-                        f.release_year ,
-                        f.title ,
-                        f.description """,(film_title_value,film_title_value,)
+                        fid , 
+                        title """,(film_title_value,film_title_value,film_title_value,)
             )
             film_data = cursor.fetchall()
             if film_data:
@@ -48,7 +43,6 @@ def search_film_title(page, conn):
                             flet.DataCell(flet.Text(row[5])),
                             flet.DataCell(flet.Text(row[6])),
                             flet.DataCell(flet.Text(row[7])),
-                            flet.DataCell(flet.Text(row[8])),
                         ])
                     )
                 film_title_data.update()
@@ -61,14 +55,13 @@ def search_film_title(page, conn):
     film_title_data = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID")),
-            flet.DataColumn(flet.Text("Year")),
             flet.DataColumn(flet.Text("Title")),
-            flet.DataColumn(flet.Text("Language")),
-            flet.DataColumn(flet.Text("Rental Duration")),
-            flet.DataColumn(flet.Text("Rental Rate")),
-            flet.DataColumn(flet.Text("Replacement Cost")),
-            flet.DataColumn(flet.Text("rating")),
             flet.DataColumn(flet.Text("Description")),
+            flet.DataColumn(flet.Text("Category")),
+            flet.DataColumn(flet.Text("Price")),
+            flet.DataColumn(flet.Text("Length")),
+            flet.DataColumn(flet.Text("Rating")),
+            flet.DataColumn(flet.Text("Actors")),
         ],
         rows=[],
         border=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar

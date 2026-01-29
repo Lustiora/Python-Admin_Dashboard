@@ -15,7 +15,9 @@ call = "010-1234-5678"
 def close_connect_error(e):
     e.page.close(dlg_connect_error) # 팝업창 종료 명령어
 def exit_connect_error(e):
-    e.page.window.close() # 윈도우 창 종료 명령어
+    e.page.window.prevent_close = False
+    e.page.window.close()
+    e.page.window.destroy()
 dlg_connect_error = flet.AlertDialog(
     title=flet.Text("Login Failed"),
     content=flet.Text("Your ID or password is incorrect."),
@@ -125,7 +127,7 @@ def check_login_process(e):
             # 3. 16진수 문자열로 변환 (.hexdigest())
         try:
             cursor.execute(""" 
-               select s.username, s.password, a.address , s.active
+               select s.username, s.password, a.address , s.active , s.store_id
                from staff s
                inner join store s2 
                   on s.store_id = s2.store_id 
@@ -145,21 +147,18 @@ def check_login_process(e):
                 e.page.update()
                 e.page.clean()
                 from main_window import run_main
-                run_main(e.page, conn, login_db, login_host, login_port, user_data[2], user_data[0])
+                run_main(e.page, conn, login_db, login_host, login_port, user_data[2], user_data[0], user_data[4])
             else:  # 쿼리값 미존재시
                 if count <= 0:
                     print(f"Login Failed")
                     dlg_connect_error.content.value = f"Please Contact the Administrator\nPhone : {call}"
                     dlg_connect_error.actions = [flet.TextButton("Cancel", on_click=exit_connect_error),]
                     e.page.open(dlg_connect_error)
-                    # messagebox.showerror("Staff Login", "Please Contact the Administrator\nPhone : 010-1234-5678")
-                    # login.destroy()
                 else:
                     print(f"Login Failed | Count (3) : {count}")
                     dlg_connect_error.content.value = f"Connect Failed\nCount (3) : {count}"
                     e.page.open(dlg_connect_error)
                     e.page.update()
-                    # messagebox.showerror("Staff Login", f"Connect Failed\nChance (3) : {count}")
         except Exception as e:
             print(f"[staff_login] error : {e}")
 # -- Run Test --

@@ -4,7 +4,7 @@ from db_monitor import connect_test
 from nav_tile import nav
 # -- Variable --
 # -- Module --
-def run_main(page: flet.Page, conn, login_db, login_host, login_port, staff_store, staff_user):
+def run_main(page: flet.Page, conn, login_db, login_host, login_port, store_address, staff_user, store_id):
     # -- Frame --
     page.clean()
     page.title = "Sakila"
@@ -46,7 +46,7 @@ def run_main(page: flet.Page, conn, login_db, login_host, login_port, staff_stor
         bgcolor=flet.Colors.OUTLINE
     )
     # -- Main Area --
-    ex_tile, basic_content = nav(page, login_db, login_host, login_port, staff_store, staff_user, conn) # Return 값 변수 수거
+    ex_tile, basic_content = nav(page, login_db, login_host, login_port, store_address, staff_user, store_id, conn) # Return 값 변수 수거
     # -- Page --
     page.add(
         flet.Row([
