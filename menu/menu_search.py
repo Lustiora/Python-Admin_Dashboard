@@ -3,8 +3,8 @@ from menu.menu_search_inventory import *
 from menu.menu_search_film import *
 
 def search_customer(page, conn):
-    customer_id, search_id, s_c_id = search_customer_id(page, conn) # Module Return Value get
-    customer_name, search_name, s_c_name = search_customer_name(page, conn)
+    customer_id_text, search_id, customer_id = search_customer_id(page, conn) # Module Return Value get
+    customer_name_text, search_name, customer_name = search_customer_name(page, conn)
     return flet.Column(
         controls=[
             flet.Row([
@@ -13,7 +13,7 @@ def search_customer(page, conn):
             flet.Divider(),
             flet.Row([
                 flet.Text("ID :", style=flet.TextThemeStyle.BODY_LARGE, width=100, text_align="right"),
-                customer_id,
+                customer_id_text,
                 search_id
             ], height=30),
             flet.Divider(),
@@ -22,7 +22,7 @@ def search_customer(page, conn):
                     bgcolor=flet.Colors.GREY_200,
                     alignment=flet.alignment.top_left,
                     height=Font.height + 45,
-                    content=s_c_id,
+                    content=customer_id,
                     padding=10,
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
@@ -31,7 +31,7 @@ def search_customer(page, conn):
             flet.Divider(),
             flet.Row([
                 flet.Text("Name :", style=flet.TextThemeStyle.BODY_LARGE, width=100, text_align="right"),
-                customer_name,
+                customer_name_text,
                 search_name
             ], height=30),
             flet.Divider(),
@@ -39,7 +39,7 @@ def search_customer(page, conn):
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
                     alignment=flet.alignment.top_left,
-                    content=s_c_name,
+                    content=customer_name,
                     expand=True,
                     padding=10,
                     border_radius=5,
@@ -50,7 +50,7 @@ def search_customer(page, conn):
     )
 
 def search_inventory(page, conn):
-    inventory, search, s_i_id, s_i_rt, s_i_ti = search_inventory_id(page, conn)  # Module Return Value get
+    inventory_id, search, stock_id, stock_rental, stock_title = search_inventory_data(page, conn)  # Module Return Value get
     return flet.Column(
         controls=[
             flet.Row([
@@ -59,14 +59,14 @@ def search_inventory(page, conn):
             flet.Divider(),
             flet.Row([
                 flet.Text("ID :", style=flet.TextThemeStyle.BODY_LARGE, width=100, text_align="right"),
-                inventory,
+                inventory_id,
                 search,
             ], height=30),
             flet.Divider(),
             flet.Column([
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
-                    content=s_i_id,
+                    content=stock_id,
                     alignment=flet.alignment.top_left,
                     height=Font.height + 45,
                     padding=10,
@@ -82,7 +82,7 @@ def search_inventory(page, conn):
                     flet.Container(
                         bgcolor=flet.Colors.GREY_200,
                         alignment=flet.alignment.top_left,
-                        content=s_i_rt,
+                        content=stock_rental,
                         expand=True,
                         padding=10,
                         border_radius=5,
@@ -95,7 +95,7 @@ def search_inventory(page, conn):
                     flet.Container(
                         bgcolor=flet.Colors.GREY_200,
                         alignment=flet.alignment.top_left,
-                        content=s_i_ti,
+                        content=stock_title,
                         expand=True,
                         padding=10,
                         border_radius=5,

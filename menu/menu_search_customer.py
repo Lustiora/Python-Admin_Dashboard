@@ -2,13 +2,13 @@ import flet
 from window import Font
 
 def search_customer_id(page, conn):
-    def scq_id(e):
-        cu_id = int(customer_id.value)
+    def customer_id_module(e):
+        int_customer_id = int(customer_id_text.value)
         def close_pop(e):
             page.close(error_quit)  # 팝업창 종료 명령어
         error_quit = flet.AlertDialog(
             title=flet.Text("Customer"),
-            content=flet.Text(f"Customer ID Not Found [{customer_id.value}]"),
+            content=flet.Text(f"Customer ID Not Found [{customer_id_text.value}]"),
             actions=[flet.TextButton("OK", on_click=close_pop)
                      ], actions_alignment=flet.MainAxisAlignment.END)
         cursor = conn.cursor()
@@ -25,12 +25,12 @@ def search_customer_id(page, conn):
                     inner join address a 
                         on c.address_id = a.address_id
                     where c.activebool is true
-                        and c.customer_id = %s""",(cu_id,)
+                        and c.customer_id = %s""",(int_customer_id,)
             )
             customer_data = cursor.fetchone()
             if customer_data:
-                sc_id.rows.clear()
-                sc_id.rows.append(
+                customer_id_data.rows.clear()
+                customer_id_data.rows.append(
                     flet.DataRow(cells=[
                         flet.DataCell(flet.Text(customer_data[0])),
                         flet.DataCell(flet.Text(customer_data[1])),
@@ -40,15 +40,15 @@ def search_customer_id(page, conn):
                         flet.DataCell(flet.Text(customer_data[5])),
                     ])
                 )
-                sc_id.update()
+                customer_id_data.update()
             else:
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Customer error : {err}")
-    customer_id = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
+    customer_id_text = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
     search_id = flet.Button(
-        "Search", on_click=scq_id, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
-    sc_id = flet.DataTable(
+        "Search", on_click=customer_id_module, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
+    customer_id_data = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID", width=25)),
             flet.DataColumn(flet.Text("Create Date", width=74)),
@@ -66,22 +66,22 @@ def search_customer_id(page, conn):
         data_row_min_height=Font.height-2, # DataTable Data Min Height
         data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
-    s_c_id = flet.Row(
+    customer_id = flet.Row(
         controls=[
-            flet.Column([sc_id], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([customer_id_data], scroll=flet.ScrollMode.ALWAYS)
         ],scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
-    return customer_id, search_id, s_c_id
+    return customer_id_text, search_id, customer_id
 
 def search_customer_name(page, conn):
-    def scq_firstname(e):
-        cu_name = f"%{customer_name.value}%"
+    def customer_name_module(e):
+        customer_name_value = f"%{customer_name_text.value}%"
         def close_pop(e):
             page.close(error_quit)  # 팝업창 종료 명령어
         error_quit = flet.AlertDialog(
             title=flet.Text("Customer"),
-            content=flet.Text(f"Customer Name Not Found [{customer_name.value}]"),
+            content=flet.Text(f"Customer Name Not Found [{customer_name_text.value}]"),
             actions=[flet.TextButton("OK", on_click=close_pop)
                      ], actions_alignment=flet.MainAxisAlignment.END)
         cursor = conn.cursor()
@@ -99,13 +99,13 @@ def search_customer_name(page, conn):
                         on c.address_id = a.address_id
                     where c.activebool is true
                         and c.first_name Ilike %s
-                        or c.last_name Ilike %s""",(cu_name,cu_name,)
+                        or c.last_name Ilike %s""",(customer_name_value,customer_name_value,)
             )
             customer_data = cursor.fetchall()
             if customer_data:
-                sc_name.rows.clear()
+                customer_name_data.rows.clear()
                 for sc_row in customer_data:
-                    sc_name.rows.append(
+                    customer_name_data.rows.append(
                         flet.DataRow(cells=[
                             flet.DataCell(flet.Text(sc_row[0])),
                             flet.DataCell(flet.Text(sc_row[1])),
@@ -115,14 +115,14 @@ def search_customer_name(page, conn):
                             flet.DataCell(flet.Text(sc_row[5])),
                         ])
                     )
-                sc_name.update()
+                customer_name_data.update()
             else:
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Customer error : {err}")
-    customer_name = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
-    search_name = flet.Button("Search", on_click=scq_firstname, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
-    sc_name = flet.DataTable(
+    customer_name_text = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
+    search_name = flet.Button("Search", on_click=customer_name_module, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
+    customer_name_data = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID", width=25)),
             flet.DataColumn(flet.Text("Create Date", width=74)),
@@ -140,9 +140,9 @@ def search_customer_name(page, conn):
         data_row_min_height=Font.height-2, # DataTable Data Min Height
         data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
-    s_c_name = flet.Row(
-        controls=[flet.Column([sc_name], scroll=flet.ScrollMode.ALWAYS)],
+    customer_name = flet.Row(
+        controls=[flet.Column([customer_name_data], scroll=flet.ScrollMode.ALWAYS)],
         scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
-    return customer_name, search_name, s_c_name
+    return customer_name_text, search_name, customer_name
