@@ -15,6 +15,7 @@
 * View 최소 6 Row : 650px
 
 * 예정 :
+  * 
   * 조회된 목록을 export 하는 기능 
   * 조회된 목록에서 선택을 하여 수정, 삭제 기능으로 연결
   * c_status에 터미널 로그창을 추가하여 동작 상태를 출력하고 export하는 기능
@@ -27,6 +28,7 @@
   1. Search Customer 모듈 (ID, Name) 분할
   2. try, except > Error 구분 문구 추가
   3. Search Inventory 모듈 (ID (Film Title 등), 동일한 Film Title의 inventory ID 및 정보, 대여상태) 작성
+  4. Search Film 모듈 작성
 
 <details>
 <summary>Old Workflow</summary>

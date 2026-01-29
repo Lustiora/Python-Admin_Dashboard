@@ -139,9 +139,9 @@ def search_inventory_id(page, conn):
         data_row_min_height=Font.height-2, # DataTable Data Min Height
         data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
-    s_i_id = flet.Column(
+    s_i_id = flet.Row(
         controls=[
-            flet.Row([si_id], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([si_id], scroll=flet.ScrollMode.ALWAYS)
         ],scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
@@ -160,9 +160,9 @@ def search_inventory_id(page, conn):
         data_row_min_height=Font.height - 2,  # DataTable Data Min Height
         data_row_max_height=Font.height - 2,  # DataTable Data Max Height
     )
-    s_i_rt = flet.Column(
+    s_i_rt = flet.Row(
         controls=[
-            flet.Row([si_rt], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([si_rt], scroll=flet.ScrollMode.ALWAYS)
         ], scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
@@ -181,9 +181,9 @@ def search_inventory_id(page, conn):
         data_row_min_height=Font.height - 2,  # DataTable Data Min Height
         data_row_max_height=Font.height - 2,  # DataTable Data Max Height
     )
-    s_i_ti = flet.Column(
+    s_i_ti = flet.Row(
         controls=[
-            flet.Row([si_ti], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([si_ti], scroll=flet.ScrollMode.ALWAYS)
         ], scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
