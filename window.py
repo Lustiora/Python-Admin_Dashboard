@@ -1,3 +1,3 @@
 class Font:
     fontsize = 14
-    height = fontsize + 4
+    height = fontsize + 8

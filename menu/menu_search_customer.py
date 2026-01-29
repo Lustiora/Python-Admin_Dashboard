@@ -3,7 +3,7 @@ from window import Font
 
 def search_customer_id(page, conn):
     def scq_id(e):
-        cu_id = customer_id.value
+        cu_id = int(customer_id.value)
         def close_pop(e):
             page.close(error_quit)  # 팝업창 종료 명령어
         error_quit = flet.AlertDialog(
@@ -45,7 +45,7 @@ def search_customer_id(page, conn):
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Customer error : {err}")
-    customer_id = flet.TextField(width=150, height=30, content_padding=10, max_length=10, autofocus=True)
+    customer_id = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
     search_id = flet.Button(
         "Search", on_click=scq_id, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
     sc_id = flet.DataTable(
@@ -62,9 +62,9 @@ def search_customer_id(page, conn):
         vertical_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar
         horizontal_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar
         heading_row_color=flet.Colors.GREY_300, # DataTable Titlebar Inside Color
-        heading_row_height=Font.height+4, # DataTable Titlebar Height
-        data_row_min_height=Font.height, # DataTable Data Min Height
-        data_row_max_height=Font.height, # DataTable Data Max Height
+        heading_row_height=Font.height, # DataTable Titlebar Height
+        data_row_min_height=Font.height-2, # DataTable Data Min Height
+        data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
     s_c_id = flet.Column(
         controls=[
@@ -121,7 +121,7 @@ def search_customer_name(page, conn):
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Customer error : {err}")
-    customer_name = flet.TextField(width=150, height=30, content_padding=10, max_length=10)
+    customer_name = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
     search_name = flet.Button("Search", on_click=scq_firstname, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
     sc_name = flet.DataTable(
         columns=[
@@ -137,9 +137,9 @@ def search_customer_name(page, conn):
         vertical_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar
         horizontal_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar
         heading_row_color=flet.Colors.GREY_300, # DataTable Titlebar Inside Color
-        heading_row_height=Font.height+4, # DataTable Titlebar Height
-        data_row_min_height=Font.height, # DataTable Data Min Height
-        data_row_max_height=Font.height, # DataTable Data Max Height
+        heading_row_height=Font.height, # DataTable Titlebar Height
+        data_row_min_height=Font.height-2, # DataTable Data Min Height
+        data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
     s_c_name = flet.Column(
         controls=[flet.Row([sc_name], scroll=flet.ScrollMode.ALWAYS)],

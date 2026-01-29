@@ -19,7 +19,7 @@ def search_customer(page, conn):
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
                     content=s_c_id,
-                    height=65,
+                    height=Font.height+45,
                     padding=10,
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
