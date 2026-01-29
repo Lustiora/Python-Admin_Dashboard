@@ -11,11 +11,7 @@
 
 ## Workflow
 
-* View 최소 3 Row : 818px
-* View 최소 6 Row : 650px
-
 * 예정 :
-  * 
   * 조회된 목록을 export 하는 기능 
   * 조회된 목록에서 선택을 하여 수정, 삭제 기능으로 연결
   * c_status에 터미널 로그창을 추가하여 동작 상태를 출력하고 export하는 기능
@@ -24,15 +20,19 @@
   * 테마 기능
   * System 동작 중 서버 연결이 끊어지는 경우 재연결을 시도하는 기능
 
+* **2026-01-30**
+  1. Search Customer Name > All Status 출력으로 수정
+  2. Basic Logic 2.1 작성중 (기존 사양과 현재 사양이 맞지않음)
+
+<details>
+<summary>Old Workflow</summary>
+
 * **2026-01-29**
   1. Search Customer 모듈 (ID, Name) 분할
   2. try, except > Error 구분 문구 추가
   3. Search Inventory 모듈 (ID (Film Title 등), 동일한 Film Title의 inventory ID 및 정보, 대여상태) 작성
   4. Search Film 모듈 작성
   5. 변수명 수정
-
-<details>
-<summary>Old Workflow</summary>
 
 * **2026-01-28**
   1. Tile Menu 생성 (홈, 조회, ~, 접속상태)
@@ -128,7 +128,9 @@
   5. exe file 생성 `pyinstaller` 및 테스트 / `GUI_test1 - 1.exe`
   6. **성공**
   7. 구조 변경을 통한 동작 흐름 최적화 / `GUI_test2.py`
+<p>
     <img width="707" height="437" alt="스크린샷 2026-01-20 170017" src="https://github.com/user-attachments/assets/c2ea61f9-b06a-44d9-9592-cf3a0bfa5a8e" />
+</p>
 
 * **2026-01-15 (GUI)**
   1. 로그인 화면 구현 및 DB 연결 / `GUI_test1.py`
@@ -137,7 +139,9 @@
   4. `방화벽 포트 개방 5432` 
   5. `QUERY Tool` > `SHOW hba_file;` > `IPv4 local connections 모든 IP 접속 허용`
   6. **성공**
+<p>
     <img width="271" height="141" alt="스크린샷 2026-01-20 165959" src="https://github.com/user-attachments/assets/2b732a9f-7eb9-4e53-b514-540f517ac469" />
+</p>
 
 * **2026-01-14 (CLI)**
   1. 미반납 이력이 존재하는 경우 미반납 이력과 연체 목록, 전체 연체료 출력 , 계산 > rental , film / `CLI_test1.py`
@@ -152,6 +156,72 @@
   3. 존재하는 영화 여부 확인 및 대여기간을 지정하여 대여기간에 따른 대여료 출력 > inventory , film / `CLI_test1.py`
 
 </details>
+
+### Workflow View
+
+1. [x] DB Connect Page
+2. [x] Staff Login Page
+3. [x] Main Page
+    - [x] Menubar
+        - Home
+        - 검색 & 변경 & 삭제
+            - [x] [ ] [ ] 고객 (Customer-Table)
+            - [x] [ ] [ ] 재고 (Inventory-Table)
+            - [x] [ ] [ ] 영화 (Film-Table)
+            - [ ] [ ] [ ] 대여 (Rental-Table)
+            - [ ] [ ] [ ] 결제 (Payment-Table)
+        - 추가
+            - [ ] [ ] [ ] 고객 (Customer-Table)
+            - [ ] [ ] [ ] 재고 (Inventory-Table)
+            - [ ] [ ] [ ] 영화 (Film-Table)
+            - [ ] [ ] [ ] 배우 (Actor-Table)
+            - [ ] [ ] [ ] 장르 (Category-Table)
+            - 
+        - [ ] 통계 (대여 / 반납 , 대여 Top 10 (영화, 장르, 등급 Count))
+        - [ ] 관리
+            - [ ] 직원 (Staff-Table)
+            - [ ] 작업 로그
+        - [x] 상태 (DB 연결, 직원 정보)
+        - [x] 종료 **End**
+    - [x] Statusbar
+
+## Basic Logic 2.1
+
+1. DB 연결 정보를 확인
+   * 화이트 리스트 [...\PostgreSQL\18\data\postgresql.conf, pg_hba.conf](https://github.com/Lustiora/Python-Sakila/wiki/PostgresSQL-Server-White-List)
+   * 연결정보가 저장된 config.ini 유무 확인
+     * 존재
+       * `[1-1. 해당 연결정보로 자동 연결 시도]`
+         * 성공 > `2`
+         * 실패
+           * `Auto-Login Failed` popup 
+           * `[1-2. 연결정보 입력창으로 전환]`
+             * 입력된 연결정보로 연결 시도
+               * `Connecting to Database` popup 
+               * 성공 > `2`
+               * 실패
+                 * `Connection Failed` popup
+                 * `1-1`
+     * 미존재 > `1-2`
+
+2. 직원 계정을 확인
+   * count = 3
+   * `[2-1. ID, PW 입력창으로 전환]`
+     * 성공 > `3`
+     * 실패
+       * count - 1
+       * `2-1`
+       * count == 0 > `Please Contact the Administrator` popup > close,destroy
+
+3. 메인 화면
+   * 하단 상태바 > `연결 상태 출력`
+   * 좌측 메뉴
+     * `3-1. 메인화면`
+     * `3-2. 검색`
+       * 고객 > ID or Name(All Status)
+       * 재고 > ID and Rental Data and Inventory Status
+       * 영화 > Title and Description and Actor
+       * 
 
 ## Hot Reload 실행 구성
 * `flet run -r ./main_window.py` 해당 명령어로 실행은 flet가 정지되는 경우가 잦음
@@ -173,8 +243,6 @@
             - ~불일치 >> Count **-1** Print _Not Connected_~
                 - ~Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ _End_~
                 - Count 제거 / 에러코드 출력으로도 충분
-        <br>
-        <img width="674" height="257" alt="스크린샷 2026-01-20 170736" src="https://github.com/user-attachments/assets/1e3ad08c-defb-48db-92ae-0b0bb70a7929" />
 
 2. [x] **직원 ID를 확인 (Staff-Table)**
     - Login Count = **3**
@@ -182,8 +250,6 @@
         - 일치 >> `DB Access`
         - 불일치 >> Count **-1** Print _Login Failed / Chance(Count)_
             - Count == **0** Print _Please Contact the Administrator / Phone : 010-1234-5678_ _End_
-    <br>
-    <img width="782" height="214" alt="스크린샷 2026-01-20 170512" src="https://github.com/user-attachments/assets/956b66f3-7f8f-4fae-9522-c4fc8bfb394e" />
 
 ### 2. Customer Check / Return / Rental / Calculation Logic
 
@@ -271,79 +337,7 @@
     - 전체 과정 실패 시 `rollback`
     - _End_
 
-### Window
-
-
-1. [x] DB Connect Window `1`
-
-    <img width="302" height="272" alt="스크린샷 2026-01-22 172642" src="https://github.com/user-attachments/assets/91d2e611-533d-43be-9b15-11bd2f6412e3" />
-
-2. [x] Staff Login Window `2`
-
-    -- Left `Tkinter` -- Middle `Custom Tkinter` & Dark Theme -- Right `Custom Tkinter` & Basic Theme --
-
-    <img width="831" height="238" alt="Screenshot_20260124_142020" src="https://github.com/user-attachments/assets/98578567-67f3-49d1-b651-4901f262644b" />
-    
-3. [x] Main Window
-    
-    `Tkinter`
-    <img width="1026" height="820" alt="스크린샷 2026-01-22 172434" src="https://github.com/user-attachments/assets/04d5c636-2aa7-487c-b883-01ac260df8c9" />
-    
-    `Custom Tkinter`
-    <img width="1154" height="958" alt="Screenshot_20260124_145245" src="https://github.com/user-attachments/assets/3bdc3d49-7658-4f5d-a095-0d861697b2b0" />
-
-    - Menubar
-        - 메뉴
-            - 상태 (DB 연결, 직원 정보)
-            - 종료 _End_
-        - 조회 & 변경 & 삭제
-            - 고객 (Customer-Table)
-            - 재고 (Inventory-Table)
-            - 영화 (Film-Table) (C: fulltext)
-            - 대여 (Rental-Table)
-            - 결제 (Payment-Table)
-        - 추가
-            - 고객 (Customer-Table)
-            - 재고 (Inventory-Table)
-            - 영화 (Film-Table) (C: fulltext)
-            - 배우 (Actor-Table)
-            - 장르 (Category-Table)
-        - 통계 (대여 / 반납 , 대여 Top 10 (영화, 장르, 등급 Count))
-        - 관리
-            - 직원 (Staff-Table)
-            - 작업 로그
-
-### Old Basic Logic 1.0
-
-<details>
-<summary>...</summary>
-<br>
-<img width="271" height="141" alt="스크린샷 2026-01-20 165959" src="https://github.com/user-attachments/assets/2b732a9f-7eb9-4e53-b514-540f517ac469" />
-
-<img width="707" height="437" alt="스크린샷 2026-01-20 170017" src="https://github.com/user-attachments/assets/c2ea61f9-b06a-44d9-9592-cf3a0bfa5a8e" />
-
-1. **사용자 ID를 확인**
-   - 1-1. 대여중/연체중인 DVD가 존재하는 경우 > **3-2**
-
-2. **영화 DVD = inventory_id = 바코드 확인**
-   - 확인되지 않는다면 날짜/시간, 확인되지 않는 DVD임을 로그로 기록 > **[종료]**
-
-3. **대여 > 3-1 , 반납 > 3-2 을 확인하는 화면 출력**
-   - **3-1. 대여의 경우**
-     - 현재 날짜를 상단에 표시하고 중간 좌측에 대여 기간(a)을 선택사항으로 두고 우측에는 현재날짜 + 대여기간(a)을 합산한 만료일 출력
-     - 하단에는 대여 버튼을 만들고 대여기간(a)이 선택되면 활성화/ 이전까지는 비활성화 > **3-1**
-   - **3-2. 반납의 경우**
-     - 현재 날짜를 상단에 표시하고 중간에 좌측에 연체 목록/만료 기간을 출력하고 우측에는 연체기간 표시(현재날짜-만료날짜)
-     - 하단 좌측에 반납 버튼을 만들고 연체가 없는 경우 활성화 > 반납 후 **[종료]**
-     - 하단 우측에는 연체가 있는 경우 연체 기간에 따른 연체료를 버튼으로 생성하여 활성화 > **3-2**
-
-4. **[대여금액 및 연체료 표시]**
-   - **4-1.** 대여기간(a)에 해당하는 대여금액(b)을 표시하고 하단에 전체 대여금액 표시,  복수의 DVD를 대여하는 경우 바코드를 확인 > **3-1**
-   - **4-2.** 연체기간(C)에 해당하는 연체료(c x d)를 표시하고 하단에 전체 연체료 표시, 복수의 DVD를 연체한 경우 바코드를 확인 > **3-2**
-
-5. **계산**
-
-6. **[종료]**
+## Basic Logic 1.0
 
 <details>
 <summary>Calculation Logic</summary>
@@ -360,9 +354,23 @@
 
 </details>
 
-</details>
-
-## Future Improvements
+1. **사용자 ID를 확인**
+   - 1-1. 대여중/연체중인 DVD가 존재하는 경우 > **3-2**
+2. **영화 DVD = inventory_id = 바코드 확인**
+   - 확인되지 않는다면 날짜/시간, 확인되지 않는 DVD임을 로그로 기록 > **[종료]**
+3. **대여 > 3-1 , 반납 > 3-2 을 확인하는 화면 출력**
+   - **3-1. 대여의 경우**
+     - 현재 날짜를 상단에 표시하고 중간 좌측에 대여 기간(a)을 선택사항으로 두고 우측에는 현재날짜 + 대여기간(a)을 합산한 만료일 출력
+     - 하단에는 대여 버튼을 만들고 대여기간(a)이 선택되면 활성화/ 이전까지는 비활성화 > **3-1**
+   - **3-2. 반납의 경우**
+     - 현재 날짜를 상단에 표시하고 중간에 좌측에 연체 목록/만료 기간을 출력하고 우측에는 연체기간 표시(현재날짜-만료날짜)
+     - 하단 좌측에 반납 버튼을 만들고 연체가 없는 경우 활성화 > 반납 후 **[종료]**
+     - 하단 우측에는 연체가 있는 경우 연체 기간에 따른 연체료를 버튼으로 생성하여 활성화 > **3-2**
+4. **[대여금액 및 연체료 표시]**
+   - **4-1.** 대여기간(a)에 해당하는 대여금액(b)을 표시하고 하단에 전체 대여금액 표시,  복수의 DVD를 대여하는 경우 바코드를 확인 > **3-1**
+   - **4-2.** 연체기간(C)에 해당하는 연체료(c x d)를 표시하고 하단에 전체 연체료 표시, 복수의 DVD를 연체한 경우 바코드를 확인 > **3-2**
+5. **계산**
+6. **[종료]**
 
 * Sakila DB를 재확인한 결과 상상이상으로 많은 데이터가 정리되어있음을 확인하여 **새로운 Logic의 필요성을 확인**
   * Old
