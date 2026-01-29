@@ -66,9 +66,9 @@ def search_customer_id(page, conn):
         data_row_min_height=Font.height-2, # DataTable Data Min Height
         data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
-    s_c_id = flet.Column(
+    s_c_id = flet.Row(
         controls=[
-            flet.Row([sc_id], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([sc_id], scroll=flet.ScrollMode.ALWAYS)
         ],scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
@@ -140,8 +140,8 @@ def search_customer_name(page, conn):
         data_row_min_height=Font.height-2, # DataTable Data Min Height
         data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
-    s_c_name = flet.Column(
-        controls=[flet.Row([sc_name], scroll=flet.ScrollMode.ALWAYS)],
+    s_c_name = flet.Row(
+        controls=[flet.Column([sc_name], scroll=flet.ScrollMode.ALWAYS)],
         scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
