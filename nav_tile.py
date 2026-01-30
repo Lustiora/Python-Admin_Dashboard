@@ -6,7 +6,7 @@ from menu.menu_add import *
 
 def nav(page: flet.Page, login_db, login_host, login_port, store_address, staff_user, store_id, conn):
     basic_content = flet.Container(
-        content=c_home(),
+        content=view_home(),
         alignment=flet.alignment.center,
         expand=True,
         border_radius=5,
@@ -28,53 +28,53 @@ def nav(page: flet.Page, login_db, login_host, login_port, store_address, staff_
                  ], actions_alignment=flet.MainAxisAlignment.END)
     def on_nav_change(index):
         if index == 0: # 메인화면
-            basic_content.content = c_home()
+            basic_content.content = view_home()
         elif index == 1.1: # 고객 조회
-            basic_content.content = search_customer(page, store_id, conn)
+            basic_content.content = view_search_customer(page, store_id, conn)
         elif index == 1.2: # 재고 조회
-            basic_content.content = search_inventory(page, conn)
+            basic_content.content = view_search_inventory(page, conn)
         elif index == 1.3: # 영화 조회
-            basic_content.content = search_film(page, conn)
+            basic_content.content = view_search_film(page, conn)
         elif index == 1.4: # 대여상태 조회
-            basic_content.content = search_rental()
+            basic_content.content = view_search_rental()
         elif index == 1.5: # 결제이력 조회
-            basic_content.content = search_payment()
+            basic_content.content = view_search_payment()
         elif index == 2.1: # 고객정보 변경
-            basic_content.content = edit_customer()
+            basic_content.content = view_edit_customer()
         elif index == 2.2: # 재고정보 변경
-            basic_content.content = edit_inventory()
+            basic_content.content = view_edit_inventory()
         elif index == 2.3: # 영화정보 변경
-            basic_content.content = edit_film()
+            basic_content.content = view_edit_film()
         elif index == 2.4: # 대여상태 변경
-            basic_content.content = edit_rental()
+            basic_content.content = view_edit_rental()
         elif index == 2.5: # 결제상태 변경
-            basic_content.content = edit_payment()
+            basic_content.content = view_edit_payment()
         elif index == 3.1: # 고객 삭제
-            basic_content.content = delete_customer()
+            basic_content.content = view_delete_customer()
         elif index == 3.2: # 재고 삭제
-            basic_content.content = delete_inventory()
+            basic_content.content = view_delete_inventory()
         elif index == 3.3: # 영화 삭제
-            basic_content.content = delete_film()
+            basic_content.content = view_delete_film()
         elif index == 3.4: # 대여이력 삭제
-            basic_content.content = delete_rental()
+            basic_content.content = view_delete_rental()
         elif index == 3.5: # 결제이력 삭제
-            basic_content.content = delete_payment()
+            basic_content.content = view_delete_payment()
         elif index == 4.1: # 고객 추가
-            basic_content.content = add_customer()
+            basic_content.content = view_add_customer()
         elif index == 4.2: # 재고 추가
-            basic_content.content = add_inventory()
+            basic_content.content = view_add_inventory()
         elif index == 4.3: # 영화 추가
-            basic_content.content = add_film()
+            basic_content.content = view_add_film()
         elif index == 4.4: # 배우 추가
-            basic_content.content = add_actor()
+            basic_content.content = view_add_actor()
         elif index == 4.5: # 장르 추가
-            basic_content.content = add_category()
+            basic_content.content = view_add_category()
         elif index == 5: # 통계
-            basic_content.content = c_statistic()
+            basic_content.content = view_statistic()
         elif index == 6: # 관리
-            basic_content.content = c_manager()
+            basic_content.content = view_manager()
         elif index == 7: # 접속 상태
-            basic_content.content = c_status(login_db, login_host, login_port, store_address, staff_user)
+            basic_content.content = view_status(login_db, login_host, login_port, store_address, staff_user)
 
         basic_content.update()
     tile_column = flet.Column(

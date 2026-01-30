@@ -1,6 +1,6 @@
 import flet
 
-def c_home():
+def view_home():
     return flet.Column(
         alignment=flet.MainAxisAlignment.CENTER,
         controls=[
@@ -38,7 +38,7 @@ def c_home():
         ]
     )
 
-def c_status(login_db, login_host, login_port, staff_store, staff_user):
+def view_status(login_db, login_host, login_port, staff_store, staff_user):
     return flet.Column(
         controls=[
             flet.Row([
@@ -112,7 +112,7 @@ def c_status(login_db, login_host, login_port, staff_store, staff_user):
         ]
     )
 
-def c_statistic():
+def view_statistic():
     return flet.Column(
         controls=[
             flet.Row([
@@ -126,7 +126,7 @@ def c_statistic():
         ]
     )
 
-def c_manager():
+def view_manager():
     return flet.Column(
         controls=[
             flet.Row([

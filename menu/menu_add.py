@@ -1,6 +1,6 @@
 import flet
 
-def add_customer():
+def view_add_customer():
     return flet.Column(
         controls=[
             flet.Row([
@@ -14,7 +14,7 @@ def add_customer():
         ]
     )
 
-def add_inventory():
+def view_add_inventory():
     return flet.Column(
         controls=[
             flet.Row([
@@ -28,7 +28,7 @@ def add_inventory():
         ]
     )
 
-def add_film():
+def view_add_film():
     return flet.Column(
         controls=[
             flet.Row([
@@ -42,7 +42,7 @@ def add_film():
         ]
     )
 
-def add_actor():
+def view_add_actor():
     return flet.Column(
         controls=[
             flet.Row([
@@ -56,7 +56,7 @@ def add_actor():
         ]
     )
 
-def add_category():
+def view_add_category():
     return flet.Column(
         controls=[
             flet.Row([

@@ -1,14 +1,14 @@
 import flet
 from window import Font
 
-def search_inventory_data(page, conn):
-    def stock_id_module(e):
-        int_inventory_id = int(inventory_id.value)
+def build_inventory_ui(page, conn):
+    def query_basic_info(e):
+        int_inventory_id = int(input_inventory_id.value)
         def close_pop(e):
             page.close(error_quit)  # 팝업창 종료 명령어
         error_quit = flet.AlertDialog(
             title=flet.Text("Inventory"),
-            content=flet.Text(f"Inventory ID Not Found [{inventory_id.value}]"),
+            content=flet.Text(f"Inventory ID Not Found [{input_inventory_id.value}]"),
             actions=[flet.TextButton("OK", on_click=close_pop)
                      ], actions_alignment=flet.MainAxisAlignment.END)
         cursor = conn.cursor()
@@ -25,21 +25,21 @@ def search_inventory_data(page, conn):
             )
             inventory_data = cursor.fetchone()
             if inventory_data:
-                stock_id_data.rows.clear()
-                stock_id_data.rows.append(
+                table_basic_info.rows.clear()
+                table_basic_info.rows.append(
                     flet.DataRow(cells=[
                         flet.DataCell(flet.Text(inventory_data[0])),
                         flet.DataCell(flet.Text(inventory_data[1])),
                         flet.DataCell(flet.Text(inventory_data[2])),
                     ])
                 )
-                stock_id_data.update()
+                table_basic_info.update()
             else:
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Inventory error : {err}")
-    def stock_rental_module(e):
-        int_inventory_id = int(inventory_id.value)
+    def query_rental_history(e):
+        int_inventory_id = int(input_inventory_id.value)
         cursor = conn.cursor()
         try:
             cursor.execute(
@@ -55,20 +55,20 @@ def search_inventory_data(page, conn):
             )
             inventory_data = cursor.fetchall()
             if inventory_data:
-                stock_rental_data.rows.clear()
+                table_rental_history.rows.clear()
                 for row in inventory_data:
-                    stock_rental_data.rows.append(
+                    table_rental_history.rows.append(
                         flet.DataRow(cells=[
                             flet.DataCell(flet.Text(row[0])),
                             flet.DataCell(flet.Text(row[1])),
                             flet.DataCell(flet.Text(row[2])),
                         ])
                     )
-                stock_rental_data.update()
+                table_rental_history.update()
         except Exception as err:
             print(f"Search Inventory error : {err}")
-    def stock_title_module(e):
-        int_inventory_id = int(inventory_id.value)
+    def query_current_status(e):
+        int_inventory_id = int(input_inventory_id.value)
         cursor = conn.cursor()
         try:
             cursor.execute(
@@ -105,26 +105,26 @@ def search_inventory_data(page, conn):
             )
             inventory_data = cursor.fetchall()
             if inventory_data:
-                stock_title_data.rows.clear()
+                table_current_status.rows.clear()
                 for row in inventory_data:
-                    stock_title_data.rows.append(
+                    table_current_status.rows.append(
                         flet.DataRow(cells=[
                             flet.DataCell(flet.Text(row[0])),
                             flet.DataCell(flet.Text(row[1])),
                             flet.DataCell(flet.Text(row[2])),
                         ])
                     )
-                stock_title_data.update()
+                table_current_status.update()
         except Exception as err:
             print(f"Search Inventory error : {err}")
-    def iv_bu(e): # Double Event
-        stock_id_module(e)
-        stock_rental_module(e)
-        stock_title_module(e)
-    inventory_id = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
-    search = flet.Button(
-        "Search", on_click=iv_bu, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
-    stock_id_data = flet.DataTable(
+    def on_click_search(e): # Double Event
+        query_basic_info(e)
+        query_rental_history(e)
+        query_current_status(e)
+    input_inventory_id = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
+    btn_search = flet.Button(
+        "Search", on_click=on_click_search, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
+    table_basic_info = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID", width=60)),
             flet.DataColumn(flet.Text("Title", width=150)),
@@ -139,13 +139,13 @@ def search_inventory_data(page, conn):
         data_row_min_height=Font.height-2, # DataTable Data Min Height
         data_row_max_height=Font.height-2, # DataTable Data Max Height
     )
-    stock_id = flet.Row(
+    ui_basic_info = flet.Row(
         controls=[
-            flet.Column([stock_id_data], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([table_basic_info], scroll=flet.ScrollMode.ALWAYS)
         ],scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
-    stock_rental_data = flet.DataTable(
+    table_rental_history = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("Rental ID", width=60)),
             flet.DataColumn(flet.Text("Rental Date", width=130)),
@@ -160,13 +160,13 @@ def search_inventory_data(page, conn):
         data_row_min_height=Font.height - 2,  # DataTable Data Min Height
         data_row_max_height=Font.height - 2,  # DataTable Data Max Height
     )
-    stock_rental = flet.Row(
+    ui_rental_history = flet.Row(
         controls=[
-            flet.Column([stock_rental_data], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([table_rental_history], scroll=flet.ScrollMode.ALWAYS)
         ], scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
-    stock_title_data = flet.DataTable(
+    table_current_status = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID", width=60)),
             flet.DataColumn(flet.Text("Title", width=152)),
@@ -181,10 +181,10 @@ def search_inventory_data(page, conn):
         data_row_min_height=Font.height - 2,  # DataTable Data Min Height
         data_row_max_height=Font.height - 2,  # DataTable Data Max Height
     )
-    stock_title = flet.Row(
+    ui_current_status = flet.Row(
         controls=[
-            flet.Column([stock_title_data], scroll=flet.ScrollMode.ALWAYS)
+            flet.Column([table_current_status], scroll=flet.ScrollMode.ALWAYS)
         ], scroll=flet.ScrollMode.AUTO,
         expand=True,
     )
-    return inventory_id, search, stock_id, stock_rental, stock_title
+    return input_inventory_id, btn_search, ui_basic_info, ui_rental_history, ui_current_status

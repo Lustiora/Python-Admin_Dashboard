@@ -1,8 +1,8 @@
 import flet
 from window import Font
 
-def search_customer_id(page, conn):
-    def customer_id_module(e):
+def build_customer_id_ui(page, conn):
+    def query_customer_by_id(e):
         int_customer_id = int(customer_id_text.value)
         def close_pop(e):
             page.close(error_quit)  # 팝업창 종료 명령어
@@ -47,7 +47,7 @@ def search_customer_id(page, conn):
             print(f"Search Customer error : {err}")
     customer_id_text = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
     search_id = flet.Button(
-        "Search", on_click=customer_id_module, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
+        "Search", on_click=query_customer_by_id, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
     customer_id_data = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID", width=25)),
@@ -74,8 +74,8 @@ def search_customer_id(page, conn):
     )
     return customer_id_text, search_id, customer_id
 
-def search_customer_name(page, store_id, conn):
-    def customer_name_module(e):
+def build_customer_name_ui(page, store_id, conn):
+    def query_customer_by_name(e):
         customer_name_value = f"%{customer_name_text.value}%"
         def close_pop(e):
             page.close(error_quit)  # 팝업창 종료 명령어
@@ -123,7 +123,7 @@ def search_customer_name(page, store_id, conn):
         except Exception as err:
             print(f"Search Customer error : {err}")
     customer_name_text = flet.TextField(text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
-    search_name = flet.Button("Search", on_click=customer_name_module, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
+    search_name = flet.Button("Search", on_click=query_customer_by_name, width=80, style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
     customer_name_data = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID")),

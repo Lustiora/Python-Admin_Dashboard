@@ -2,9 +2,9 @@ from menu.menu_search_customer import *
 from menu.menu_search_inventory import *
 from menu.menu_search_film import *
 
-def search_customer(page, store_id, conn):
-    customer_id_text, search_id, customer_id = search_customer_id(page, conn) # Module Return Value get
-    customer_name_text, search_name, customer_name = search_customer_name(page, store_id, conn)
+def view_search_customer(page, store_id, conn):
+    customer_id_text, search_id, customer_id = build_customer_id_ui(page, conn) # Module Return Value get
+    customer_name_text, search_name, customer_name = build_customer_name_ui(page, store_id, conn)
     return flet.Column(
         controls=[
             flet.Row([
@@ -49,8 +49,8 @@ def search_customer(page, store_id, conn):
         ]
     )
 
-def search_inventory(page, conn):
-    inventory_id, search, stock_id, stock_rental, stock_title = search_inventory_data(page, conn)  # Module Return Value get
+def view_search_inventory(page, conn):
+    input_inventory_id, btn_search, ui_basic_info, ui_rental_history, ui_current_status = build_inventory_ui(page, conn)  # Module Return Value get
     return flet.Column(
         controls=[
             flet.Row([
@@ -59,14 +59,14 @@ def search_inventory(page, conn):
             flet.Divider(),
             flet.Row([
                 flet.Text("ID :", style=flet.TextThemeStyle.BODY_LARGE, width=100, text_align="right"),
-                inventory_id,
-                search,
+                input_inventory_id,
+                btn_search,
             ], height=30),
             flet.Divider(),
             flet.Column([
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
-                    content=stock_id,
+                    content=ui_basic_info,
                     alignment=flet.alignment.top_left,
                     height=Font.height + 45,
                     padding=10,
@@ -82,7 +82,7 @@ def search_inventory(page, conn):
                     flet.Container(
                         bgcolor=flet.Colors.GREY_200,
                         alignment=flet.alignment.top_left,
-                        content=stock_rental,
+                        content=ui_rental_history,
                         expand=True,
                         padding=10,
                         border_radius=5,
@@ -95,7 +95,7 @@ def search_inventory(page, conn):
                     flet.Container(
                         bgcolor=flet.Colors.GREY_200,
                         alignment=flet.alignment.top_left,
-                        content=stock_title,
+                        content=ui_current_status,
                         expand=True,
                         padding=10,
                         border_radius=5,
@@ -106,8 +106,8 @@ def search_inventory(page, conn):
         ]
     )
 
-def search_film(page, conn):
-    film_title_text, search_title, film_title = search_film_title(page, conn)
+def view_search_film(page, conn):
+    input_film_title, search_title, ui_film_list = build_film_ui(page, conn)
     return flet.Column(
         controls=[
             flet.Row([
@@ -116,7 +116,7 @@ def search_film(page, conn):
             flet.Divider(),
             flet.Row([
                 flet.Text("Title & Description & Actor :", style=flet.TextThemeStyle.BODY_LARGE, width=200, text_align="right"),
-                film_title_text,
+                input_film_title,
                 search_title
             ], height=30),
             flet.Divider(),
@@ -124,7 +124,7 @@ def search_film(page, conn):
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
                     alignment=flet.alignment.top_left,
-                    content=film_title,
+                    content=ui_film_list,
                     expand=True,
                     padding=10,
                     border_radius=5,
@@ -134,7 +134,7 @@ def search_film(page, conn):
         ]
     )
 
-def search_rental():
+def view_search_rental():
     rental = flet.TextField(width=150, height=30, content_padding=10, max_length=10, autofocus=True)
     search = flet.Button("Search", on_click="", width=80,
                         style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
@@ -152,7 +152,7 @@ def search_rental():
         ]
     )
 
-def search_payment():
+def view_search_payment():
     payment = flet.TextField(width=150, height=30, content_padding=10, max_length=10, autofocus=True)
     search = flet.Button("Search", on_click="", width=80,
                         style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))

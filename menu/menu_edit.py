@@ -1,6 +1,6 @@
 import flet
 
-def edit_customer():
+def view_edit_customer():
     return flet.Column(
         controls=[
             flet.Row([
@@ -14,7 +14,7 @@ def edit_customer():
         ]
     )
 
-def edit_inventory():
+def view_edit_inventory():
     return flet.Column(
         controls=[
             flet.Row([
@@ -28,7 +28,7 @@ def edit_inventory():
         ]
     )
 
-def edit_film():
+def view_edit_film():
     return flet.Column(
         controls=[
             flet.Row([
@@ -42,7 +42,7 @@ def edit_film():
         ]
     )
 
-def edit_rental():
+def view_edit_rental():
     return flet.Column(
         controls=[
             flet.Row([
@@ -56,7 +56,7 @@ def edit_rental():
         ]
     )
 
-def edit_payment():
+def view_edit_payment():
     return flet.Column(
         controls=[
             flet.Row([
