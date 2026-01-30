@@ -9,9 +9,7 @@
 * Windows 11
 * Arch Linux 
 
-## Workflow
-
-* 예정 :
+## Future Improvements
   * 조회된 목록을 export 하는 기능 
   * 조회된 목록에서 선택을 하여 수정, 삭제 기능으로 연결
   * c_status에 터미널 로그창을 추가하여 동작 상태를 출력하고 export하는 기능
@@ -19,6 +17,8 @@
   * 돋보기 기능 window > Font <Class 방식으로 전환>
   * 테마 기능
   * System 동작 중 서버 연결이 끊어지는 경우 재연결을 시도하는 기능
+
+## Workflow
 
 * **2026-01-30**
   1. Search Customer Name > All Status 출력으로 수정
@@ -162,25 +162,34 @@
 2. [x] Staff Login Page
 3. [x] Main Page
     - [x] Menubar
-        - Home
-        - 검색 & 변경 & 삭제
-            - [x] [ ] [ ] 고객 (Customer-Table)
-            - [x] [ ] [ ] 재고 (Inventory-Table)
-            - [x] [ ] [ ] 영화 (Film-Table)
-            - [ ] [ ] [ ] 대여 (Rental-Table)
-            - [ ] [ ] [ ] 결제 (Payment-Table)
-        - 추가
-            - [ ] [ ] [ ] 고객 (Customer-Table)
-            - [ ] [ ] [ ] 재고 (Inventory-Table)
-            - [ ] [ ] [ ] 영화 (Film-Table)
-            - [ ] [ ] [ ] 배우 (Actor-Table)
-            - [ ] [ ] [ ] 장르 (Category-Table)
-            - 
-        - [ ] 통계 (대여 / 반납 , 대여 Top 10 (영화, 장르, 등급 Count))
-        - [ ] 관리
-            - [ ] 직원 (Staff-Table)
-            - [ ] 작업 로그
-        - [x] 상태 (DB 연결, 직원 정보)
+        - [x] Home
+        - Search
+            - [x] 고객 (Customer-Table)
+            - [x] 재고 (Inventory-Table)
+            - [x] 영화 (Film-Table)
+            - [ ] 대여 (Rental-Table)
+            - [ ] 결제 (Payment-Table)
+        - Add
+            - [ ] 고객 (Customer-Table)
+            - [ ] 재고 (Inventory-Table)
+            - [ ] 영화 (Film-Table)
+            - [ ] 배우 (Actor-Table)
+            - [ ] 장르 (Category-Table)
+        - Edit
+            - [ ] 고객 (Customer-Table)
+            - [ ] 재고 (Inventory-Table)
+            - [ ] 영화 (Film-Table)
+            - [ ] 대여 (Rental-Table)
+            - [ ] 결제 (Payment-Table)
+        - Delete
+            - [ ] 고객 (Customer-Table)
+            - [ ] 재고 (Inventory-Table)
+            - [ ] 영화 (Film-Table)
+            - [ ] 대여 (Rental-Table)
+            - [ ] 결제 (Payment-Table)
+        - [ ] Statistic (대여 / 반납 , 대여 Top 10 (영화, 장르, 등급 Rank))
+        - [ ] Manager (Staff-Table)
+        - [ ] Dashboard (DB 연결, 직원 정보, 작업 로그)
         - [x] 종료 **End**
     - [x] Statusbar
 
@@ -372,9 +381,9 @@
 6. **[종료]**
 
 * Sakila DB를 재확인한 결과 상상이상으로 많은 데이터가 정리되어있음을 확인하여 **새로운 Logic의 필요성을 확인**
-  * Old
+  * Basic Logic 1.0
     * 관리자확인 > 고객확인 > 대여이력확인 > 재고확인 > 결제
-  * New
+  * Basic Logic 2.0 ~
     * 대여 가능 기간, 그에 따른 대여 비용은 사전에 정의되어있음
     * 관리자확인을 대신하는 Staff Table
     * 특정 폴더에 로그와 psycopg2.connect 정보를 저장하는(이후 정보) ini 파일 생성
