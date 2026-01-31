@@ -1,7 +1,7 @@
 import flet
 from window import Font
 
-def build_inventory_ui(page, conn):
+def build_inventory_ui(page, store_id, conn):
     def query_basic_info(e):
         int_inventory_id = int(input_inventory_id.value)
         def close_pop(e):
@@ -44,7 +44,6 @@ def build_inventory_ui(page, conn):
         try:
             cursor.execute(
                 """ select 
-                        r.rental_id , 
                         r.rental_date , 
                         r.return_date  
                     from inventory i
@@ -61,7 +60,6 @@ def build_inventory_ui(page, conn):
                         flet.DataRow(cells=[
                             flet.DataCell(flet.Text(row[0])),
                             flet.DataCell(flet.Text(row[1])),
-                            flet.DataCell(flet.Text(row[2])),
                         ])
                     )
                 table_rental_history.update()
@@ -72,37 +70,52 @@ def build_inventory_ui(page, conn):
         cursor = conn.cursor()
         try:
             cursor.execute(
-                """ with search_int_inventory_idtle_1 as (
-                        select f.film_id
-                        from inventory i 
-                        inner join film f 
-                            on i.film_id = f.film_id
-                        where i.inventory_id = %s
-                    ), search_int_inventory_idtle_2 as (
-                        select 
-                            row_number() over (partition by i.inventory_id order by r.rental_date desc) as row ,
-                            i.inventory_id , 
-                            f.title ,
-                            r.rental_date ,
-                            r.return_date 
-                        from inventory i 
-                        inner join search_int_inventory_idtle_1 s 
-                            on i.film_id = s.film_id
-                        inner join film f 
-                            on i.film_id = f.film_id 
-                        left join rental r 
-                            on i.inventory_id = r.inventory_id 
-                    )
-                    select 
-                        inventory_id , 
-                        title, 
-                        case 
-                            when rental_date is not null and return_date is null then 'Checked out'
-                            else 'In stock' 
-                        end as status
-                    from search_int_inventory_idtle_2 
-                    where row = 1 """,(int_inventory_id,)
+                # """ with search_int_inventory_idtle_1 as (
+                #         select f.film_id
+                #         from inventory i
+                #         inner join film f
+                #             on i.film_id = f.film_id
+                #         where i.inventory_id = %s
+                #     ), search_int_inventory_idtle_2 as (
+                #         select
+                #             row_number() over (partition by i.inventory_id order by r.rental_date desc) as row ,
+                #             i.inventory_id ,
+                #             f.title ,
+                #             r.rental_date ,
+                #             r.return_date
+                #         from inventory i
+                #         inner join search_int_inventory_idtle_1 s
+                #             on i.film_id = s.film_id
+                #         inner join film f
+                #             on i.film_id = f.film_id
+                #         left join rental r
+                #             on i.inventory_id = r.inventory_id
+                #     )
+                #     select
+                #         inventory_id ,
+                #         title,
+                #         case
+                #             when rental_date is not null and return_date is null then 'Checked out'
+                #             else 'In stock'
+                #         end as status
+                #     from search_int_inventory_idtle_2
+                #     where row = 1 """,(int_inventory_id,)
+                """ select f.film_id
+                    from inventory i 
+                    inner join film f 
+                        on i.film_id = f.film_id
+                    where i.inventory_id = %s """,(int_inventory_id,)
             )
+            film_store_inventory_id = cursor.fetchone()
+            result = film_store_inventory_id[0]
+            cursor.execute(""" select 
+                                   inventory_id, 
+                                   status
+                               from inventory_data 
+                               where row = 1
+                                   and film_id = %s
+                                   and store_id = %s """,(result, store_id,)
+           )
             inventory_data = cursor.fetchall()
             if inventory_data:
                 table_current_status.rows.clear()
@@ -111,7 +124,6 @@ def build_inventory_ui(page, conn):
                         flet.DataRow(cells=[
                             flet.DataCell(flet.Text(row[0])),
                             flet.DataCell(flet.Text(row[1])),
-                            flet.DataCell(flet.Text(row[2])),
                         ])
                     )
                 table_current_status.update()
@@ -147,7 +159,6 @@ def build_inventory_ui(page, conn):
     )
     table_rental_history = flet.DataTable(
         columns=[
-            flet.DataColumn(flet.Text("Rental ID", width=60)),
             flet.DataColumn(flet.Text("Rental Date", width=130)),
             flet.DataColumn(flet.Text("Return Date", width=120)),
         ],
@@ -169,7 +180,6 @@ def build_inventory_ui(page, conn):
     table_current_status = flet.DataTable(
         columns=[
             flet.DataColumn(flet.Text("ID", width=60)),
-            flet.DataColumn(flet.Text("Title", width=152)),
             flet.DataColumn(flet.Text("Status", width=100)),
         ],
         rows=[],

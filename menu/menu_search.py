@@ -49,8 +49,8 @@ def view_search_customer(page, store_id, conn):
         ]
     )
 
-def view_search_inventory(page, conn):
-    input_inventory_id, btn_search, ui_basic_info, ui_rental_history, ui_current_status = build_inventory_ui(page, conn)  # Module Return Value get
+def view_search_inventory(page, store_id, conn):
+    input_inventory_id, btn_search, ui_basic_info, ui_rental_history, ui_current_status = build_inventory_ui(page, store_id, conn)  # Module Return Value get
     return flet.Column(
         controls=[
             flet.Row([

@@ -100,7 +100,8 @@ flet run -r ./main_window.py
 ## 📜 Development Log (Workflow)
 
 * **Latest Update: 2026-01-31**
-  1. Improved variable and function names
+  1. query_current_status module query 단축 및 스토어 정보를 연결하여 해당 점포에만 존재하는 재고를 출력
+  2. Improved variable and function names
         <details><summary>Improvement History</summary>
         
         | 파일명 | Old | New | 비고 (역할) |
