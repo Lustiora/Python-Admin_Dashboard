@@ -8,6 +8,7 @@ def build_customer_ui(page, store_id, conn):
         cart_customer_id = [] # ID 상자
         def close_pop(e):
             page.close(error_quit)
+            input_customer.focus()
         error_quit = flet.AlertDialog(
             title=flet.Text("Customer"),
             content=flet.Text(f"Customer Name Not Found [{input_customer.value}]"),
@@ -95,6 +96,7 @@ def build_customer_ui(page, store_id, conn):
                         )
                     )
                 customer_id_data.update()
+                input_customer.focus()
             else:
                 print(f"Not Customer ID : {int(input_customer.value)}")
                 page.open(error_quit)

@@ -8,6 +8,7 @@ def build_inventory_ui(page, store_id, conn):
         cart_inventory_id = [] # ID 상자
         def close_pop(e):
             page.close(error_quit)
+            input_inventory.focus()
         error_quit = flet.AlertDialog(
             title=flet.Text("Inventory"),
             content=flet.Text(f"Film Title Not Found [{input_inventory.value}]"),
@@ -87,6 +88,7 @@ def build_inventory_ui(page, store_id, conn):
                         )
                     )
                 inventory_id_data.update()
+                input_inventory.focus()
             else:
                 print(f"Not Inventory ID : {int(input_inventory.value)}")
                 page.open(error_quit)
