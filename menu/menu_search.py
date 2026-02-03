@@ -4,7 +4,6 @@ from menu.menu_search_film import *
 
 def view_search_customer(page, store_id, conn):
     customer_id_text, search_id, customer_id = build_customer_id_ui(page, store_id, conn) # Module Return Value get
-    customer_name_text, search_name, customer_name = build_customer_name_ui(page, store_id, conn)
     return flet.Column(
         controls=[
             flet.Row([
@@ -12,40 +11,21 @@ def view_search_customer(page, store_id, conn):
             ], height=80),
             flet.Divider(),
             flet.Row([
-                flet.Text("ID :", style=flet.TextThemeStyle.BODY_LARGE, width=100, text_align="right"),
                 customer_id_text,
                 search_id
-            ], height=30),
+            ], height=60),
             flet.Divider(),
             flet.Column([
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
                     alignment=flet.alignment.top_left,
-                    height=Font.height + 45,
+                    expand=True,
                     content=customer_id,
                     padding=10,
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
                 )
-            ], alignment=flet.alignment.center),
-            flet.Divider(),
-            flet.Row([
-                flet.Text("Name :", style=flet.TextThemeStyle.BODY_LARGE, width=100, text_align="right"),
-                customer_name_text,
-                search_name
-            ], height=30),
-            flet.Divider(),
-            flet.Column([
-                flet.Container(
-                    bgcolor=flet.Colors.GREY_200,
-                    alignment=flet.alignment.top_left,
-                    content=customer_name,
-                    expand=True,
-                    padding=10,
-                    border_radius=5,
-                    border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-                )
-            ], expand=True, alignment=flet.alignment.center),
+            ], alignment=flet.alignment.center, expand=True),
         ]
     )
 

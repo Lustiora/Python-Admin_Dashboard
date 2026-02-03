@@ -113,15 +113,22 @@ flet run -r ./main_window.py
 
 ## 📜 Development Log (Workflow)
 
-* **Latest Update: 2026-02-02**
+* **Latest Update: 2026-02-03**
+1. Datatable → Row,Column,Expand 방식으로 전환 (flet 0.28.3 : page.on_resize 명령어 부재)
+2. Popup Autofocus 추가
+3. **Search Customer:** 검색 화면 재설계 (ID or Name (First or Last Name))
+
+<details><summary>📂 Past Development Log (Click to Expand)</summary>
+
+* **2026-02-02**
 1. Customer ID Query Update 및 IF문으로 출력물에 따른 색상 변동 기능 추가
    
-   <details><summary>Query</summary>
-   
-   수정 전
-   
-   ```sql
-   select 
+    <details><summary>Query</summary>
+    
+    수정 전
+    
+    ```sql
+    select 
           c.customer_id , 
           c.create_date  , 
           c.first_name , 
@@ -133,13 +140,13 @@ flet run -r ./main_window.py
           on c.address_id = a.address_id
       where c.activebool is true
           and c.customer_id = %s
-   ```
-   
-   수정 후
-   
-   ```sql
-   <- VIEW Table 생성 ->
-   CREATE OR REPLACE VIEW public.not_return_customer as
+    ```
+    
+    수정 후
+    
+    ```sql
+    <- VIEW Table 생성 ->
+    CREATE OR REPLACE VIEW public.not_return_customer as
      select distinct r.customer_id
      from rental r 
      inner join inventory i 
@@ -148,9 +155,9 @@ flet run -r ./main_window.py
          on i.film_id = f.film_id 
      where r.return_date is null
          and r.rental_date + (f.rental_duration * INTERVAL '1 day') < now();
-   --
-   <- Query -> 
-   select 
+    --
+    <- Query -> 
+    select 
        case when c.store_id = 1 then '🇨🇦 Lethbridge' else '🇦🇺 Woodridge' end as store ,
        c.customer_id , 
        c.first_name || ' ' || c.last_name as name, 
@@ -161,18 +168,16 @@ flet run -r ./main_window.py
        c.store_id
     from customer c
     inner join address a 
-         on c.address_id = a.address_id
+     on c.address_id = a.address_id
     left join not_return_customer n 
-           on n.customer_id = c.customer_id
+       on n.customer_id = c.customer_id
     where c.activebool is true
-           and c.customer_id = %s
-   ```
-   
-   </details>
+       and c.customer_id = %s
+    ```
+    
+    </details>
 
-<details><summary>📂 Past Development Log (Click to Expand)</summary>
-
-* **Latest Update: 2026-01-31**
+* **2026-01-31**
 1. query_current_status module query 단축 및 스토어 정보를 연결하여 해당 점포에만 존재하는 재고를 출력
    
    <details><summary>Query</summary>
@@ -304,6 +309,7 @@ flet run -r ./main_window.py
    | `delete_inventory`             | **`view_delete_inventory`**  |                                |
    
    </details>
+
 * **2026-01-30**
   
   1. **Search Customer:** `Name` 검색 시 상세 상태(All Status) 출력으로 로직 고도화.
@@ -311,18 +317,18 @@ flet run -r ./main_window.py
 
 * **2026-01-29**
   
-  1. Search Customer 모듈 분할 (ID, Name)
+  1. **Search Customer:** 모듈 분할 (ID, Name)
   2. 예외 처리 강화: `try-except` 구문 및 Error 구분 문구 추가
-  3. Search Inventory 모듈 작성 (ID/Title 검색, 동일 Title 그룹화, 대여 상태 확인)
-  4. Search Film 모듈 작성
+  3. **Search Inventory:** 모듈 작성 (ID/Title 검색, 동일 Title 그룹화, 대여 상태 확인)
+  4. **Search Film:** 모듈 작성
   5. 전체 변수명 수정 및 통일
 
 * **2026-01-28**
   
   1. Tile Menu 생성 (홈, 조회, 관리, 접속 상태)
   2. Main Home UI 작성
-  3. System Dashboard 작성 (접속 정보 표시)
-  4. Search Customer 로직 작성
+  3. **System Dashboard:** 작성 (접속 정보 표시)
+  4. **Search Customer:** 로직 작성
 
 * **2026-01-27**
   
@@ -340,20 +346,15 @@ flet run -r ./main_window.py
 * **2026-01-26**
   
   1. **Framework Migration:** CustomTkinter → **Flet (0.28.3)** (Web/App 호환성 및 GUI 이슈 해결)
-  
   2. DB Connect > Main Window 연결 성공
-  
   3. Linux Flet 호환성 옵션 추가 (Window Size 강제 설정)
-     
      ```bash
      page.window.min_width = page.window.width
      page.window.min_height = page.window.height
      page.window.max_width = page.window.min_width
      page.window.max_height = page.window.min_height
      ```
-  
   4. Exit Popup 추가 (`page.window.prevent_close = True` 이벤트 처리)
-     
      * Linux: `e.page.window.destroy()`
 
 * **2026-01-23**
@@ -367,36 +368,24 @@ flet run -r ./main_window.py
 * **2026-01-22**
   
   1. Status Bar 구현 (DB 접속 상태 5초 주기 체크)
-  
   2. Linux 호환 설정: DB Disconnect 시 Restart 로직 디버깅
-  
   3. PyInstaller 패키지 컴파일 테스트
-     
      ```bash
      pyinstaller -F -w -n Sakila_Basic_Logic_2_3 db_connect.py
      # Linux 실행 성공 / Windows 별도 패키지 컴파일 필요 (Cross-Compile 미지원)
      ```
-  
   4. OS별 재시작(Restart) 로직 분기 처리 및 디버깅
-  
   5. `config.ini` 파일 유무에 따른 접속 로직 변경 (파일 존재 시 즉시 접속 시도)
-  
   6. Windows EXE Compile Restart Error 디버깅 (파일 자체 재실행 방식으로 전환)
-     
      * *원인: Windows EXE 실행 시 임시 폴더 생성 방식과 재시작 로직 간의 경로 충돌*
-  
   7. Windows Sandbox Test 완료 (**Clear**)
 
 * **2026-01-21**
   
   1. Main Window Menubar 생성
-  
   2. Sub Window Frame 구현 진행
-  
   3. Status Bar 구현 진행 (DB 접속 체크)
-  
   4. DB Connect 5s Test 및 Disconnect Link Logic 추가
-  
   5. Linux/Windows 경로 호환성 설정 추가
      
      ```bash

@@ -23,7 +23,7 @@ def nav(page: flet.Page, login_db, login_host, login_port, store_address, staff_
     main_quit = flet.AlertDialog(
         title=flet.Text("Quit"),
         content=flet.Text("Exit?"),
-        actions=[flet.TextButton("OK", on_click=close_main),
+        actions=[flet.TextButton("OK", on_click=close_main, autofocus=True),
                  flet.TextButton("Cancel", on_click=close_pop)
                  ], actions_alignment=flet.MainAxisAlignment.END)
     def on_nav_change(index):

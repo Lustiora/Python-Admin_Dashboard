@@ -17,7 +17,7 @@ def close_connect_error(e):
 dlg_connect_error = flet.AlertDialog(
     title=flet.Text("Connected Failed"),
     content=flet.Text("Your ID or password is incorrect."),
-    actions=[flet.TextButton("Cancel", on_click=close_connect_error),
+    actions=[flet.TextButton("OK", on_click=close_connect_error, autofocus=True),
     ], actions_alignment=flet.MainAxisAlignment.END)
 # -- Save Config Module --
 def save_config(login_db, login_host, login_port, login_id, login_pw):
@@ -199,7 +199,7 @@ def run_db_connect(page: flet.Page):
     main_quit = flet.AlertDialog(
         title=flet.Text("Quit"),
         content=flet.Text("Exit?"),
-        actions=[flet.TextButton("OK", on_click=close_main),
+        actions=[flet.TextButton("OK", on_click=close_main, autofocus=True),
                  flet.TextButton("Cancel", on_click=close_pop)
                  ], actions_alignment=flet.MainAxisAlignment.END)
     def window_event(e):

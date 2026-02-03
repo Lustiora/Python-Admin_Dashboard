@@ -21,7 +21,7 @@ def exit_connect_error(e):
 dlg_connect_error = flet.AlertDialog(
     title=flet.Text("Login Failed"),
     content=flet.Text("Your ID or password is incorrect."),
-    actions=[flet.TextButton("Cancel", on_click=close_connect_error),
+    actions=[flet.TextButton("OK", on_click=close_connect_error, autofocus=True),
     ], actions_alignment=flet.MainAxisAlignment.END)
 # -- Staff Login GUI
 def run_staff_login(page: flet.Page):
@@ -49,7 +49,7 @@ def run_staff_login(page: flet.Page):
     main_quit = flet.AlertDialog(
         title=flet.Text("Quit"),
         content=flet.Text("Exit?"),
-        actions=[flet.TextButton("OK", on_click=close_main),
+        actions=[flet.TextButton("OK", on_click=close_main, autofocus=True),
                  flet.TextButton("Cancel", on_click=close_pop)
                  ], actions_alignment=flet.MainAxisAlignment.END)
     def window_event(e):
@@ -154,7 +154,7 @@ def check_login_process(e):
                 if count <= 0:
                     print(f"Login Failed")
                     dlg_connect_error.content.value = f"Please Contact the Administrator\nPhone : {call}"
-                    dlg_connect_error.actions = [flet.TextButton("Cancel", on_click=exit_connect_error),]
+                    dlg_connect_error.actions = [flet.TextButton("Exit", on_click=exit_connect_error, autofocus=True),]
                     e.page.open(dlg_connect_error)
                 else:
                     print(f"Login Failed | Count (3) : {count}")
