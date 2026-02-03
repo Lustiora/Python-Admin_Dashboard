@@ -1,23 +1,23 @@
 import flet
 from window import Font, Ratios
 
-def build_customer_id_ui(page, store_id, conn):
+def build_customer_ui(page, store_id, conn):
     customer_id_data = flet.ListView(expand=True, spacing=0)
-    def query_customer_by_id(e):
+    def query_customer(e):
         cart_customer_id = [] # ID 상자
         def close_pop(e):
             page.close(error_quit)
         error_quit = flet.AlertDialog(
             title=flet.Text("Customer"),
-            content=flet.Text(f"Customer Name Not Found [{customer_id_text.value}]"),
+            content=flet.Text(f"Customer Name Not Found [{input_customer.value}]"),
             actions=[flet.TextButton("OK", on_click=close_pop, autofocus=True)
                      ], actions_alignment=flet.MainAxisAlignment.END)
         try:
-            cart_customer_id.append(int(customer_id_text.value)) # ANY(%s) 조회를 위해 상자 보관
-            # cart_customer_id = int(customer_id_text.value) -> ID 상자를 만들지 않는 경우 사용가능 | ANY(%s) -> ERROR
-            print(f"Search Customer ID : {int(customer_id_text.value)}")
+            cart_customer_id.append(int(input_customer.value)) # ANY(%s) 조회를 위해 상자 보관
+            # cart_customer_id = int(input_customer.value) -> ID 상자를 만들지 않는 경우 사용가능 | ANY(%s) -> ERROR
+            print(f"Search Customer ID : {int(input_customer.value)}")
         except:
-            str_customer_name = f"%{customer_id_text.value}%"
+            str_customer_name = f"%{input_customer.value}%"
             print("Not ID -> Name Search")
             cursor = conn.cursor()
             try:
@@ -27,16 +27,16 @@ def build_customer_id_ui(page, store_id, conn):
                                         or last_name ilike %s """,(str_customer_name,str_customer_name,))
                 customer_name_id = cursor.fetchall()
                 if customer_name_id:
-                    print(f"Name Check : {customer_id_text.value}")
+                    print(f"Name Check : {input_customer.value}")
                     for row in customer_name_id: # 검색어에 해당하는 ID 값들을 상자에 보관하기 위한 반복
                         cart_customer_id.append(row[0]) # .append로 상자에 보관
                     print(f"List Check : {cart_customer_id}")
                 else:
-                    print(f"Not Customer Name {customer_id_text.value}")
+                    print(f"Not Customer Name {input_customer.value}")
                     page.open(error_quit)
                     return # 조회 실패시 쿼리 실행 방지
             except:
-                print(f"Error. Not Customer Name {customer_id_text.value}")
+                print(f"Error. Not Customer Name {input_customer.value}")
                 page.open(error_quit)
                 return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
@@ -98,7 +98,7 @@ def build_customer_id_ui(page, store_id, conn):
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[4]),
                                     flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                                     flet.Text(
-                                        str(row[5])[:10], expand=Ratios.create_date, text_align="center",
+                                        str(row[5])[:10], expand=Ratios.date, text_align="center",
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[5])[:10]),
                                     flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                                     flet.Text(
@@ -110,14 +110,14 @@ def build_customer_id_ui(page, store_id, conn):
                     )
                 customer_id_data.update()
             else:
-                print(f"Not Customer ID : {int(customer_id_text.value)}")
+                print(f"Not Customer ID : {int(input_customer.value)}")
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Customer error : {err}")
-    customer_id_text = flet.TextField(hint_text=" ID or Name",
+    input_customer = flet.TextField(hint_text=" ID or Name",
         text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=20, autofocus=True)
-    search_id = flet.Button(
-        "Search", on_click=query_customer_by_id, width=120, height=40,
+    search_customer = flet.Button(
+        "Search", on_click=query_customer, width=120, height=40,
         style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
     header = flet.Container(
         content = flet.Row(
@@ -132,16 +132,16 @@ def build_customer_id_ui(page, store_id, conn):
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Text("Address", expand=Ratios.address, text_align="center"),
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
-                flet.Text("Create Date", expand=Ratios.create_date, text_align="center"),
+                flet.Text("Create Date", expand=Ratios.date, text_align="center"),
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Text("Status", expand=Ratios.status, text_align="center"),
             ], alignment=flet.MainAxisAlignment.START, spacing=5
         ), padding=10, border_radius=5, bgcolor=flet.Colors.PRIMARY_CONTAINER, height=40
     )
-    customer_id = flet.Column(
+    view_customer = flet.Column(
         controls=[
             header, customer_id_data
         ],
         expand=True, spacing=5
     )
-    return customer_id_text, search_id, customer_id
+    return input_customer, search_customer, view_customer

@@ -10,5 +10,6 @@ class Ratios:
     name = 2
     email = 3
     address = 3
-    create_date = 2
+    date = 2
     status = 2
+    rate = 2

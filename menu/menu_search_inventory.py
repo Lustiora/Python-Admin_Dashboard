@@ -1,172 +1,136 @@
 import flet
-from window import Font
+from window import Font, Ratios
 
 def build_inventory_ui(page, store_id, conn):
-    def query_basic_info(e):
-        int_inventory_id = int(input_inventory_id.value)
+    inventory_id_data = flet.ListView(expand=True, spacing=0)
+    def query_inventory(e):
+        cart_inventory_id = [] # ID 상자
         def close_pop(e):
-            page.close(error_quit)  # 팝업창 종료 명령어
+            page.close(error_quit)
         error_quit = flet.AlertDialog(
             title=flet.Text("Inventory"),
-            content=flet.Text(f"Inventory ID Not Found [{input_inventory_id.value}]"),
-            actions=[flet.TextButton("OK", on_click=close_pop)
+            content=flet.Text(f"Film Title Not Found [{input_inventory.value}]"),
+            actions=[flet.TextButton("OK", on_click=close_pop, autofocus=True)
                      ], actions_alignment=flet.MainAxisAlignment.END)
+        try:
+            cart_inventory_id.append(int(input_inventory.value)) # ANY(%s) 조회를 위해 상자 보관
+            # cart_inventory_id = int(input_inventory.value) -> ID 상자를 만들지 않는 경우 사용가능 | ANY(%s) -> ERROR
+            print(f"Search Inventory ID : {int(input_inventory.value)}")
+        except:
+            str_film_title = f"%{input_inventory.value}%"
+            print("Not ID -> Title Search")
+            cursor = conn.cursor()
+            try:
+                cursor.execute( """ select distinct inventory_id
+                                    from inventory_data
+                                    where title ilike %s """,(str_film_title,))
+                film_title = cursor.fetchall()
+                if film_title:
+                    print(f"Title Check : {input_inventory.value}")
+                    for row in film_title: # 검색어에 해당하는 ID 값들을 상자에 보관하기 위한 반복
+                        cart_inventory_id.append(row[0]) # .append로 상자에 보관
+                    print(f"List Check : {cart_inventory_id}")
+                else:
+                    print(f"Not Film Title {input_inventory.value}")
+                    page.open(error_quit)
+                    return # 조회 실패시 쿼리 실행 방지
+            except:
+                print(f"Error. Not Film Title {input_inventory.value}")
+                page.open(error_quit)
+                return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
         try:
             cursor.execute(
-                """ select 
-                        i.inventory_id ,
-                        f.title , 
-                        f.description 
-                    from inventory i
-                    inner join film f 
-                        on i.film_id = f.film_id
-                    where i.inventory_id = %s """,(int_inventory_id,)
-            )
-            inventory_data = cursor.fetchone()
+                """ select
+                        inventory_id ,
+                        title ,
+                        case when store_id = 1 then '🇨🇦 Lethbridge' else '🇦🇺 Woodridge' end as store ,
+                        case when return_date is not null then 'In stock' else 'Checked out' end as status ,
+                        rental_date ,
+                        rental_rate
+                    from inventory_data
+                    where status is not null
+                    and inventory_id = ANY(%s) """,(cart_inventory_id,)) # ANY(%s) : 상자에 담겨있는 ID들을 전부 비교
+            inventory_data = cursor.fetchall()
+            print(inventory_data)
             if inventory_data:
-                table_basic_info.rows.clear()
-                table_basic_info.rows.append(
-                    flet.DataRow(cells=[
-                        flet.DataCell(flet.Text(inventory_data[0])),
-                        flet.DataCell(flet.Text(inventory_data[1])),
-                        flet.DataCell(flet.Text(inventory_data[2])),
-                    ])
-                )
-                table_basic_info.update()
+                inventory_id_data.controls.clear()
+                for row in inventory_data:
+                    status_color = flet.Colors.BLACK
+                    store_color = flet.Colors.BLACK
+                    if row[4] == 'Checked out':
+                        status_color = flet.Colors.RED_ACCENT
+                    if row[7] == store_id:
+                        if row[3] == '🇦🇺 Woodridge':
+                            store_color = flet.Colors.ORANGE
+                        if row[3] == '🇨🇦 Lethbridge':
+                            store_color = flet.Colors.BLUE
+                    else:
+                        store_color = flet.Colors.RED_ACCENT
+                    print("cut1")
+                    inventory_id_data.controls.append(
+                        flet.Container(
+                            content=flet.Row(
+                                controls=[
+                                    flet.Text(
+                                        str(row[0]), expand=Ratios.id, text_align="center",
+                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[0])),
+                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.Text(
+                                        row[1], expand=Ratios.name, text_align="center",
+                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[1]),
+                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.Text(
+                                        row[2], expand=Ratios.store, text_align="center",
+                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[2], color=store_color),
+                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.Text(
+                                        row[3], expand=Ratios.status, text_align="center",
+                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[3], color=status_color),
+                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.Text(
+                                        str(row[4])[:10], expand=Ratios.date, text_align="center",
+                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[4])[:10]),
+                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.Text(
+                                        str(row[5]), expand=Ratios.rate, text_align="center",
+                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[5])),
+                                ], alignment=flet.MainAxisAlignment.START, spacing=5
+                            ), padding=10, border_radius=5, height=40, expand=True # height=40 -> VerticalDivider 사용을 위해 필요
+                        )
+                    )
+                inventory_id_data.update()
             else:
+                print(f"Not Inventory ID : {int(input_inventory.value)}")
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Inventory error : {err}")
-    def query_rental_history(e):
-        int_inventory_id = int(input_inventory_id.value)
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                """ select 
-                        r.rental_date , 
-                        r.return_date  
-                    from inventory i
-                    inner join rental r 
-                        on i.inventory_id = r.inventory_id
-                    where i.inventory_id = %s
-                    order by r.rental_date desc , r.return_date desc """,(int_inventory_id,)
-            )
-            inventory_data = cursor.fetchall()
-            if inventory_data:
-                table_rental_history.rows.clear()
-                for row in inventory_data:
-                    table_rental_history.rows.append(
-                        flet.DataRow(cells=[
-                            flet.DataCell(flet.Text(row[0])),
-                            flet.DataCell(flet.Text(row[1])),
-                        ])
-                    )
-                table_rental_history.update()
-        except Exception as err:
-            print(f"Search Inventory error : {err}")
-    def query_current_status(e):
-        int_inventory_id = int(input_inventory_id.value)
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                """ select f.film_id
-                    from inventory i 
-                    inner join film f 
-                        on i.film_id = f.film_id
-                    where i.inventory_id = %s """,(int_inventory_id,)
-            )
-            film_store_inventory_id = cursor.fetchone()
-            result = film_store_inventory_id[0]
-            cursor.execute(""" select 
-                                   inventory_id, 
-                                   status
-                               from inventory_data 
-                               where row = 1
-                                   and film_id = %s
-                                   and store_id = %s """,(result, store_id,)
-           )
-            inventory_data = cursor.fetchall()
-            if inventory_data:
-                table_current_status.rows.clear()
-                for row in inventory_data:
-                    table_current_status.rows.append(
-                        flet.DataRow(cells=[
-                            flet.DataCell(flet.Text(row[0])),
-                            flet.DataCell(flet.Text(row[1])),
-                        ])
-                    )
-                table_current_status.update()
-        except Exception as err:
-            print(f"Search Inventory error : {err}")
-    def on_click_search(e): # Double Event
-        query_basic_info(e)
-        query_rental_history(e)
-        query_current_status(e)
-    input_inventory_id = flet.TextField(
-        text_size=Font.fontsize, width=150, height=30, content_padding=5, max_length=10, autofocus=True)
-    btn_search = flet.Button(
-        "Search", on_click=on_click_search, width=80,
+    input_inventory = flet.TextField(hint_text=" ID or Title",
+        text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=20, autofocus=True)
+    search_inventory = flet.Button(
+        "Search", on_click=query_inventory, width=120, height=40,
         style=flet.ButtonStyle(shape=(flet.RoundedRectangleBorder(radius=5))))
-    table_basic_info = flet.DataTable(
-        columns=[
-            flet.DataColumn(flet.Text("ID", width=60)),
-            flet.DataColumn(flet.Text("Title", width=150)),
-            flet.DataColumn(flet.Text("Description", width=608)),
-        ],
-        rows=[],
-        border=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar
-        vertical_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar
-        horizontal_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"), # DataTable Titlebar
-        heading_row_color=flet.Colors.GREY_300, # DataTable Titlebar Inside Color
-        heading_row_height=Font.height, # DataTable Titlebar Height
-        data_row_min_height=Font.height-2, # DataTable Data Min Height
-        data_row_max_height=Font.height-2, # DataTable Data Max Height
+    header = flet.Container(
+        content = flet.Row(
+            controls=[
+                flet.Text("ID", expand=Ratios.id, text_align="center"),
+                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.Text("Title", expand=Ratios.name, text_align="center"),
+                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.Text("Store", expand=Ratios.store, text_align="center"),
+                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.Text("Status", expand=Ratios.status, text_align="center"),
+                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.Text("Last Rental Date", expand=Ratios.date, text_align="center"),
+                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.Text("Rental Rate", expand=Ratios.rate, text_align="center"),
+            ], alignment=flet.MainAxisAlignment.START, spacing=5
+        ), padding=10, border_radius=5, bgcolor=flet.Colors.PRIMARY_CONTAINER, height=40
     )
-    ui_basic_info = flet.Row(
+    view_inventory = flet.Column(
         controls=[
-            flet.Column([table_basic_info], scroll=flet.ScrollMode.ALWAYS)
-        ],scroll=flet.ScrollMode.AUTO,
-        expand=True,
-    )
-    table_rental_history = flet.DataTable(
-        columns=[
-            flet.DataColumn(flet.Text("Rental Date", width=130)),
-            flet.DataColumn(flet.Text("Return Date", width=120)),
+            header, inventory_id_data
         ],
-        rows=[],
-        border=flet.border.all(1, "flet.Colors.BLUE_GREY_100"),  # DataTable Titlebar
-        vertical_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"),  # DataTable Titlebar
-        horizontal_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"),  # DataTable Titlebar
-        heading_row_color=flet.Colors.GREY_300,  # DataTable Titlebar Inside Color
-        heading_row_height=Font.height,  # DataTable Titlebar Height
-        data_row_min_height=Font.height - 2,  # DataTable Data Min Height
-        data_row_max_height=Font.height - 2,  # DataTable Data Max Height
+        expand=True, spacing=5
     )
-    ui_rental_history = flet.Row(
-        controls=[
-            flet.Column([table_rental_history], scroll=flet.ScrollMode.ALWAYS)
-        ], scroll=flet.ScrollMode.AUTO,
-        expand=True,
-    )
-    table_current_status = flet.DataTable(
-        columns=[
-            flet.DataColumn(flet.Text("ID", width=60)),
-            flet.DataColumn(flet.Text("Status", width=100)),
-        ],
-        rows=[],
-        border=flet.border.all(1, "flet.Colors.BLUE_GREY_100"),  # DataTable Titlebar
-        vertical_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"),  # DataTable Titlebar
-        horizontal_lines=flet.border.all(1, "flet.Colors.BLUE_GREY_100"),  # DataTable Titlebar
-        heading_row_color=flet.Colors.GREY_300,  # DataTable Titlebar Inside Color
-        heading_row_height=Font.height,  # DataTable Titlebar Height
-        data_row_min_height=Font.height - 2,  # DataTable Data Min Height
-        data_row_max_height=Font.height - 2,  # DataTable Data Max Height
-    )
-    ui_current_status = flet.Row(
-        controls=[
-            flet.Column([table_current_status], scroll=flet.ScrollMode.ALWAYS)
-        ], scroll=flet.ScrollMode.AUTO,
-        expand=True,
-    )
-    return input_inventory_id, btn_search, ui_basic_info, ui_rental_history, ui_current_status
+    return input_inventory, search_inventory, view_inventory

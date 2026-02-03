@@ -117,6 +117,43 @@ flet run -r ./main_window.py
 1. Datatable → Row,Column,Expand 방식으로 전환 (flet 0.28.3 : page.on_resize 명령어 부재)
 2. Popup Autofocus 추가
 3. **Search Customer:** 검색 화면 재설계 (ID or Name (First or Last Name))
+4. **Search Inventory:** View Table 재생성 및 쿼리 재설정 / 재설계중
+    
+    <details><summary>Query</summary>
+    
+    ```sql
+    <- VIEW Table 생성 ->
+    CREATE OR REPLACE VIEW public.inventory_data as (
+    select 
+        i.inventory_id ,
+        f.title ,
+        i.store_id ,
+        r.rental_date ,
+        r.return_date ,
+        case when rank() over (
+            partition by i.inventory_id , i.store_id order by r.rental_date desc) = 1 then 1
+        else null end as status ,
+        f.rental_rate 
+    from inventory i
+    inner join film f
+        on i.film_id = f.film_id
+    inner join rental r
+        on i.inventory_id = r.inventory_id)
+    --
+    <- Query -> 
+    select
+        inventory_id ,
+        title ,
+        case when store_id = 1 then '🇨🇦 Lethbridge' else '🇦🇺 Woodridge' end as store ,
+        case when return_date is not null then 'In stock' else 'Checked out' end as status ,
+        rental_date ,
+        rental_rate
+    from inventory_data
+    where status is not null
+    and inventory_id = %s
+    ```
+    
+    </details>
 
 <details><summary>📂 Past Development Log (Click to Expand)</summary>
 

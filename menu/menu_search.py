@@ -3,7 +3,7 @@ from menu.menu_search_inventory import *
 from menu.menu_search_film import *
 
 def view_search_customer(page, store_id, conn):
-    customer_id_text, search_id, customer_id = build_customer_id_ui(page, store_id, conn) # Module Return Value get
+    input_customer, search_customer, view_customer = build_customer_ui(page, store_id, conn) # Module Return Value get
     return flet.Column(
         controls=[
             flet.Row([
@@ -11,8 +11,8 @@ def view_search_customer(page, store_id, conn):
             ], height=80),
             flet.Divider(),
             flet.Row([
-                customer_id_text,
-                search_id
+                input_customer,
+                search_customer
             ], height=60),
             flet.Divider(),
             flet.Column([
@@ -20,7 +20,7 @@ def view_search_customer(page, store_id, conn):
                     bgcolor=flet.Colors.GREY_200,
                     alignment=flet.alignment.top_left,
                     expand=True,
-                    content=customer_id,
+                    content=view_customer,
                     padding=10,
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
@@ -30,8 +30,7 @@ def view_search_customer(page, store_id, conn):
     )
 
 def view_search_inventory(page, store_id, conn):
-    input_inventory_id, btn_search, ui_basic_info, ui_rental_history, ui_current_status = (
-        build_inventory_ui(page, store_id, conn))  # Module Return Value get
+    input_inventory, search_inventory, view_inventory = build_inventory_ui(page, store_id, conn)  # Module Return Value get
     return flet.Column(
         controls=[
             flet.Row([
@@ -39,53 +38,21 @@ def view_search_inventory(page, store_id, conn):
             ], height=80),
             flet.Divider(),
             flet.Row([
-                flet.Text("ID :", style=flet.TextThemeStyle.BODY_LARGE, width=100, text_align="right"),
-                input_inventory_id,
-                btn_search,
-            ], height=30),
+                input_inventory,
+                search_inventory,
+            ], height=60),
             flet.Divider(),
             flet.Column([
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
-                    content=ui_basic_info,
+                    content=view_inventory,
                     alignment=flet.alignment.top_left,
-                    height=Font.height + 45,
+                    expand=True,
                     padding=10,
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
                 )
-            ], alignment=flet.alignment.center),
-            flet.Divider(),
-            flet.Row([
-                flet.Column([
-                    flet.Row([flet.Text("Rental Data", width=200, text_align="center",
-                                        theme_style=flet.TextThemeStyle.TITLE_LARGE, italic=True)],height=40),
-                    flet.Divider(),
-                    flet.Container(
-                        bgcolor=flet.Colors.GREY_200,
-                        alignment=flet.alignment.top_left,
-                        content=ui_rental_history,
-                        expand=True,
-                        padding=10,
-                        border_radius=5,
-                        border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-                    )
-                ], expand=True),
-                flet.Column([
-                    flet.Row([flet.Text("Inventory Status", width=200, text_align="center",
-                                        theme_style=flet.TextThemeStyle.TITLE_LARGE, italic=True)],height=40),
-                    flet.Divider(),
-                    flet.Container(
-                        bgcolor=flet.Colors.GREY_200,
-                        alignment=flet.alignment.top_left,
-                        content=ui_current_status,
-                        expand=True,
-                        padding=10,
-                        border_radius=5,
-                        border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-                    )
-                ], expand=True),
-            ], expand=True, alignment=flet.alignment.top_left)
+            ], alignment=flet.alignment.center, expand=True),
         ]
     )
 
