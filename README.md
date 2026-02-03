@@ -44,22 +44,25 @@ Sakila 샘플 데이터베이스를 기반으로 회원 관리, 재고 관리, �
 
 * **A. Customer Search (고객 관리)**
   
-  * **Query:** `Customer ID` 또는 `Name` (First/Last) 복합 검색.
-  * **Output:** 고객 기본 정보, 계정 활성 상태(Active/Inactive), 미반납 연체 이력 표시.
-  * **Flow:** 검색 결과 없음(Not Found) 시 **[신규 고객 등록]** 프로세스로 자동 전환.
+  * **Query:** `Customer ID (Barcode)` 또는 `Name` (First/Last) 복합 검색.
+  * **Output:** 고객 기본 정보, 미반납 연체 상태(Normal/Overdue).
+  * ~~**Flow:** 검색 결과 없음(Not Found) 시 **[신규 고객 등록]** 프로세스로 자동 전환.~~
 
 * **B. Inventory Check (재고 확인)**
   
-  * **Query:** `Inventory ID` (Barcode) 스캔.
+  * **Query:** `Inventory ID (Barcode)` 또는 `Title` 복합 검색.
   * **Output:**
-    * **Film Data:** 영화 제목, 등급, 대여료 정보.
+    * **Film Data:** 영화 제목, 보유 상점, 최근 대여일자, 대여료 정보.
     * **Rental Status:** 현재 대여 중(`Checked Out`)인지 대여 가능(`In Stock`)인지 판별.
   * **Logic:** `rental` 테이블의 `return_date`가 `NULL`인 기록 존재 여부로 상태 판단.
 
-* **C. Film Search (영화 정보)**
-  
-  * **Query:** `Title` 기반 검색 (Full-text Search 지원).
-  * **Output:** 영화 제목, 줄거리(Description), 출연 배우(Actor) 정보 매핑 출력.
+* **C. Rental Search (대여 상태)**
+
+  * **Output:**
+    * **Total Rentals:** 대여중인 재고
+    * **Overdue:** 연체중인 재고
+    * **Due Today:** 금일 반납예정인 재고
+    * **Rental Data:** Rental ID, Customer Name, Film Title, Rental Date, Due Date, Status, Action(?) 
 
 ---
 
@@ -119,6 +122,8 @@ flet run -r ./main_window.py
 3. **Search Customer:** 검색 화면 재설계 (ID or Name (First or Last Name))
 4. **Search Inventory:** View Table 재생성 및 쿼리 재설정 / 재설계 (ID or Film Title)
 5. search query 분리
+6. input event 이후 포커스 연결 : input_inventory.focus()
+7. Search Modules (Core Features), C. Rental Search 추가 (Film Search 제거)
     
     <details><summary>Query</summary>
     
