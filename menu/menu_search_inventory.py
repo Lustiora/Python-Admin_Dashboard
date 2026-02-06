@@ -94,7 +94,7 @@ def build_inventory_ui(page, store_id, conn):
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Inventory error : {err}")
-    input_inventory = flet.TextField(hint_text=" ID or Title ↵", on_submit=query_inventory, helper_text="Press Enter to Search",
+    input_inventory = flet.TextField(label=" Inventory ID or Film Title ↵", on_submit=query_inventory, hint_text=" Press Enter to Search",
         text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)
     header = flet.Container(
         content = flet.Row(

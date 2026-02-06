@@ -102,7 +102,7 @@ def build_customer_ui(page, store_id, conn):
                 page.open(error_quit)
         except Exception as err:
             print(f"Search Customer error : {err}")
-    input_customer = flet.TextField(hint_text=" ID or Name ↵", on_submit=query_customer, helper_text="Press Enter to Search",
+    input_customer = flet.TextField(label=" Customer ID or Name ↵", on_submit=query_customer, hint_text=" Press Enter to Search",
         text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)
     header = flet.Container(
         content = flet.Row(

@@ -221,6 +221,7 @@ def build_rental_ui(page, store_id, conn):
             padding=10,
             border_radius=10,
             height=80,
+            ink=True,
             alignment=flet.alignment.center_left,
             border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
             content=flet.Column([
@@ -235,6 +236,7 @@ def build_rental_ui(page, store_id, conn):
         padding=10,
         border_radius=10,
         height=80,
+        ink=True,
         alignment=flet.alignment.center_left,
         border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
         content=flet.Column([
@@ -249,6 +251,7 @@ def build_rental_ui(page, store_id, conn):
         padding=10,
         border_radius=10,
         height=80,
+        ink=True,
         alignment=flet.alignment.center_left,
         border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
         content=flet.Column([
@@ -344,7 +347,7 @@ def build_rental_ui(page, store_id, conn):
         except Exception as err:
             print(f"Search Rental error : {err}")
     input_rental = flet.TextField(
-        hint_text="Press Enter to Search", on_submit=rental_search_data_query, label=" Rental ID or Customer Name ↵",
+        hint_text=" Press Enter to Search", on_submit=rental_search_data_query, label=" Rental ID or Customer Name ↵",
         text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)
 
     # Filter
