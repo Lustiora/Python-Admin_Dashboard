@@ -6,6 +6,9 @@
        * rental_search_total_query Module 초기 실행 시 발생하는 Error `if rental_data.page:`를 추가하여 초기 Update 방지
     3. **Search Rental:** Font Color 중복 사용 부분 Class Add
     4. **Search Rental:** View Table: now() → CURRENT_DATE , return_due_today_query 수정 `due_day::date = today`
+    5. **Search Payment:** Query 설계 중
+    6. **Search Payment:** 화면 구성 중
+    7. Test Main Window: 실행 속도 Fix
 
 * **2026-02-05**
     1. Test Main Window: Conn Connect

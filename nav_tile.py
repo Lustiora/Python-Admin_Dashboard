@@ -33,11 +33,9 @@ def nav(page: flet.Page, login_db, login_host, login_port, store_address, staff_
             basic_content.content = view_search_customer(page, store_id, conn)
         elif index == 1.2: # 재고 조회
             basic_content.content = view_search_inventory(page, store_id, conn)
-        # elif index == 1.3: # 영화 조회
-        #     basic_content.content = view_search_film(page, conn)
-        elif index == 1.4: # 대여상태 조회
+        elif index == 1.3: # 대여상태 조회
             basic_content.content = view_search_rental(page, store_id, conn)
-        elif index == 1.5: # 결제이력 조회
+        elif index == 1.4: # 결제이력 조회
             basic_content.content = view_search_payment()
         elif index == 2.1: # 고객정보 변경
             basic_content.content = view_edit_customer()
@@ -97,18 +95,14 @@ def nav(page: flet.Page, login_db, login_host, login_port, store_address, staff_
                         title=flet.Text("Inventory"),
                         content_padding=flet.padding.only(left=40),
                         on_click=lambda e: on_nav_change(1.2)
-                    # ),flet.ListTile(
-                    #     title=flet.Text("Film"),
-                    #     content_padding=flet.padding.only(left=40),
-                    #     on_click=lambda e: on_nav_change(1.3)
                     ),flet.ListTile(
                         title=flet.Text("Rental"),
                         content_padding=flet.padding.only(left=40),
-                        on_click=lambda e: on_nav_change(1.4)
+                        on_click=lambda e: on_nav_change(1.3)
                     ),flet.ListTile(
                         title=flet.Text("Payment"),
                         content_padding=flet.padding.only(left=40),
-                        on_click=lambda e: on_nav_change(1.5)
+                        on_click=lambda e: on_nav_change(1.4)
                     ),
                 ]
             ),flet.ExpansionTile(
