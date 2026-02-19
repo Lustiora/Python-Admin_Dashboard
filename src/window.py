@@ -15,6 +15,7 @@ class Ratios:
     id = 1
     name = 2
     email = 3
+    title = 3
     phone = 2
     address = 2
     date = 2

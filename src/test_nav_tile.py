@@ -8,7 +8,7 @@ from menu.menu_add import *
 
 def nav(page: flet.Page, login_db, login_host, login_port, store_address, staff_user, store_id, conn): # test
     basic_content = flet.Container(
-        content=view_search_payment(), # 테스트 중인 컨텐츠
+        content=view_search_rental(page, store_id, conn) , # 테스트 중인 컨텐츠
         alignment=flet.alignment.center,
         expand=True,
         border_radius=5,

@@ -106,15 +106,18 @@ class Search:
             rental_id ,
             name ,
             title ,
-            to_char(rental_date,'YYYY-MM-DD HH24:MI:SS') as rental_date ,
+            rental_date ,
             due_day ,
             case when over_due is null then 'Unreturned'
                 else 'Overdue'||' ('||over_due * interval '1 day'||')'
-            end as status
+            end as status ,
+            count_title ,
+            full_title
         from rental_data
         where return_date is null
         and store_id = %s
         order by name
+        limit 10 offset %s
         """
 
     return_overdue_query\
@@ -132,16 +135,19 @@ class Search:
             rental_id ,
             name ,
             title ,
-            to_char(rental_date,'YYYY-MM-DD HH24:MI:SS') as rental_date ,
+            rental_date ,
             due_day ,
             case when over_due is null then 'Unreturned'
                 else 'Overdue'||' ('||over_due * interval '1 day'||')'
-            end as status
+            end as status ,
+            count_title ,
+            full_title
         from rental_data
         where return_date is null
         and store_id = %s
         and over_due is not null
         order by over_due desc 
+        limit 10 offset %s
         """
 
     return_due_today_query\
@@ -159,25 +165,35 @@ class Search:
             rental_id ,
             name ,
             title ,
-            to_char(rental_date,'YYYY-MM-DD HH24:MI:SS') as rental_date ,
+            rental_date ,
             due_day ,
             case when over_due is null then 'Unreturned'
                 else 'Overdue'||' ('||over_due * interval '1 day'||')'
-            end as status
+            end as status ,
+            count_title ,
+            full_title
         from rental_data
         where return_date is null
         and store_id = %s
         and due_day = CURRENT_DATE
         order by name
+        limit 10 offset %s
         """
 
     rental_search_name_query\
         = """
-        select 
-            rental_id
+        select rental_id
         from rental_data
         where store_id = %s
         and name ilike %s
+        """
+
+    rental_search_count_query\
+        = """
+        select count(*)
+        from rental_data
+        where store_id = %s
+        and rental_id = ANY(%s)
         """
 
     rental_search_id_query\
@@ -186,17 +202,20 @@ class Search:
             rental_id ,
             name ,
             title ,
-            to_char(rental_date,'YYYY-MM-DD HH24:MI:SS') as rental_date ,
+            rental_date ,
             due_day ,
             case 
                 when return_date is null and over_due is null then 'Unreturned'
                 when return_date is null and over_due is not null then 'Overdue'||' ('||over_due * interval '1 day'||')'
                 else 'Returned'
-            end as status
+            end as status ,
+            count_title ,
+            full_title
         from rental_data
         where store_id = %s
         and rental_id = ANY(%s)
         order by name , rental_date desc , over_due desc
+        limit 10 offset %s
         """
 
     # <-- View Table Create -->

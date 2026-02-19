@@ -20,8 +20,7 @@ def view_search_customer(page, store_id, conn):
                     bgcolor=flet.Colors.GREY_200,
                     alignment=flet.alignment.top_left,
                     expand=True,
-                    content=view_customer,
-                    padding=10,
+                    content=flet.SelectionArea(content=view_customer),
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
                 )
@@ -42,10 +41,9 @@ def view_search_inventory(page, store_id, conn):
             flet.Column([
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
-                    content=view_inventory,
+                    content=flet.SelectionArea(content=view_inventory),
                     alignment=flet.alignment.top_left,
                     expand=True,
-                    padding=10,
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
                 )
@@ -69,10 +67,9 @@ def view_search_rental(page, store_id, conn):
             flet.Column([
                 flet.Container(
                     bgcolor=flet.Colors.GREY_200,
-                    content=view_rental,
+                    content=flet.SelectionArea(content=view_rental),
                     alignment=flet.alignment.top_left,
                     expand=True,
-                    padding=10,
                     border_radius=5,
                     border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
                 )
