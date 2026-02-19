@@ -1,4 +1,5 @@
 import flet as ft
+import inspect
 from window import Ratios
 
 # DataTable 대체 -> Row + Column + expand
@@ -19,7 +20,7 @@ def main(page: ft.Page):
                 ft.Text("Name", weight="bold", expand=Ratios.name, text_align="center"),
                 ft.Text("Email", weight="bold", expand=Ratios.email, text_align="center"),
                 ft.Text("Address", weight="bold", expand=Ratios.address, text_align="center"),
-                ft.Text("Date", weight="bold", expand=Ratios.create_date, text_align="center"),
+                ft.Text("Date", weight="bold", expand=Ratios.date, text_align="center"),
                 ft.Text("Status", weight="bold", expand=Ratios.status, text_align="center"),
             ],
             alignment=ft.MainAxisAlignment.START,
@@ -49,7 +50,7 @@ def main(page: ft.Page):
                     # 아주 긴 주소 테스트
                     ft.Text(f"South Korea Seoul Gangnam-gu Teheran-ro 123, Building No.{i} (Very Long Address Test)",
                             expand=Ratios.address, no_wrap=True, overflow=ft.TextOverflow.ELLIPSIS),
-                    ft.Text("2023-10-25", expand=Ratios.create_date, text_align="center"),
+                    ft.Text("2023-10-25", expand=Ratios.date, text_align="center"),
 
                     # 상태값에 따른 색상/뱃지 처리
                     ft.Container(
@@ -88,6 +89,15 @@ def main(page: ft.Page):
     )
 
     page.add(layout)
-
+    flet_view = open("flet.txt", "w", encoding='utf-8')
+    # print(inspect.getsource(ft.ListView), file=flet_view)
+    # print(inspect.signature(ft.ListView), file=flet_view)
+    print(ft.__file__)
+    print(dir(ft))
+    txt = []
+    for row in dir(ft):
+        txt.append(row)
+    print(txt)
+    flet_view.close()
 
 ft.app(target=main)
