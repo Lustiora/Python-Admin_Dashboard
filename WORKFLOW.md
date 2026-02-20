@@ -3,6 +3,7 @@
 * **2026-02-20**
   1. 함수형 프로그래밍에서 객체지향 프로그래밍 전환 (Def >> Class)
      * src\db_connect.py >> class_src\db_connect.py **완료**
+     * src\staff_login.py >> class_src\staff_login.py **완료**
 
 * **2026-02-19**
   1. menu search rental 페이징 버튼 추가
