@@ -15,6 +15,7 @@
     <option name="TEMPLATE_FOLDERS">
       <list>
         <option value="$MODULE_DIR$/src/menu" />
+        <option value="$MODULE_DIR$/class_src/menu" />
       </list>
     </option>
   </component>

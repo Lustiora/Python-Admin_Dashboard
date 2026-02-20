@@ -7,28 +7,27 @@ def connect_test(conn, status, page: flet.Page):  # DB 연결 확인
     def open_pop(page):
         page.open(main_quit)
     def close_pop(e):
-        page.close(main_quit)  # 팝업창 종료 명령어
+        page.close(main_quit)
     def close_main(e):
         page.window.prevent_close = False
         page.window.destroy()
-        # page.window.close()
-        if getattr(sys, 'frozen', False):  # [Windows EXE]
+        if getattr(sys, 'frozen', False):
             current_executable = sys.executable
             current_dir = os.path.dirname(current_executable)
-        else:  # [개발 환경]
+        else:
             current_executable = sys.executable
             current_dir = os.path.dirname(os.path.abspath(__file__))
         print("Restarting Process...")
-        if sys.platform == 'win32':  # explorer.exe "실행파일경로" 명령 실행
+        if sys.platform == 'win32': # [Windows 개발 환경]
             if getattr(sys, 'frozen', False):
                 print("Restarting via Windows Explorer...")
                 subprocess.Popen(['explorer', current_executable])
-            else:  # [Windows 개발 환경]
+            else:
                 print("Restarting via os.system...")
                 os.chdir(current_dir)
                 os.system("python db_connect_ui.py")
-            sys.exit()  # 파이썬 종료
-        else:  # [Linux / Mac]
+            sys.exit()
+        else: # [Linux / Mac]
             my_env = os.environ.copy()
             if "PYTHONPATH" in my_env:
                 my_env["PYTHONPATH"] = current_dir + os.pathsep + my_env["PYTHONPATH"]

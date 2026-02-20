@@ -2,7 +2,7 @@
 import sys, os, time, configparser, base64
 import psycopg2
 import flet
-from window import Font
+from class_window import Font
 
 class DBConnect:
     def __init__(self, page: flet.Page, popup: Popup):
@@ -153,8 +153,8 @@ class DBConnect:
         self.page.window.resizable = True
         self.page.window.maximizable = True
         self.page.clean()
-        from staff_login import run_staff_login
-        run_staff_login(self.page, self.config, self.config_file)
+        from staff_login_ui import staff_login_ui
+        staff_login_ui(self.page, self.config, self.config_file)
 
 class Popup:
     def __init__(self, page: flet.Page):

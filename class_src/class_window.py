@@ -1,8 +1,8 @@
 import flet
 
 class Font:
-    fontsize = 14
-    height = fontsize + 8
+    login_ui = 14
+    height = login_ui + 8
     big_fontsize = 20
     status_normal = flet.Colors.BLACK
     status_overdue = flet.Colors.ERROR

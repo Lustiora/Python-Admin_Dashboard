@@ -2,8 +2,10 @@
 
 * **2026-02-20**
   1. 함수형 프로그래밍에서 객체지향 프로그래밍 전환 (Def >> Class)
-     * src\db_connect.py >> class_src\db_connect.py **완료**
-     * src\staff_login.py >> class_src\staff_login.py **완료**
+     * 사유 : _코드 재사용을 원활하게 하기 위함_
+     * src\db_connect.py >> class_src\db_connect_ui.py **완료**
+     * src\staff_login.py >> class_src\staff_login_ui.py **완료**
+     * src\main_window.py >> class_src\main_ui.py **완료**
 
 * **2026-02-19**
   1. menu search rental 페이징 버튼 추가
@@ -122,7 +124,7 @@
      <details><summary>Improvement History</summary>
    
      | Old                            | New                          | 비고 (역할)                        |
-     | ------------------------------ | ---------------------------- | ------------------------------ |
+     |--------------------------------|------------------------------|--------------------------------|
      | **`menu.py`**                  | --                           | --                             |
      | `c_home`                       | **`view_home`**              | 메인 홈 화면 반환                     |
      | `c_status`                     | **`view_system_dashboard`**  | 시스템 상태 대시보드 반환                 |
@@ -231,7 +233,7 @@
   2. Linux 호환 설정: DB Disconnect 시 Restart 로직 디버깅
   3. PyInstaller 패키지 컴파일 테스트
         ```bash
-        pyinstaller -F -w -n Sakila_Basic_Logic_2_3 db_connect.py
+        pyinstaller -F -w -n Sakila_Basic_Logic_2_3 db_connect_ui.py
         # Linux 실행 성공 / Windows 별도 패키지 컴파일 필요 (Cross-Compile 미지원)
         ```
   4. OS별 재시작(Restart) 로직 분기 처리 및 디버깅

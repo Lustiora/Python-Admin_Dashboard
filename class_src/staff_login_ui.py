@@ -1,8 +1,8 @@
 import flet
 import time, base64, hashlib
 import psycopg2
-from db_connect import Popup
-from window import Font
+from db_connect_ui import Popup
+from class_window import Font
 
 class LoginManager:
     def __init__(self, page: flet.Page, config, config_file):
@@ -16,7 +16,7 @@ class LoginManager:
         self.user_data = None
         self.call = "010-1234-5678"
         self.query =\
-        """ select s.username , s.password , a.address , s.active , s.store_id
+        """ select s.username , s.password , a.address , s.store_id
             from staff s
             inner join store s2 on s.store_id = s2.store_id 
             inner join address a on s2.address_id = a.address_id 
@@ -47,14 +47,22 @@ class LoginManager:
                 user_data = cursor.fetchone()
                 print("User Login ...")
                 if user_data:
-                    print(f"ID : {user_data[0]} | PW : {user_data[1]}")
+                    login_db = self.config['DB Connect']['db']
+                    login_host = self.config['DB Connect']['host']
+                    login_port = self.config['DB Connect']['port']
+                    staff_user = user_data[0]
+                    staff_pw = user_data[1]
+                    staff_store_address = user_data[2]
+                    staff_store_id = user_data[3]
+                    print(f"ID : {staff_user} | PW : {staff_pw}")
                     self.page.window.min_width = None
                     self.page.window.min_height = None
                     self.page.window.resizable = True
                     self.page.window.maximizable = True
                     self.page.update()
                     self.page.clean()
-                    self.page.window.destroy()
+                    from main_ui import run_main
+                    run_main(self.page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id)
                 else:
                     if self.count <= 0:
                         print(f"Login Failed : OUT")
@@ -69,7 +77,7 @@ class LoginManager:
             except Exception as err:
                 print(f"[staff_login] error : {err}")
 
-def run_staff_login(page: flet.Page, config, config_file):
+def staff_login_ui(page: flet.Page, config, config_file):
     login_handler = LoginManager(page=page, config=config, config_file=config_file)
     popup = Popup(page=page)
     # -- Frame --
