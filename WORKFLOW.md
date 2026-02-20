@@ -1,5 +1,14 @@
 ## [README](/README.md)
 
+* **2026-02-20**
+  1. 함수형 프로그래밍에서 객체지향 프로그래밍 전환 (Def >> Class)
+     * src\db_connect.py >> class_src\db_connect.py **완료**
+
+* **2026-02-19**
+  1. menu search rental 페이징 버튼 추가
+  2. page 선택 영역 드래그 기능 추가
+  3. flet 0.28.3 라이브러리 위젯 List 추출 및 Docs 제작
+
 * **2026-02-13**
   1. Database Update (Actor, Category, ... Table)
      * **Film Table**:
