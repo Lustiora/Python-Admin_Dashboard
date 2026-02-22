@@ -1,7 +1,7 @@
 import flet
 import time, base64, hashlib
 import psycopg2
-from db_connect_ui import Popup
+from class_popup import Popup
 from class_window import Font
 
 class LoginManager:

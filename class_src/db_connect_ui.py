@@ -3,6 +3,7 @@ import sys, os, time, configparser, base64
 import psycopg2
 import flet
 from class_window import Font
+from class_popup import Popup
 
 class DBConnect:
     def __init__(self, page: flet.Page, popup: Popup):
@@ -156,57 +157,6 @@ class DBConnect:
         from staff_login_ui import staff_login_ui
         staff_login_ui(self.page, self.config, self.config_file)
 
-class Popup:
-    def __init__(self, page: flet.Page):
-        self.page = page
-
-        self.main_quit = flet.AlertDialog(
-            title=flet.Text("Quit"),
-            content=flet.Text("Exit?"),
-            actions_alignment = flet.MainAxisAlignment.END,
-            actions=[
-                flet.TextButton("OK", on_click=self.show_main_close, autofocus=True),
-                flet.TextButton("Cancel", on_click=self.show_close)
-            ]
-        )
-
-        self.error = flet.AlertDialog(
-            title=flet.Text("Connection Failed"),
-            content=flet.Text("Your ID or password is incorrect."),
-            actions_alignment=flet.MainAxisAlignment.END,
-            actions=[
-                flet.TextButton("OK", on_click=self.show_error_close, autofocus=True),
-            ]
-        )
-
-    # noinspection PyCallingNonCallable : 밑줄 코드 Pycharm 경고 제거
-
-    def show_open(self, e):
-        if e.data == "close":
-            # noinspection PyCallingNonCallable
-            self.page.open(self.main_quit)
-
-    def show_close(self, e):
-        self.page.close(self.main_quit)  # 팝업창 종료 명령어
-
-    def show_main_close(self, e):
-        self.page.window.close()
-        self.page.window.destroy()  # 윈도우 창 종료 명령어
-
-    def show_error_message(self, message: str):
-        self.error.content.value = message
-        # noinspection PyCallingNonCallable
-        self.page.open(self.error)
-
-    def show_error_actions_message(self, actions, message: str):
-        self.error.content.value = message
-        self.error.actions = actions
-        # noinspection PyCallingNonCallable
-        self.page.open(self.error)
-
-    def show_error_close(self, e):
-        self.page.close(self.error)
-
 def login_start(page: flet.Page):
     popup = Popup(page=page)
     app = DBConnect(page=page, popup=popup)
@@ -221,7 +171,7 @@ def login_start(page: flet.Page):
     page.window.min_width = page.window.width
     page.window.min_height = page.window.height
     page.window.center()
-    time.sleep(0.1)  # Loading Time Force : 옵션 적용 전 시작 방지
+    time.sleep(0.1) # Loading Time Force
     page.update()
     page.window.prevent_close = True # Exit Event
     page.window.on_event = popup.show_open

@@ -1,7 +1,21 @@
+# Log Print
+import logging, warnings
+level=logging.INFO # DEBUG, INFO, WARNING, ERROR, CRITICAL
+# ============================================================================
+# [Logging Levels]
+# 1. CRITICAL (50) : 🚨 시스템 붕괴 (엔진 폭발) -> 앱이 죽기 직전
+# 2. ERROR    (40) : ❌ 기능 실패   (타이어 펑크) -> 배포 환경 (기본)
+# 3. WARNING  (30) : ⚠️ 주의 요망   (연료 부족)   -> 예상치 못한 상황
+# 4. INFO     (20) : ✅ 정상 작동   (시동 켜짐)   -> 배포 환경 (상세)
+# 5. DEBUG    (10) : 🐞 개발 정보   (엔진 회전수) -> 개발 중 (현재)
+# ============================================================================
+logging.basicConfig(level=level)
+warnings.filterwarnings("ignore")
+
 # -- Import --
 import flet, time, os, sys, configparser, psycopg2, base64
-from db_monitor import connect_test
-from db_connect_ui import Popup
+from monitoring import connect_test
+from class_popup import Popup
 from navigation_tile import navigation
 
 # -- Module --
@@ -72,6 +86,7 @@ def run_main(page: flet.Page):
     ex_tile, basic_content = navigation(
         page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id
     )
+
     # -- Page --
     page.add(
         flet.Row([

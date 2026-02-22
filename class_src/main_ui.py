@@ -1,7 +1,7 @@
 # -- Import --
 import flet, time
-from db_monitor import connect_test
-from db_connect_ui import Popup
+from monitoring import connect_test
+from class_popup import Popup
 from navigation_tile import navigation
 
 # -- Module --
