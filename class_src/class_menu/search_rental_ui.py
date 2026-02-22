@@ -1,6 +1,24 @@
-import flet, math
+import flet
+from math import ceil
 from class_window import Font, Ratios
 from class_query import Search
+
+def today_status(query, view_page, status_name: str, status_query, status_color=None):
+    return flet.Container(
+        bgcolor=flet.Colors.GREY_200,
+        on_click=lambda e:query(None, view_page),
+        expand=1,
+        padding=10,
+        border_radius=10,
+        height=80,
+        ink=True,
+        alignment=flet.alignment.center_left,
+        border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
+        content=flet.Column([
+            flet.Text(status_name, style=flet.TextThemeStyle.TITLE_MEDIUM, color=status_color),
+            flet.Text(status_query, style=flet.TextThemeStyle.HEADLINE_SMALL, weight=flet.FontWeight.BOLD, color=status_color)
+        ], spacing=1)
+    )
 
 def build_rental_ui(page, store_id, conn):
     rental_data = flet.ListView(expand=True, spacing=0)
@@ -79,7 +97,7 @@ def build_rental_ui(page, store_id, conn):
         def page_count():
             connect_module_count.clear()
             count_pages = []
-            count = int(math.ceil(total_rental_query() / 10))
+            count = int(ceil(total_rental_query() / 10))
             for i in range(count):
                 pages = str(i+1)
                 count_pages.append(flet.Text(pages))
@@ -175,7 +193,7 @@ def build_rental_ui(page, store_id, conn):
         def page_count():
             connect_module_count.clear()
             count_pages = []
-            count = int(math.ceil(overdue_query() / 10))
+            count = int(ceil(overdue_query() / 10))
             for i in range(count):
                 pages = str(i+1)
                 count_pages.append(flet.Text(pages))
@@ -269,7 +287,7 @@ def build_rental_ui(page, store_id, conn):
         def page_count():
             connect_module_count.clear()
             count_pages = []
-            count = int(math.ceil(due_today_query() / 10))
+            count = int(ceil(due_today_query() / 10))
             for i in range(count):
                 pages = str(i+1)
                 count_pages.append(flet.Text(pages))
@@ -359,51 +377,28 @@ def build_rental_ui(page, store_id, conn):
         except Exception as err:
             print(f"Search Rental error : {err}")
 
-    total_rentals = flet.Container(
-        bgcolor=flet.Colors.GREY_200,
-        on_click=lambda e:rental_search_total_query(None, view_page),
-        expand=1,
-        padding=10,
-        border_radius=10,
-        height=80,
-        ink=True,
-        alignment=flet.alignment.center_left,
-        border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-        content=flet.Column([
-            flet.Text("Total Rentals:", style=flet.TextThemeStyle.TITLE_MEDIUM),
-            flet.Text(total_rental_query(), style=flet.TextThemeStyle.HEADLINE_SMALL, weight=flet.FontWeight.BOLD)
-        ], spacing=1)
+    total_rentals = today_status(
+        query=rental_search_total_query,
+        view_page=view_page,
+        status_name="Total Rentals:",
+        status_query=total_rental_query()
     )
-    overdue = flet.Container(
-        bgcolor=flet.Colors.GREY_200,
-        on_click=lambda e:rental_search_overdue_query(None, view_page),
-        expand=1,
-        padding=10,
-        border_radius=10,
-        height=80,
-        ink=True,
-        alignment=flet.alignment.center_left,
-        border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-        content=flet.Column([
-            flet.Text("Overdue:", style=flet.TextThemeStyle.TITLE_MEDIUM, color=flet.Colors.ERROR),
-            flet.Text(overdue_query(), style=flet.TextThemeStyle.HEADLINE_SMALL, weight=flet.FontWeight.BOLD, color=flet.Colors.ERROR)
-        ], spacing=1)
+
+    overdue = today_status(
+        query=rental_search_overdue_query,
+        view_page=view_page,
+        status_name="Overdue:",
+        status_query=overdue_query(),
+        status_color=flet.Colors.ERROR
     )
-    due_today = flet.Container(
-        bgcolor=flet.Colors.GREY_200,
-        on_click=lambda e:rental_search_due_today_query(None, view_page),
-        expand=1,
-        padding=10,
-        border_radius=10,
-        height=80,
-        ink=True,
-        alignment=flet.alignment.center_left,
-        border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-        content=flet.Column([
-            flet.Text("Due Today:", style=flet.TextThemeStyle.TITLE_MEDIUM),
-            flet.Text(due_today_query(), style=flet.TextThemeStyle.HEADLINE_SMALL, weight=flet.FontWeight.BOLD)
-        ], spacing=1)
+
+    due_today = today_status(
+        query=rental_search_due_today_query,
+        view_page=view_page,
+        status_name="Due Today:",
+        status_query=due_today_query()
     )
+
     # Search
     def rental_search_data_query(e, view_page):
         cart_customer_id = []
@@ -418,7 +413,7 @@ def build_rental_ui(page, store_id, conn):
                      ], actions_alignment=flet.MainAxisAlignment.END)
         def page_count():
             count_pages = []
-            count = int(math.ceil(int(connect_module_count[0]) / 10))
+            count = int(ceil(int(connect_module_count[0]) / 10))
             for i in range(count):
                 pages = str(i+1)
                 count_pages.append(flet.Text(pages))
@@ -540,7 +535,7 @@ def build_rental_ui(page, store_id, conn):
         except Exception as err:
             print(f"Search Rental error : {err}")
 
-        # print(f"{count_num / 10} / {math.ceil(count_num / 10, 0) * 10}")
+        # print(f"{count_num / 10} / {ceil(count_num / 10, 0) * 10}")
 
     input_rental = flet.TextField(
         hint_text=" Press Enter to Search", on_submit=lambda e:rental_search_data_query(None, view_page), label=" Rental ID or Customer Name ↵",

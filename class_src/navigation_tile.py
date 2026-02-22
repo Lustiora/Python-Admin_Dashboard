@@ -1,8 +1,8 @@
-from menu.menu import *
-from menu.menu_search import *
-from menu.menu_edit import *
-from menu.menu_delete import *
-from menu.menu_add import *
+from class_menu.m_menu import *
+from class_menu.search import *
+from class_menu.edit import *
+from class_menu.delete import *
+from class_menu.add import *
 
 def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id):
     basic_content = flet.Container(

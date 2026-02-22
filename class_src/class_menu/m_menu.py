@@ -20,7 +20,7 @@ def view_home():
                             ], height=50),
                             flet.Row([
                                 flet.Text(
-                                    "Get started by navigating through the sidebar menu on the left. " # Body
+                                    "Get started by navigating through the sidebar class_menu on the left. " # Body
                                     "You can quickly look up customer records, check real-time stock levels, or process new rentals. "
                                     "If you need to update system configurations or view staff details, please visit the Manager section. "
                                     "Your efficient workflow starts here.",

@@ -1,9 +1,8 @@
 import flet
-
-from menu.menu_search_customer import *
-from menu.menu_search_inventory import *
-from menu.menu_search_rental import *
-from menu.menu_search_payment import *
+from menu_search_customer import build_customer_ui
+from menu_search_inventory import build_inventory_ui
+from search_rental_ui import build_rental_ui
+from menu_search_payment import build_payment_ui
 
 def view_search_customer(page, store_id, conn):
     input_customer, view_customer = build_customer_ui(page, store_id, conn) # Module Return Value get

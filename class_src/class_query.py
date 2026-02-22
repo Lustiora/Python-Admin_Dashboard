@@ -1,7 +1,7 @@
 class Search:
 
     #############################################
-    # menu search customer
+    # class_menu search customer
     #############################################
 
     customer_name_query\
@@ -45,7 +45,7 @@ class Search:
     # 	and r.rental_date::date + f.rental_duration < CURRENT_DATE;
 
     #############################################
-    # menu search inventory
+    # class_menu search inventory
     #############################################
 
     film_title_query\
@@ -89,7 +89,7 @@ class Search:
     #     on i.inventory_id = r.inventory_id);
 
     #############################################
-    # menu search rental
+    # class_menu search rental
     #############################################
 
     return_total_query\
@@ -297,7 +297,7 @@ class Search:
 class Rental:
 
     #############################################
-    # menu add return
+    # class_menu add return
     #############################################
 
     return_payment_query\
