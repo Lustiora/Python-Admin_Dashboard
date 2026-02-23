@@ -1,5 +1,12 @@
 ## [README](/README.md)
 
+* **2026-02-23**
+  1. class_src\search_rental_ui.py 중복사용 코드 간략화 (**_609 > 307_**)
+     * 현재 확인된 문제:
+       * 상단 컨테이너 버튼 클릭 시 데이터가 없는 경우 page_num 동작 안함
+       * 상단 컨테이너 버튼 클릭 시 page_num 기본 위치가 0으로 돌아가지 않음 
+  2. Hot_Reload (Linux) Fix
+
 * **2026-02-22**
   1. DB Connect Monitoring Script 연결 재시작 방식 전환
      * 기존 : 연결 끊김시 페이지를 드랍하고 새로운 페이지를 사용

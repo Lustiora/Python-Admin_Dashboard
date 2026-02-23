@@ -25,7 +25,7 @@ fi
 
 export FLET_NO_BROWSER=1
 
-watchfiles "python class_src/test_main_ui.py" src
+watchfiles "python class_src/test_main_ui.py" class_src
 
 echo ""
 read -p "Press Enter to exit..."
