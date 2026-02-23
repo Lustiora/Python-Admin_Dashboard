@@ -4,6 +4,15 @@ from .menu_search_inventory import build_inventory_ui
 from .search_rental_ui import build_rental_ui
 from .menu_search_payment import build_payment_ui
 
+def view_container(view_content):
+    return flet.Container(
+        alignment=flet.alignment.top_left,
+        expand=True,
+        content=flet.SelectionArea(content=view_content),
+        border_radius=5,
+        border=flet.border.all(1),
+    )
+
 def view_search_customer(page, store_id, conn):
     input_customer, view_customer = build_customer_ui(page, store_id, conn) # Module Return Value get
     return flet.Column(
@@ -15,14 +24,7 @@ def view_search_customer(page, store_id, conn):
             flet.Row([input_customer], height=60),
             flet.Divider(),
             flet.Column([
-                flet.Container(
-                    bgcolor=flet.Colors.GREY_200,
-                    alignment=flet.alignment.top_left,
-                    expand=True,
-                    content=flet.SelectionArea(content=view_customer),
-                    border_radius=5,
-                    border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-                )
+                view_container(view_customer)
             ], alignment=flet.alignment.center, expand=True),
         ]
     )
@@ -38,14 +40,7 @@ def view_search_inventory(page, store_id, conn):
             flet.Row([input_inventory,], height=60),
             flet.Divider(),
             flet.Column([
-                flet.Container(
-                    bgcolor=flet.Colors.GREY_200,
-                    content=flet.SelectionArea(content=view_inventory),
-                    alignment=flet.alignment.top_left,
-                    expand=True,
-                    border_radius=5,
-                    border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-                )
+                view_container(view_inventory)
             ], alignment=flet.alignment.center, expand=True),
         ]
     )
@@ -64,14 +59,7 @@ def view_search_rental(page, store_id, conn):
             flet.Row([input_rental, ], height=60),
             dummy,
             flet.Column([
-                flet.Container(
-                    bgcolor=flet.Colors.GREY_200,
-                    content=flet.SelectionArea(content=view_rental),
-                    alignment=flet.alignment.top_left,
-                    expand=True,
-                    border_radius=5,
-                    border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
-                )
+                view_container(view_rental)
             ], alignment=flet.alignment.center, expand=True),
         ]
     )
@@ -94,12 +82,11 @@ def view_search_payment():
                         flet.Text("Receipt Details", style=flet.TextThemeStyle.TITLE_LARGE,
                                   weight=flet.FontWeight.BOLD)], height=40),
                     flet.Container(
-                        bgcolor=flet.Colors.GREY_200,
                         content=receipt_details,
                         expand=True,
                         padding=10,
                         border_radius=5,
-                        border=flet.border.all(1, "flet.Colors.BLUE_GREY_50"),
+                        border=flet.border.all(1),
                         width=200
                     ),
                 ]
