@@ -8,7 +8,7 @@ from class_popup import Popup
 def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id):
     popup = Popup(page=page)
     basic_content = flet.Container(
-        content=view_home(),
+        content=view_search_payment(),
         alignment=flet.alignment.center,
         expand=True,
         border_radius=5,

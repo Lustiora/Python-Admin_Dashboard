@@ -7,6 +7,7 @@
   3. Server Time 추가
   4. conn > commit(), rollback() 추가 (유령 연결 방지)
   5. view_home 화면 코드 간략화
+  6. search_rental_ui 표시화면 개선 split(), in 사용
 
 * **2026-02-23**
   1. class_src\search_rental_ui.py 중복사용 코드 간략화 (**_609 > 307_**)

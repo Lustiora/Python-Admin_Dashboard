@@ -54,56 +54,68 @@ def view_header():
     )
 
 def view_table(row, status_normal, status_color):
+    if "Overdue" in row[5]:
+        status = row[5].split(" (")[0]
+        days = row[5].split("due ")[1]
+    else:
+        status = row[5]
+        days = ""
     return flet.Container(
         content=flet.Row(
             controls=[
                 flet.Row([
-                    flet.Container(width=5),
+                    flet.Container(width=4),
                     flet.Text(
                         str(row[0]), color=status_normal, expand=True,
                         max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[0])),
                 ], expand=Ratios.id, spacing=0),
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Row([
-                    flet.Container(width=5),
+                    flet.Container(width=4),
                     flet.Text(
                         row[1], color=status_normal, expand=True,
                         max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[1]),
                 ], expand=Ratios.name, spacing=0),
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Row([
-                    flet.Container(width=5),
-                    flet.Text(
-                        row[2], text_align="left", color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[7]),
-                    flet.Text(
-                        row[6], text_align="right", color=status_normal, expand=True,
-                        max_lines=1, tooltip=row[7]),
-                    flet.Container(width=5),
+                    flet.Container(width=4),
+                    flet.Column([
+                        flet.Text(
+                            row[2], color=status_normal, max_lines=1, tooltip=row[7],
+                            overflow=flet.TextOverflow.ELLIPSIS),
+                        flet.Text(
+                            row[6], color=status_normal, max_lines=1, tooltip=row[7]),
+                    ],expand=True, spacing=0),
+                    flet.Container(width=4),
                 ], expand=Ratios.title, alignment=flet.MainAxisAlignment.SPACE_BETWEEN, spacing=0),
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Row([
-                    flet.Container(width=5),
+                    flet.Container(width=4),
                     flet.Text(
-                        str(row[3]), text_align="left", color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[3])),
+                        str(row[3]), color=status_normal, expand=True,
+                        max_lines=2, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[3])),
                 ], expand=Ratios.date, spacing=0),
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Row([
-                    flet.Container(width=5),
+                    flet.Container(width=4),
                     flet.Text(
-                        str(row[4]), text_align="left", color=status_normal, expand=True,
+                        str(row[4]), color=status_normal, expand=True,
                         max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[4])),
                 ], expand=Ratios.date, spacing=0),
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Row([
-                    flet.Container(width=5),
-                    flet.Text(
-                        row[5], text_align="left", color=status_color, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[5]),
+                    flet.Container(width=4),
+                    flet.Column([
+                        flet.Text(
+                            status, color=status_normal, max_lines=1, tooltip=row[5],
+                            overflow=flet.TextOverflow.ELLIPSIS),
+                        flet.Text(
+                            days, color=status_normal, max_lines=1, tooltip=row[5],
+                            overflow=flet.TextOverflow.ELLIPSIS),
+                    ], expand=True, spacing=0),
                 ], expand=Ratios.status, spacing=0),
             ], alignment=flet.MainAxisAlignment.START, spacing=5
-        ), padding=10, border_radius=5, height=40, expand=True
+        ), padding=10, border_radius=5, height=60, expand=True
     )
 
 def view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count, connect_module_page:int, query, page_num, select_page):
