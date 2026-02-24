@@ -61,9 +61,11 @@ class LoginManager:
                     self.page.window.maximizable = True
                     self.page.update()
                     self.page.clean()
+                    conn.commit()
                     from main_ui import run_main
                     run_main(self.page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id)
                 else:
+                    conn.commit()
                     if self.count <= 0:
                         print(f"Login Failed : OUT")
                         popup.show_error_open(
@@ -75,6 +77,7 @@ class LoginManager:
                         popup.show_error_open(f"Connect Failed\nCount (3) : {self.count}")
                         return
             except Exception as err:
+                conn.rollback()
                 print(f"[staff_login] error : {err}")
 
 def staff_login_ui(page: flet.Page, config, config_file):

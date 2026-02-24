@@ -30,7 +30,9 @@ def build_customer_ui(page, store_id, conn):
                         message=f"Customer Name Not Found [{input_customer.value}]"
                     )
                     return # 조회 실패시 쿼리 실행 방지
+                conn.commit()
             except:
+                conn.rollback()
                 print("Error. Customer Search")
                 popup.show_error_open(
                     message="Error. Customer Search"
@@ -100,7 +102,9 @@ def build_customer_ui(page, store_id, conn):
                 popup.show_error_open(
                     message=f"Customer ID Not Found [{input_customer.value}]"
                 )
+            conn.commit()
         except Exception as err:
+            conn.rollback()
             print(f"Search Customer error : {err}")
     input_customer = flet.TextField(label=" Customer ID or Name ↵", on_submit=query_customer, hint_text=" Press Enter to Search",
         text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)

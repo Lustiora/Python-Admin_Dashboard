@@ -10,7 +10,7 @@ def view_container(view_content):
         expand=True,
         content=flet.SelectionArea(content=view_content),
         border_radius=5,
-        border=flet.border.all(1),
+        border=flet.border.all(color=flet.Colors.BLACK),
     )
 
 def view_search_customer(page, store_id, conn):
@@ -86,7 +86,7 @@ def view_search_payment():
                         expand=True,
                         padding=10,
                         border_radius=5,
-                        border=flet.border.all(1),
+                        border=flet.border.all(color=flet.Colors.BLACK),
                         width=200
                     ),
                 ]

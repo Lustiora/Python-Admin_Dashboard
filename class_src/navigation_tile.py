@@ -3,8 +3,10 @@ from class_menu.search import *
 from class_menu.edit import *
 from class_menu.delete import *
 from class_menu.add import *
+from class_popup import Popup
 
 def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id):
+    popup = Popup(page=page)
     basic_content = flet.Container(
         content=view_home(),
         alignment=flet.alignment.center,
@@ -71,7 +73,6 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
             ),flet.ExpansionTile(
                 leading=flet.Icon(flet.Icons.SCREEN_SEARCH_DESKTOP_ROUNDED),
                 title=flet.Text("Search"),
-                bgcolor=flet.Colors.BLUE_GREY_200,
                 controls=[
                     flet.ListTile(
                         title=flet.Text("Customer"),
@@ -94,7 +95,6 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
             ),flet.ExpansionTile(
                 leading=flet.Icon(flet.Icons.ADD_BOX),
                 title=flet.Text("Add"),
-                bgcolor=flet.Colors.BLUE_GREY_200,
                 controls=[
                     flet.ListTile(
                         title=flet.Text("Customer"),
@@ -121,7 +121,6 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
             ),flet.ExpansionTile(
                 leading=flet.Icon(flet.Icons.CHANGE_CIRCLE),
                 title=flet.Text("Edit"),
-                bgcolor=flet.Colors.BLUE_GREY_200,
                 controls=[
                     flet.ListTile(
                         title=flet.Text("Customer"),
@@ -148,7 +147,6 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
             ),flet.ExpansionTile(
                 leading=flet.Icon(flet.Icons.DELETE),
                 title=flet.Text("Delete"),
-                bgcolor=flet.Colors.BLUE_GREY_200,
                 controls=[
                     flet.ListTile(
                         title=flet.Text("Customer"),
@@ -189,13 +187,12 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
             ),flet.ListTile(
                 leading=flet.Icon(flet.Icons.EXIT_TO_APP),
                 title=flet.Text("Exit"),
-                on_click=""
+                on_click=lambda e: (setattr(e, "data", "close"), popup.show_open(e))
             )
         ]
     )
     ex_tile = flet.Container(
         width=180,
-        bgcolor=flet.Colors.BLUE_GREY_100,
         padding=2,
         border_radius=5,
         content=tile_column

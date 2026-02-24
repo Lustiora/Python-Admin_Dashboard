@@ -4,6 +4,9 @@
   1. ~~Rental ID 검색 시 결과값이 1개인 경우 검색되지않음~~ **해결**
      * 결과값이 1개인 경우 page_num 숨김처리 `len(count_pages) <= 1`
   2. 오타 경고 단어 사전 추가, Popup Class 간소화, print문 정리 (결과가 없거나 실패했을때만 출력)
+  3. Server Time 추가
+  4. conn > commit(), rollback() 추가 (유령 연결 방지)
+  5. view_home 화면 코드 간략화
 
 * **2026-02-23**
   1. class_src\search_rental_ui.py 중복사용 코드 간략화 (**_609 > 307_**)

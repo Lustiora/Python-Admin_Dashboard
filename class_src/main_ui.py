@@ -26,30 +26,33 @@ def run_main(page: flet.Page, conn, login_db, login_host, login_port, staff_user
     page.window.on_event = popup.show_open
 
     # -- Statusbar --
-    con_status = flet.Container(
-        content=flet.Text(value="status "),
-        alignment=flet.Alignment(1, 1),
+    server_status = flet.Text(value="Server Status", text_align=flet.TextAlign.RIGHT)
+    server_time = flet.Text(value="Server Time", text_align=flet.TextAlign.LEFT)
+    connect_status = flet.Container(
+        content=flet.Row([server_time, server_status], alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
         height=24,
-        padding=2,
+        alignment=flet.alignment.center_left,
+        padding=flet.padding.only(left=10, right=10),
         border_radius=5,
-        bgcolor=flet.Colors.OUTLINE
+        border=flet.border.all(color=flet.Colors.BLACK)
     )
 
     # -- Main Area --
     ex_tile, basic_content = navigation(
         page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id
     )
+
     # -- Page --
     page.add(
         flet.Row([
             flet.Column([ex_tile
                 ],scroll=flet.ScrollMode.AUTO, alignment=flet.MainAxisAlignment.START),
             flet.VerticalDivider(width=1),
-            flet.Column([basic_content, con_status],expand=True),
+            flet.Column([basic_content, connect_status],expand=True),
                 ], expand=True, vertical_alignment=flet.CrossAxisAlignment.START
         )
     )
-    connect_test(conn, con_status, page)
+    connect_test(conn, server_status, server_time, connect_status, page)
 
     # -- Update --
     page.update()

@@ -29,7 +29,9 @@ def build_inventory_ui(page, store_id, conn):
                         message=f"Film Title Not Found [{input_inventory.value}]"
                     )
                     return # 조회 실패시 쿼리 실행 방지
+                conn.commit()
             except:
+                conn.rollback()
                 print("Error. Not Film Title")
                 popup.show_error_open(
                     message="Error. Not Film Title"
@@ -92,7 +94,9 @@ def build_inventory_ui(page, store_id, conn):
                 popup.show_error_open(
                     message=f"Inventory ID Not Found [{input_inventory.value}]"
                 )
+            conn.commit()
         except Exception as err:
+            conn.rollback()
             print(f"Search Inventory error : {err}")
     input_inventory = flet.TextField(label=" Inventory ID or Film Title ↵", on_submit=query_inventory, hint_text=" Press Enter to Search",
         text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)
@@ -111,7 +115,7 @@ def build_inventory_ui(page, store_id, conn):
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Text("Rental Rate", expand=Ratios.rate, text_align="center"),
             ], alignment=flet.MainAxisAlignment.START, spacing=5
-        ), padding=10, border_radius=5, bgcolor=flet.Colors.PRIMARY_CONTAINER, height=40
+        ), padding=10, border_radius=5, height=40
     )
     view_inventory = flet.Column(
         controls=[

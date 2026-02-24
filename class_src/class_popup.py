@@ -5,6 +5,7 @@ class Popup:
         self.page = page
 
         self.main_quit = flet.AlertDialog(
+            modal=True,
             title=flet.Text("Quit"),
             content=flet.Text("Exit?"),
             actions_alignment = flet.MainAxisAlignment.END,
@@ -15,6 +16,7 @@ class Popup:
         )
 
         self.error = flet.AlertDialog(
+            modal=True,
             title=flet.Text("Connection Failed"),
             content=flet.Text("Your ID or password is incorrect."),
             actions_alignment=flet.MainAxisAlignment.END,

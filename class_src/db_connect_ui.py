@@ -95,13 +95,14 @@ class DBConnect:
                 encrypted_pw = self.config['DB Connect']['password']
                 pw_bytes = base64.b64decode(encrypted_pw)
                 decrypted_pw = pw_bytes.decode('utf-8')
-                psycopg2.connect(
+                conn = psycopg2.connect(
                     dbname=self.config['DB Connect']['db'],
                     host=self.config['DB Connect']['host'],
                     port=self.config['DB Connect']['port'],
                     user=self.config['DB Connect']['user'],
                     password=decrypted_pw
                 )
+                conn.commit()
                 print("Auto Login Connection Established")
                 self.staff_view()
             except Exception as e:
@@ -112,13 +113,14 @@ class DBConnect:
         else:
             print("Unable to Load")
             try:
-                psycopg2.connect(
+                conn = psycopg2.connect(
                     dbname=self.db.value, # type: ignore
                     host=self.host.value, # type: ignore
                     port=self.port.value, # type: ignore
                     user=self.username.value, # type: ignore
                     password=self.password.value # type: ignore
                 )
+                conn.commit()
                 self.save_config()
                 self.staff_view()
             except Exception as err:

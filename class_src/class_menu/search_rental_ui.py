@@ -13,7 +13,7 @@ def today_status(query, view_page, status_name:str, status_query, status_color=N
         height=80,
         ink=True,
         alignment=flet.alignment.center_left,
-        border=flet.border.all(1),
+        border=flet.border.all(color=flet.Colors.BLACK),
         content=flet.Column([
             flet.Text(status_name, style=flet.TextThemeStyle.TITLE_MEDIUM, color=status_color),
             flet.Text(status_query, style=flet.TextThemeStyle.HEADLINE_SMALL, weight=flet.FontWeight.BOLD, color=status_color)
@@ -26,10 +26,12 @@ def status_page(conn, query, store_id):
         cursor.execute(query, (store_id,))
         data = cursor.fetchone()
         if data:
+            conn.commit()
             return data[0]
         else:
             print("Status Page Query Search Failed")
     except Exception as err:
+        conn.rollback()
         print(f"Status Page Query Search Failed \n{err}")
 
 def view_header():
@@ -48,7 +50,7 @@ def view_header():
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Text("Status", expand=Ratios.status, text_align="center"),
             ], alignment=flet.MainAxisAlignment.START, spacing=5
-        ), padding=10, border_radius=5, height=40
+        ), padding=10, border_radius=5, height=40,
     )
 
 def view_table(row, status_normal, status_color):
@@ -204,7 +206,9 @@ def build_rental_ui(page, store_id, conn):
             rental_id_data = cursor.fetchall()
             view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
                                    connect_module_page, total_rental_data, page_num, select_page)
+            conn.commit()
         except Exception as err:
+            conn.rollback()
             print(f"Search Rental error : {err}")
 
     def rental_search_overdue_query(e, view_page, select_page):
@@ -215,7 +219,9 @@ def build_rental_ui(page, store_id, conn):
             rental_id_data = cursor.fetchall()
             view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
                                    connect_module_page, overdue_data, page_num, select_page)
+            conn.commit()
         except Exception as err:
+            conn.rollback()
             print(f"Search Rental error : {err}")
 
     def rental_search_due_today_query(e, view_page, select_page):
@@ -226,7 +232,9 @@ def build_rental_ui(page, store_id, conn):
             rental_id_data = cursor.fetchall()
             view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
                                    connect_module_page, due_today_data, page_num, select_page)
+            conn.commit()
         except Exception as err:
+            conn.rollback()
             print(f"Search Rental error : {err}")
 
     # Search
@@ -254,7 +262,9 @@ def build_rental_ui(page, store_id, conn):
                         message=f"Customer Name Not Found [{input_rental.value}]"
                     )
                     return
+                conn.commit()
             except Exception as err:
+                conn.rollback()
                 print(f"Error. Customer Name Search {err}")
         cursor = conn.cursor()
         if cart_customer_id:
@@ -271,7 +281,9 @@ def build_rental_ui(page, store_id, conn):
                 print(f"Customer ID Not Found [{input_rental.value}]")
             view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
                                    connect_module_page, connect_module_count[0], page_num, select_page)
+            conn.commit()
         except Exception as err:
+            conn.rollback()
             print(f"Search Rental error : {err}")
 
     total_rentals = today_status(
@@ -322,7 +334,11 @@ def build_rental_ui(page, store_id, conn):
                     scroll=flet.ScrollMode.AUTO,
     )]))
 
-    view_rental = flet.Column(expand=True, spacing=5,controls=[view_header(), rental_data, page_row])
+    view_rental = flet.Column(
+        expand=True,
+        spacing=5,
+        controls=[view_header(), rental_data, page_row]
+    )
 
     rental_search_total_query(None, 0,0)
 

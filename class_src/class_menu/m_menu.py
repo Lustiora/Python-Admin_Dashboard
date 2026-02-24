@@ -1,41 +1,38 @@
 import flet
 
+logo_src = "/logo.png"
+welcome_text = "Welcome to the Sakila Management System"
+project_text = """
+Get started by navigating through the sidebar class_menu on the left. \
+You can quickly look up customer records, check real-time stock levels, or process new rentals. \
+If you need to update system configurations or view staff details, please visit the Manager section. \
+Your efficient workflow starts here.
+"""
+
 def view_home():
-    return flet.Column(
-        alignment=flet.MainAxisAlignment.CENTER,
-        controls=[
-            flet.Row([
-                flet.Row([
-                    flet.Image(src="/logo.png",width=200,height=200),
-                    flet.Container(
-                        margin=flet.margin.only(left=20),
-                        content=flet.Column([
-                            flet.Row([
-                                flet.Text(
-                                    "Welcome to the Sakila Management System", # Title
-                                    style=flet.TextThemeStyle.BODY_LARGE,
-                                    size=30,
-                                    italic=True,
-                                    weight=flet.FontWeight.BOLD),
-                            ], height=50),
-                            flet.Row([
-                                flet.Text(
-                                    "Get started by navigating through the sidebar class_menu on the left. " # Body
-                                    "You can quickly look up customer records, check real-time stock levels, or process new rentals. "
-                                    "If you need to update system configurations or view staff details, please visit the Manager section. "
-                                    "Your efficient workflow starts here.",
-                                    color=flet.Colors.GREY_700,
-                                    style=flet.TextThemeStyle.BODY_LARGE,
-                                    width=650,
-                                    text_align=flet.TextAlign.JUSTIFY,
-                                    size=16
-                                    ),
-                                ]),
-                        ],)
-                    )
-                ], vertical_alignment=flet.CrossAxisAlignment.START)
-            ], alignment=flet.MainAxisAlignment.CENTER,)
-        ]
+    return flet.Container(
+        margin=flet.padding.all(10),
+        content=flet.Row([
+            flet.Image(src=logo_src, width=200, height=200),
+            flet.Column([
+                flet.Text(
+                    value=welcome_text,
+                    style=flet.TextThemeStyle.BODY_LARGE,
+                    size=30,
+                    italic=True,
+                    weight=flet.FontWeight.BOLD,
+                    text_align=flet.TextAlign.CENTER,
+                    width=650,
+                ),flet.Text(
+                    value=project_text,
+                    color=flet.Colors.GREY_700,
+                    style=flet.TextThemeStyle.BODY_LARGE,
+                    text_align=flet.TextAlign.JUSTIFY,
+                    size=16,
+                    width=650,
+                )
+            ],alignment=flet.MainAxisAlignment.CENTER)
+        ],alignment=flet.MainAxisAlignment.CENTER,)
     )
 
 def view_status(login_db, login_host, login_port, staff_store, staff_user):
