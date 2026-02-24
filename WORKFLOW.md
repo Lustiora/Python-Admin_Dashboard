@@ -1,5 +1,9 @@
 ## [README](/README.md)
 
+* **2026-02-24**
+  1. ~~Rental ID 검색 시 결과값이 1개인 경우 검색되지않음~~ **해결**
+     * 결과값이 1개인 경우 page_num 숨김처리 `len(count_pages) <= 1`
+
 * **2026-02-23**
   1. class_src\search_rental_ui.py 중복사용 코드 간략화 (**_609 > 307_**)
   2. Hot_Reload (Linux) Fix

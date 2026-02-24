@@ -141,7 +141,10 @@ def view_table_rental_data(rental_data, rental_id_data, connect_module, connect_
         for i in range(count):
             pages = str(i + 1)
             count_pages.append(flet.Text(pages))
-        page_num.controls = count_pages
+        if len(count_pages) <= 1:
+            page_num.visible = False
+        else:
+            page_num.controls = count_pages
         if page_num.page:
             page_num.update()
         if rental_data.page:
