@@ -29,10 +29,10 @@ def connect_test(conn, status, page: flet.Page):
         status.bgcolor = flet.Colors.ERROR_CONTAINER
         status.update()
         print(f"Error: {err}")
-        popup.show_error_actions_message(
+        popup.show_error_open(
+            message="Disconnected\nProgram Restart?",
             actions=[
                 flet.TextButton("OK", on_click=restart_main),
                 flet.TextButton("Cancel", on_click=popup.show_error_close)
             ],
-            message="Disconnected\nProgram Restart?",
         )

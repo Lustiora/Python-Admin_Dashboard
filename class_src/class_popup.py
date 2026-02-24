@@ -37,14 +37,14 @@ class Popup:
         self.page.window.close()
         self.page.window.destroy()  # 윈도우 창 종료 명령어
 
-    def show_error_message(self, message: str):
+    def show_error_open(self, message: str, actions=None):
         self.error.content.value = message
-        # noinspection PyCallingNonCallable
-        self.page.open(self.error)
-
-    def show_error_actions_message(self, actions, message: str):
-        self.error.content.value = message
-        self.error.actions = actions
+        if actions is not None:
+            self.error.actions = actions
+        else:
+            self.error.actions = [
+                flet.TextButton("OK", on_click=self.show_error_close, autofocus=True),
+            ]
         # noinspection PyCallingNonCallable
         self.page.open(self.error)
 

@@ -1,42 +1,40 @@
 import flet
 from class_window import Font, Ratios
 from class_query import Search
+from class_popup import Popup
 
 def build_customer_ui(page, store_id, conn):
+    popup = Popup(page=page)
     customer_id_data = flet.ListView(expand=True, spacing=0)
     def query_customer(e):
         cart_customer_id = [] # ID 상자
-        def close_pop(e):
-            page.close(error_quit)
-            input_customer.focus()
-        error_quit = flet.AlertDialog(
-            title=flet.Text("Customer"),
-            content=flet.Text(f"Customer Name Not Found [{input_customer.value}]"),
-            actions=[flet.TextButton("OK", on_click=close_pop, autofocus=True)
-                     ], actions_alignment=flet.MainAxisAlignment.END)
         try:
             cart_customer_id.append(int(input_customer.value)) # ANY(%s) 조회를 위해 상자 보관
             # cart_customer_id = int(input_customer.value) -> ID 상자를 만들지 않는 경우 사용가능 | ANY(%s) -> ERROR
-            print(f"Search Customer ID : {int(input_customer.value)}")
+            # print(f"Search Customer ID : {int(input_customer.value)}")
         except:
             str_customer_name = f"%{input_customer.value}%"
-            print("Not ID -> Name Search")
+            # print("Not ID -> Name Search")
             cursor = conn.cursor()
             try:
                 cursor.execute(Search.customer_name_query,(str_customer_name,str_customer_name,))
                 customer_name_id = cursor.fetchall()
                 if customer_name_id:
-                    print(f"Name Check : {input_customer.value}")
+                    # print(f"Name Check : {input_customer.value}")
                     for row in customer_name_id: # 검색어에 해당하는 ID 값들을 상자에 보관하기 위한 반복
                         cart_customer_id.append(row[0]) # .append로 상자에 보관
-                    print(f"List Check : {cart_customer_id}")
+                    # print(f"List Check : {cart_customer_id}")
                 else:
                     print(f"Not Customer Name {input_customer.value}")
-                    page.open(error_quit)
+                    popup.show_error_open(
+                        message=f"Customer Name Not Found [{input_customer.value}]"
+                    )
                     return # 조회 실패시 쿼리 실행 방지
             except:
-                print(f"Error. Not Customer Name {input_customer.value}")
-                page.open(error_quit)
+                print("Error. Customer Search")
+                popup.show_error_open(
+                    message="Error. Customer Search"
+                )
                 return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
         try:
@@ -99,7 +97,9 @@ def build_customer_ui(page, store_id, conn):
                 input_customer.focus()
             else:
                 print(f"Not Customer ID : {int(input_customer.value)}")
-                page.open(error_quit)
+                popup.show_error_open(
+                    message=f"Customer ID Not Found [{input_customer.value}]"
+                )
         except Exception as err:
             print(f"Search Customer error : {err}")
     input_customer = flet.TextField(label=" Customer ID or Name ↵", on_submit=query_customer, hint_text=" Press Enter to Search",
@@ -123,7 +123,7 @@ def build_customer_ui(page, store_id, conn):
                 flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
                 flet.Text("Status", expand=Ratios.status, text_align="center"),
             ], alignment=flet.MainAxisAlignment.START, spacing=5
-        ), padding=10, border_radius=5, bgcolor=flet.Colors.PRIMARY_CONTAINER, height=40
+        ), padding=10, border_radius=5, height=40
     )
     view_customer = flet.Column(
         controls=[

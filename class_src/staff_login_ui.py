@@ -66,13 +66,13 @@ class LoginManager:
                 else:
                     if self.count <= 0:
                         print(f"Login Failed : OUT")
-                        popup.show_error_actions_message(
-                            [flet.TextButton("Exit", on_click=popup.show_main_close, autofocus=True)],
-                            f"Please Contact the Administrator\nPhone : {self.call}"
+                        popup.show_error_open(
+                            message=f"Please Contact the Administrator\nPhone : {self.call}",
+                            actions=[flet.TextButton("Exit", on_click=popup.show_main_close, autofocus=True)]
                         )
                     else:
                         print(f"Login Failed | Count (3) : {self.count}")
-                        popup.show_error_message(f"Connect Failed\nCount (3) : {self.count}")
+                        popup.show_error_open(f"Connect Failed\nCount (3) : {self.count}")
                         return
             except Exception as err:
                 print(f"[staff_login] error : {err}")

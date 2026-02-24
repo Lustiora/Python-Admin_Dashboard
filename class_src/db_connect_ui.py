@@ -70,19 +70,19 @@ class DBConnect:
     def db_connect_event(self, e):
         # type: ignore : .value 경고 제거
         if not self.db.value: # type: ignore
-            self.popup.show_error_message("Please Login Database")
+            self.popup.show_error_open("Please Login Database")
             return
         if not self.host.value: # type: ignore
-            self.popup.show_error_message("Please Login Host")
+            self.popup.show_error_open("Please Login Host")
             return
         if not self.port.value: # type: ignore
-            self.popup.show_error_message("Please Login Port")
+            self.popup.show_error_open("Please Login Port")
             return
         if not self.username.value: # type: ignore
-            self.popup.show_error_message("Please Login ID")
+            self.popup.show_error_open("Please Login ID")
             return
         if not self.password.value: # type: ignore
-            self.popup.show_error_message("Please Login Password")
+            self.popup.show_error_open("Please Login Password")
             return
         print(f"Connecting to {self.host.value}...") # type: ignore
         self.login_try()
@@ -95,7 +95,7 @@ class DBConnect:
                 encrypted_pw = self.config['DB Connect']['password']
                 pw_bytes = base64.b64decode(encrypted_pw)
                 decrypted_pw = pw_bytes.decode('utf-8')
-                conn = psycopg2.connect(
+                psycopg2.connect(
                     dbname=self.config['DB Connect']['db'],
                     host=self.config['DB Connect']['host'],
                     port=self.config['DB Connect']['port'],
@@ -106,13 +106,13 @@ class DBConnect:
                 self.staff_view()
             except Exception as e:
                 print(f"Auto Login Failed:\n{e}")
-                self.popup.show_error_message("Auto-Login Failed")
+                self.popup.show_error_open("Auto-Login Failed")
                 self.page.clean()
                 self.login_ui()
         else:
             print("Unable to Load")
             try:
-                conn = psycopg2.connect(
+                psycopg2.connect(
                     dbname=self.db.value, # type: ignore
                     host=self.host.value, # type: ignore
                     port=self.port.value, # type: ignore
@@ -123,7 +123,7 @@ class DBConnect:
                 self.staff_view()
             except Exception as err:
                 print(f"Unable [load] Error : {err}")
-                self.popup.show_error_message("Connection Failed")
+                self.popup.show_error_open("Connection Failed")
                 # noinspection PyCallingNonCallable
                 self.page.open(self.popup.error)
                 return
