@@ -2,7 +2,7 @@ import flet
 from .menu_search_customer import build_customer_ui
 from .menu_search_inventory import build_inventory_ui
 from .search_rental_ui import build_rental_ui
-from .menu_search_payment import build_payment_ui
+from .search_payment_ui import build_payment_ui
 
 def view_container(view_content):
     return flet.Container(
@@ -46,7 +46,6 @@ def view_search_inventory(page, store_id, conn):
     )
 
 def view_search_rental(page, store_id, conn):
-    dummy = flet.Container()
     total_rentals, overdue, due_today, input_rental, view_rental = build_rental_ui(page, store_id, conn)
     return flet.Column(
         controls=[
@@ -54,28 +53,28 @@ def view_search_rental(page, store_id, conn):
                 flet.Text("Rental Status Overview", style=flet.TextThemeStyle.TITLE_LARGE,
                           weight=flet.FontWeight.BOLD)], height=40),
             flet.Divider(),
-            flet.Row([total_rentals, dummy, overdue, dummy, due_today]),
-            dummy,
+            flet.Row([total_rentals, overdue, due_today], spacing=20),
             flet.Row([input_rental, ], height=60),
-            dummy,
             flet.Column([
                 view_container(view_rental)
             ], alignment=flet.alignment.center, expand=True),
-        ]
+        ], spacing=20
     )
 
-def view_search_payment():
-    input_payment, receipt_details = build_payment_ui()
+def view_search_payment(page, store_id, conn):
+    input_payment, receipt_details = build_payment_ui(page, store_id, conn)
     return flet.Row([
-            flet.Column(
-                controls=[
-                    flet.Row([
-                        flet.Text("Payment History Search", style=flet.TextThemeStyle.TITLE_LARGE,
-                                  weight=flet.FontWeight.BOLD)], height=40),
-                    flet.Divider(),
-                    flet.Row([input_payment, ], height=60),
-                ], expand=5
-            ),flet.VerticalDivider(width=1),
+        flet.Column(
+            controls=[
+                flet.Row([
+                    flet.Text("Payment History Search", style=flet.TextThemeStyle.TITLE_LARGE,
+                              weight=flet.FontWeight.BOLD)], height=40),
+                flet.Divider(),
+                flet.Row([input_payment, ], height=60),
+            ], expand=5
+        ),
+        flet.Row([
+            flet.VerticalDivider(width=1),
             flet.Column(
                 controls=[
                     flet.Row([
@@ -91,5 +90,5 @@ def view_search_payment():
                     ),
                 ]
             )
-        ], spacing=20
-    )
+        ], visible=False)
+    ], spacing=20)

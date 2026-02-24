@@ -294,13 +294,50 @@ class Search:
     # inner join film f
     #     on i.film_id = f.film_id);
 
+    #############################################
+    # class_menu search payment
+    #############################################
+
+    payment_search_name_query\
+        = """
+        select p.payment_id
+        from payment p
+        inner join customer c on p.customer_id = c.customer_id
+        where c.store_id = %s
+        and c.first_name ||' '|| c.last_name ilike %s
+        """
+
+    payment_search_id_query\
+        = """
+        select 
+            p.payment_id ,
+            r.name ,
+            r.rental_date ,
+            r.title ,
+            p.amount as subtotal ,
+            p.amount * 0.1 as tax ,
+            p.amount * 1.1 as total,
+            case when return_date is null and over_due is null then 'Unreturned'
+                when return_date is null and over_due is not null then 'Overdue'||' ('||over_due * interval '1 day'||')'
+                else 'Returned'
+            end as status ,
+            r.count_title ,
+            r.full_title
+        from payment p 
+        inner join rental_data r on p.rental_id = r.rental_id 
+        where p.payment_id = ANY(%s)
+        and r.store_id = %s
+        order by payment_date desc, name
+        limit 10 offset %s
+        """
+
 class Rental:
 
     #############################################
     # class_menu add return
     #############################################
 
-    return_payment_query\
+    payment_return_query\
         = """   
         begin;
         update rental 

@@ -8,7 +8,7 @@ from class_popup import Popup
 def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id):
     popup = Popup(page=page)
     basic_content = flet.Container(
-        content=view_search_payment(),
+        content=view_search_payment(page, staff_store_id, conn),
         alignment=flet.alignment.center,
         expand=True,
         border_radius=5,
@@ -24,7 +24,7 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
         elif index == 1.3: # 대여상태 조회
             basic_content.content = view_search_rental(page, staff_store_id, conn)
         elif index == 1.4: # 결제이력 조회
-            basic_content.content = view_search_payment()
+            basic_content.content = view_search_payment(page, staff_store_id, conn)
         elif index == 2.1: # 고객정보 변경
             basic_content.content = view_edit_customer()
         elif index == 2.2: # 재고정보 변경

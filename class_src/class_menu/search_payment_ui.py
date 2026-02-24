@@ -1,7 +1,7 @@
 import flet
 from class_window import Font, Ratios
 
-def build_payment_ui():
+def build_payment_ui(page, store_id, conn):
     input_payment = flet.TextField(
             hint_text=" Press Enter to Search", on_submit="", label=" Payment ID or Customer Name ↵",
             text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)
@@ -37,11 +37,13 @@ def build_payment_ui():
             flet.Button("Print Receipt", width=200,
                         color=flet.Colors.ON_PRIMARY_CONTAINER,
                         bgcolor=flet.Colors.PRIMARY_CONTAINER,
-                        style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5), overlay_color=flet.Colors.INVERSE_PRIMARY)),
+                        style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
+                                               overlay_color=flet.Colors.INVERSE_PRIMARY)),
             flet.Button("Email Receipt", width=200,
                         color=flet.Colors.ON_PRIMARY_CONTAINER,
                         bgcolor=flet.Colors.PRIMARY_CONTAINER,
-                        style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5), overlay_color=flet.Colors.INVERSE_PRIMARY)),
+                        style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
+                                               overlay_color=flet.Colors.INVERSE_PRIMARY)),
         ], height=1, alignment=flet.MainAxisAlignment.SPACE_BETWEEN)
     )
     return input_payment, receipt_details
