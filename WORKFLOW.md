@@ -1,5 +1,13 @@
 ## [README](/README.md)
 
+* **2026-02-25**
+  1. search_payment_ui 구현 완료
+     * search_rental_ui, rental_data View Table 재사용
+     * 목록 조회, 조회 후 영수증 확인 기능 구현
+     * TMDB Image src 사용하여 영수증 디테일 강화
+     * 페이징 기능 추가
+  2. UI 정렬 상태 개선 및 가독성 강화
+
 * **2026-02-24**
   1. ~~Rental ID 검색 시 결과값이 1개인 경우 검색되지않음~~ **해결**
      * 결과값이 1개인 경우 page_num 숨김처리 `len(count_pages) <= 1`

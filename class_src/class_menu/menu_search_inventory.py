@@ -63,23 +63,23 @@ def build_inventory_ui(page, store_id, conn):
                                     flet.Text(
                                         str(row[0]), expand=Ratios.id, text_align="center",
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[0])),
-                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.VerticalDivider(width=1),
                                     flet.Text(
                                         row[1], expand=Ratios.name, text_align="center",
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[1]),
-                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.VerticalDivider(width=1),
                                     flet.Text(
                                         row[2], expand=Ratios.store, text_align="center",
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[2], color=store_color),
-                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.VerticalDivider(width=1),
                                     flet.Text(
                                         row[3], expand=Ratios.status, text_align="center",
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[3], color=status_color),
-                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.VerticalDivider(width=1),
                                     flet.Text(
                                         str(row[4]), expand=Ratios.date, text_align="center",
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[4])),
-                                    flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                                    flet.VerticalDivider(width=1),
                                     flet.Text(
                                         str(row[5]), expand=Ratios.rate, text_align="center",
                                         no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[5])),
@@ -104,15 +104,15 @@ def build_inventory_ui(page, store_id, conn):
         content = flet.Row(
             controls=[
                 flet.Text("ID", expand=Ratios.id, text_align="center"),
-                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.VerticalDivider(width=1),
                 flet.Text("Title", expand=Ratios.name, text_align="center"),
-                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.VerticalDivider(width=1),
                 flet.Text("Store", expand=Ratios.store, text_align="center"),
-                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.VerticalDivider(width=1),
                 flet.Text("Status", expand=Ratios.status, text_align="center"),
-                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.VerticalDivider(width=1),
                 flet.Text("Last Rental Date", expand=Ratios.date, text_align="center"),
-                flet.VerticalDivider(width=1, color=flet.Colors.PRIMARY),
+                flet.VerticalDivider(width=1),
                 flet.Text("Rental Rate", expand=Ratios.rate, text_align="center"),
             ], alignment=flet.MainAxisAlignment.START, spacing=5
         ), padding=10, border_radius=5, height=40

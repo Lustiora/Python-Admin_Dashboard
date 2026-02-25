@@ -22,11 +22,10 @@ def view_search_customer(page, store_id, conn):
                           weight=flet.FontWeight.BOLD)], height=40),
             flet.Divider(),
             flet.Row([input_customer], height=60),
-            flet.Divider(),
             flet.Column([
                 view_container(view_customer)
             ], alignment=flet.alignment.center, expand=True),
-        ]
+        ], spacing=20
     )
 
 def view_search_inventory(page, store_id, conn):
@@ -38,11 +37,10 @@ def view_search_inventory(page, store_id, conn):
                           weight=flet.FontWeight.BOLD)], height=40),
             flet.Divider(),
             flet.Row([input_inventory,], height=60),
-            flet.Divider(),
             flet.Column([
                 view_container(view_inventory)
             ], alignment=flet.alignment.center, expand=True),
-        ]
+        ], spacing=20
     )
 
 def view_search_rental(page, store_id, conn):
@@ -62,7 +60,7 @@ def view_search_rental(page, store_id, conn):
     )
 
 def view_search_payment(page, store_id, conn):
-    input_payment, receipt_details = build_payment_ui(page, store_id, conn)
+    input_payment, view_payment, receipt_details = build_payment_ui(page, store_id, conn)
     return flet.Row([
         flet.Column(
             controls=[
@@ -71,24 +69,10 @@ def view_search_payment(page, store_id, conn):
                               weight=flet.FontWeight.BOLD)], height=40),
                 flet.Divider(),
                 flet.Row([input_payment, ], height=60),
-            ], expand=5
+                flet.Column([
+                    view_container(view_payment)
+                ], alignment=flet.alignment.center, expand=True)
+            ], expand=5, spacing=20
         ),
-        flet.Row([
-            flet.VerticalDivider(width=1),
-            flet.Column(
-                controls=[
-                    flet.Row([
-                        flet.Text("Receipt Details", style=flet.TextThemeStyle.TITLE_LARGE,
-                                  weight=flet.FontWeight.BOLD)], height=40),
-                    flet.Container(
-                        content=receipt_details,
-                        expand=True,
-                        padding=10,
-                        border_radius=5,
-                        border=flet.border.all(color=flet.Colors.BLACK),
-                        width=200
-                    ),
-                ]
-            )
-        ], visible=False)
+        receipt_details
     ], spacing=20)
