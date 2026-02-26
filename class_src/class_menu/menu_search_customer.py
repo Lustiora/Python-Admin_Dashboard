@@ -25,18 +25,20 @@ def build_customer_ui(page, store_id, conn):
                         cart_customer_id.append(row[0]) # .append로 상자에 보관
                     # print(f"List Check : {cart_customer_id}")
                 else:
-                    print(f"Not Customer Name {input_customer.value}")
+                    print(f"Not Customer Name : {input_customer.value}")
                     popup.show_error_open(
                         message=f"Customer Name Not Found [{input_customer.value}]"
                     )
+                    input_customer.focus()
                     return # 조회 실패시 쿼리 실행 방지
                 conn.commit()
-            except:
+            except Exception as err:
                 conn.rollback()
-                print("Error. Customer Search")
+                print(f"Error. Customer Search : {err}")
                 popup.show_error_open(
                     message="Error. Customer Search"
                 )
+                input_customer.focus()
                 return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
         try:
@@ -96,12 +98,12 @@ def build_customer_ui(page, store_id, conn):
                         )
                     )
                 customer_id_data.update()
-                input_customer.focus()
             else:
                 print(f"Not Customer ID : {int(input_customer.value)}")
                 popup.show_error_open(
                     message=f"Customer ID Not Found [{input_customer.value}]"
                 )
+                input_customer.focus()
             conn.commit()
         except Exception as err:
             conn.rollback()

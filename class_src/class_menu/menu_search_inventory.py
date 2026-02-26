@@ -13,7 +13,7 @@ def build_inventory_ui(page, store_id, conn):
             # print(f"Search Inventory ID : {int(input_inventory.value)}")
         except:
             str_film_title = f"%{input_inventory.value}%"
-            print("Not ID -> Title Search")
+            # print("Not ID -> Title Search")
             cursor = conn.cursor()
             try:
                 cursor.execute(Search.film_title_query,(str_film_title,))
@@ -24,18 +24,20 @@ def build_inventory_ui(page, store_id, conn):
                         cart_inventory_id.append(row[0]) # .append로 상자에 보관
                     # print(f"List Check : {cart_inventory_id}")
                 else:
-                    # print(f"Not Film Title {input_inventory.value}")
+                    print(f"Not Film Title : {input_inventory.value}")
                     popup.show_error_open(
                         message=f"Film Title Not Found [{input_inventory.value}]"
                     )
+                    input_inventory.focus()
                     return # 조회 실패시 쿼리 실행 방지
                 conn.commit()
-            except:
+            except Exception as err:
                 conn.rollback()
-                print("Error. Not Film Title")
+                print(f"Error. Not Film Title {err}")
                 popup.show_error_open(
                     message="Error. Not Film Title"
                 )
+                input_inventory.focus()
                 return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
         try:
@@ -88,12 +90,12 @@ def build_inventory_ui(page, store_id, conn):
                         )
                     )
                 inventory_id_data.update()
-                input_inventory.focus()
             else:
-                print(f"Not Inventory ID : {int(input_inventory.value)}")
+                print(f"Not Inventory ID : {input_inventory.value}")
                 popup.show_error_open(
                     message=f"Inventory ID Not Found [{input_inventory.value}]"
                 )
+                input_inventory.focus()
             conn.commit()
         except Exception as err:
             conn.rollback()

@@ -169,24 +169,25 @@ def receipt(conn, payment_id:int=None):
     view_payment_date = flet.Text("Date", weight=flet.FontWeight.BOLD, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
     view_payment_name = flet.Text("Name", weight=flet.FontWeight.BOLD, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
     view_payment_subtotal = flet.Text("Sub")
-    view_payment_tex = flet.Text("TEX")
-    view_payment_total_amount = flet.Text("total", weight=flet.FontWeight.BOLD)
+    view_payment_tax = flet.Text("TAX")
+    view_payment_total_text = flet.Text("Total:", weight=flet.FontWeight.BOLD)
+    view_payment_total_amount = flet.Text("Total", weight=flet.FontWeight.BOLD)
 
     tmdb_api_image = "https://image.tmdb.org/t/p/w200"
 
     cursor = conn.cursor()
     try:
         payment_film_data.controls.clear()
-        cursor.execute(Search.payment_id_receipt_query,(payment_id,))
+        cursor.execute(Search.payment_receipt_query,(payment_id,))
         data = cursor.fetchone()
         if data:
             view_payment_id.value = data[0]
             view_payment_date.value = data[1]
             view_payment_name.value = data[2]
-            view_payment_subtotal.value = f"${data[3]:.2f}"
-            view_payment_tex.value = f"${data[4]:.2f}"
-            view_payment_total_amount.value = f"${data[5]:.2f}"
-        cursor.execute(Search.payment_receipt_query,(payment_id,))
+            view_payment_subtotal.value = f"${data[6]:.2f}"
+            view_payment_tax.value = f"${data[7]:.2f}"
+            view_payment_total_text.value = f"{data[4]}:"
+            view_payment_total_amount.value = f"${data[8]:.2f}"
         film_data = cursor.fetchall()
         if film_data:
             for row in film_data:
@@ -196,10 +197,10 @@ def receipt(conn, payment_id:int=None):
                         padding=10,
                         content=flet.Column([
                             flet.Row([
-                                flet.Image(src=f"{tmdb_api_image}{row[2]}",width=60, height=90),
+                                flet.Image(src=f"{tmdb_api_image}{row[3]}",width=60, height=90),
                                 flet.Column([
-                                    flet.Text(row[0]),
-                                    flet.Text(row[1])
+                                    flet.Text(row[4]),
+                                    flet.Text(row[5])
                                 ])
                             ]),
                             flet.Divider(height=1),
@@ -224,9 +225,9 @@ def receipt(conn, payment_id:int=None):
         flet.Divider(height=1),
         flet.Row([flet.Text("Subtotal:"), view_payment_subtotal,],
                  width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
-        flet.Row([flet.Text("Tax (10%):"), view_payment_tex,],
+        flet.Row([flet.Text("Tax (10%):"), view_payment_tax,],
                  width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
-        flet.Row([flet.Text("Total:", weight=flet.FontWeight.BOLD), view_payment_total_amount,],
+        flet.Row([view_payment_total_text, view_payment_total_amount,],
                  width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
         flet.Button("Print Receipt", width=float('inf'), height=50,
                     color=flet.Colors.ON_PRIMARY_CONTAINER,
@@ -294,6 +295,7 @@ def build_payment_ui(page, store_id, conn):
                     popup.show_error_open(
                         message=f"Customer Name Not Found [{input_payment.value}]"
                     )
+                    input_payment.focus()
                     return
                 conn.commit()
             except Exception as err:
@@ -319,6 +321,12 @@ def build_payment_ui(page, store_id, conn):
             conn.rollback()
             print(f"Search Payment error : {err}")
 
+    def search_payment(e, view_page, select_page):
+        page_num.selected_index = 0
+        receipt_details.visible = False
+        receipt_details.update()
+        payment_search_data_query(e, view_page, select_page)
+
     page_num = flet.CupertinoSlidingSegmentedButton(
         visible=False,  # True = 표시, False = 숨김
         selected_index=0,
@@ -340,7 +348,7 @@ def build_payment_ui(page, store_id, conn):
                 )]))
 
     input_payment = flet.TextField(
-        hint_text=" Press Enter to Search", on_submit=lambda e:payment_search_data_query(None, view_page, 0),
+        hint_text=" Press Enter to Search", on_submit=lambda e:search_payment(None, view_page, 0),
         label=" Payment ID or Customer Name ↵", text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10,
         max_length=30, autofocus=True)
 
@@ -357,14 +365,23 @@ def build_payment_ui(page, store_id, conn):
         flet.Column(
             controls=[
                 flet.Row([
-                    flet.Text("Receipt Details", style=flet.TextThemeStyle.TITLE_LARGE,
-                              weight=flet.FontWeight.BOLD),
-                    flet.IconButton(
-                        icon=flet.Icons.CLOSE_ROUNDED,
-                        on_click=lambda e:view_close_receipt(None, receipt_details)),
-                ], height=40,),
-                receipt_container
-            ],
+                    flet.Container(
+                        expand=3,
+                        alignment=flet.alignment.center_left,
+                        padding=flet.padding.only(left=10),
+                        content=flet.Text("Receipt Details", style=flet.TextThemeStyle.TITLE_LARGE,
+                            weight=flet.FontWeight.BOLD),
+                    ), flet.Container(
+                        expand=1,
+                        alignment=flet.alignment.center_right,
+                        content=flet.IconButton(
+                            icon=flet.Icons.CLOSE_ROUNDED,
+                            on_click=lambda e:view_close_receipt(None, receipt_details)
+                        ),
+                    ),
+                ], height=40, spacing=0,
+                ), receipt_container
+            ], width=250,
         )
     ], spacing=20, visible=False,)
 

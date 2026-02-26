@@ -269,15 +269,16 @@ def build_rental_ui(page, store_id, conn):
                     for row in customer_name_list:
                         cart_customer_id.append(row[0])
                 else:
-                    print(f"Customer Name Not Found [{input_rental.value}]")
+                    print(f"Customer Name Not Found : {input_rental.value}")
                     popup.show_error_open(
                         message=f"Customer Name Not Found [{input_rental.value}]"
                     )
+                    input_rental.focus()
                     return
                 conn.commit()
             except Exception as err:
                 conn.rollback()
-                print(f"Error. Customer Name Search {err}")
+                print(f"Error. Customer Name Search : {err}")
         cursor = conn.cursor()
         if cart_customer_id:
             connect_module_count.clear()
@@ -290,13 +291,13 @@ def build_rental_ui(page, store_id, conn):
             cursor.execute(Search.rental_search_id_query, (store_id, cart_customer_id, view_page,))
             rental_id_data = cursor.fetchall()
             if not rental_id_data:
-                print(f"Customer ID Not Found [{input_rental.value}]")
+                print(f"Customer ID Not Found : {input_rental.value}")
             view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
                                    connect_module_page, connect_module_count[0], page_num, select_page)
             conn.commit()
         except Exception as err:
             conn.rollback()
-            print(f"Search Rental error : {err}")
+            print(f"Search Rental error {err}")
 
     total_rentals = today_status(
         query=rental_search_total_query,

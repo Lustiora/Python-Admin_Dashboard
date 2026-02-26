@@ -1,5 +1,15 @@
 ## [README](/README.md)
 
+* **2026-02-26**
+  1. search_payment_ui
+     * 검색 후 다른 페이지를 선택하고 검색 시 페이지가 이전 페이지에 그대로 있는 오류 수정
+  2. search_payment_ui Receipt
+     * Query 압축 및 개선
+     * View Table 생성 및 Receipt 정보 통합
+       * fetchone() 을 사용하여 First Row 만 받아서 Status 출력
+       * fetchall() 을 추가로 사용하여 First Row 이후의 Film Status 출력
+  3. UI 정렬 상태 개선 및 가독성 강화
+
 * **2026-02-25**
   1. search_payment_ui 구현 완료
      * search_rental_ui, rental_data View Table 재사용

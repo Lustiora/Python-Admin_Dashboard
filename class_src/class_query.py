@@ -339,36 +339,24 @@ class Search:
         order by payment_date desc, name
         limit 10 offset %s
         """
-    payment_id_receipt_query\
-        = """
-        select 
-            p.payment_id ,
-            r.rental_date ,
-            r.name ,
-            p.amount as subtotal ,
-            p.amount * 0.1 as tax ,
-            p.amount * 1.1 as total
-        from payment p 
-        inner join rental_data r on p.rental_id = r.rental_id 
-        where p.payment_id = %s
-        order by payment_date desc, name
-        """
 
     payment_receipt_query\
         = """
         select 
-            f.title ,
-            f.rental_rate ,
-            f.poster_path 
-        from payment p
-        inner join rental r on p.rental_id = r.rental_id
-        inner join inventory i on i.inventory_id = any(r.inventory_id) 
-        inner join film f on i.film_id = f.film_id
-        where p.payment_id = %s
-        group by
-            p.payment_id ,
-            f.film_id
-        order by f.title
+            payment_id ,
+            rental_date ,
+            name ,
+            poster_path ,
+            title ,
+            rental_rate ,
+            amount ,
+            tax ,
+            total
+        from view_receipt
+        where payment_id = %s
+        order by 
+            amount asc , 
+            title asc
         """
 
 class Rental:
