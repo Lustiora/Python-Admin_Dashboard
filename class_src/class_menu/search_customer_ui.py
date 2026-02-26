@@ -2,6 +2,7 @@ import flet
 from class_window import Font, Ratios
 from class_query import Search
 from class_popup import Popup
+from material import input_text, header_text, context_menu, data_text
 
 def build_customer_ui(page, store_id, conn):
     popup = Popup(page=page)
@@ -47,10 +48,10 @@ def build_customer_ui(page, store_id, conn):
             if customer_data:
                 customer_id_data.controls.clear()
                 for row in customer_data:
-                    status_color = flet.Colors.BLACK
-                    store_color = flet.Colors.BLACK
+                    status_color = Font.status_normal
+                    store_color = Font.status_normal
                     if row[7] == 'Overdue':
-                        status_color = flet.Colors.RED_ACCENT
+                        status_color = Font.status_overdue
                     if row[8] == store_id:
                         if row[0] == '🇦🇺 Woodridge':
                             store_color = flet.Colors.ORANGE
@@ -62,44 +63,48 @@ def build_customer_ui(page, store_id, conn):
                         flet.Container(
                             content=flet.Row(
                                 controls=[
-                                    flet.Text(
-                                        row[0], expand=Ratios.store, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[0], color=store_color),
+                                    data_text(row[0], expand=Ratios.store, color=store_color),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[1], expand=Ratios.name, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[1]),
+                                    data_text(row[1], expand=Ratios.name),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        str(row[2]), expand=Ratios.id, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[2])),
+                                    data_text(str(row[2]), expand=Ratios.id),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[3], expand=Ratios.email, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[3]),
+                                    data_text(row[3], expand=Ratios.email),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[4], expand=Ratios.phone, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[4]),
+                                    data_text(row[4], expand=Ratios.phone),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[5], expand=Ratios.address, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[5]),
+                                    data_text(row[5], expand=Ratios.address),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        str(row[6])[:10], expand=Ratios.date, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[6])[:10]),
+                                    data_text(str(row[6])[:10], expand=Ratios.date),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[7], expand=Ratios.status, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[7], color=status_color),
-                                ], alignment=flet.MainAxisAlignment.START, spacing=5
-                            ), padding=10, border_radius=5, height=40, expand=True # height=40 -> VerticalDivider 사용을 위해 필요
+                                    flet.Row(
+                                        expand=Ratios.status,
+                                        controls=[
+                                            flet.Text(
+                                                row[7], text_align="center",
+                                                no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[7],
+                                                color=status_color, expand=3),
+                                            flet.PopupMenuButton(
+                                                items=[
+                                                    context_menu(row[1], True, 20, weight=flet.FontWeight.BOLD,
+                                                                 alignment=flet.alignment.center, icon=flet.Icons.PERSON),
+                                                    flet.PopupMenuItem(height=1),
+                                                    context_menu("Rentals Data", icon=flet.Icons.CALENDAR_MONTH),
+                                                    context_menu("Payments Data", icon=flet.Icons.ATTACH_MONEY),
+                                                    flet.PopupMenuItem(height=1),
+                                                    context_menu("Edit", icon=flet.Icons.MODE_EDIT_OUTLINE),
+                                                    context_menu(content="Delete", color=flet.Colors.ERROR, icon=flet.Icons.DELETE_OUTLINED),
+                                                ], expand=1, shadow_color=flet.Colors.GREY_100, icon=flet.Icons.MENU, icon_size=30, padding=0
+                                            )
+                                        ],
+                                    )
+                                ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
+                            ), margin=5, border_radius=5, expand=True
                         )
                     )
                 customer_id_data.update()
             else:
-                print(f"Not Customer ID : {int(input_customer.value)}")
+                print(f"Customer ID Not Found {int(input_customer.value)}")
                 popup.show_error_open(
                     message=f"Customer ID Not Found [{input_customer.value}]"
                 )
@@ -108,28 +113,28 @@ def build_customer_ui(page, store_id, conn):
         except Exception as err:
             conn.rollback()
             print(f"Search Customer error : {err}")
-    input_customer = flet.TextField(label=" Customer ID or Name ↵", on_submit=query_customer, hint_text=" Press Enter to Search",
-        text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)
+    input_customer = input_text(
+        " Customer ID or Name ↵", on_submit=query_customer, hint_text=" Press Enter to Search")
     header = flet.Container(
         content = flet.Row(
             controls=[
-                flet.Text("Store", expand=Ratios.store, text_align="center"),
+                header_text("Store", expand=Ratios.store),
                 flet.VerticalDivider(width=1),
-                flet.Text("Name", expand=Ratios.name, text_align="center"),
+                header_text("Name", expand=Ratios.name),
                 flet.VerticalDivider(width=1),
-                flet.Text("ID", expand=Ratios.id, text_align="center"),
+                header_text("ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
-                flet.Text("Email", expand=Ratios.email, text_align="center"),
+                header_text("Email", expand=Ratios.email),
                 flet.VerticalDivider(width=1),
-                flet.Text("Phone", expand=Ratios.phone, text_align="center"),
+                header_text("Phone", expand=Ratios.phone),
                 flet.VerticalDivider(width=1),
-                flet.Text("Address", expand=Ratios.address, text_align="center"),
+                header_text("Address", expand=Ratios.address),
                 flet.VerticalDivider(width=1),
-                flet.Text("Create Date", expand=Ratios.date, text_align="center"),
+                header_text("Create Date", expand=Ratios.date),
                 flet.VerticalDivider(width=1),
-                flet.Text("Status", expand=Ratios.status, text_align="center"),
-            ], alignment=flet.MainAxisAlignment.START, spacing=5
-        ), padding=10, border_radius=5, height=40
+                header_text("Status", expand=Ratios.status),
+            ], alignment=flet.MainAxisAlignment.START, spacing=5, height=20
+        ), margin=5
     )
     view_customer = flet.Column(
         controls=[

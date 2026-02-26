@@ -2,6 +2,7 @@ import flet
 from class_window import Font, Ratios
 from class_query import Search
 from class_popup import Popup
+from material import input_text, header_text, context_menu, data_text
 
 def build_inventory_ui(page, store_id, conn):
     popup = Popup(page=page)
@@ -47,51 +48,39 @@ def build_inventory_ui(page, store_id, conn):
             if inventory_data:
                 inventory_id_data.controls.clear()
                 for row in inventory_data:
-                    status_color = flet.Colors.BLACK
-                    store_color = flet.Colors.BLACK
+                    status_color = Font.status_normal
+                    store_color = Font.status_normal
                     if row[3] == 'Checked out':
-                        status_color = flet.Colors.RED_ACCENT
+                        status_color = Font.status_overdue
                     if row[6] == store_id:
                         if row[2] == '🇦🇺 Woodridge':
                             store_color = flet.Colors.ORANGE
                         if row[2] == '🇨🇦 Lethbridge':
                             store_color = flet.Colors.BLUE
                     else:
-                        store_color = flet.Colors.RED_ACCENT
+                        store_color = Font.status_overdue
                     inventory_id_data.controls.append(
                         flet.Container(
                             content=flet.Row(
                                 controls=[
-                                    flet.Text(
-                                        str(row[0]), expand=Ratios.id, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[0])),
+                                    data_text(str(row[0]), expand=Ratios.id),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[1], expand=Ratios.name, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[1]),
+                                    data_text(row[1], expand=Ratios.name, text_align="left"),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[2], expand=Ratios.store, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[2], color=store_color),
+                                    data_text(row[2], expand=Ratios.store, color=store_color),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        row[3], expand=Ratios.status, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[3], color=status_color),
+                                    data_text(row[3], expand=Ratios.status, color=status_color),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        str(row[4]), expand=Ratios.date, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[4])),
+                                    data_text(str(row[4]), expand=Ratios.date),
                                     flet.VerticalDivider(width=1),
-                                    flet.Text(
-                                        str(row[5]), expand=Ratios.rate, text_align="center",
-                                        no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[5])),
-                                ], alignment=flet.MainAxisAlignment.START, spacing=5
-                            ), padding=10, border_radius=5, height=40, expand=True # height=40 -> VerticalDivider 사용을 위해 필요
+                                    data_text(str(row[5]), expand=Ratios.rate),
+                                ], alignment=flet.MainAxisAlignment.START, spacing=5, height=30
+                            ), margin=5, border_radius=5, expand=True
                         )
                     )
                 inventory_id_data.update()
             else:
-                print(f"Not Inventory ID : {input_inventory.value}")
+                print(f"Inventory ID Not Found {input_inventory.value}")
                 popup.show_error_open(
                     message=f"Inventory ID Not Found [{input_inventory.value}]"
                 )
@@ -100,24 +89,25 @@ def build_inventory_ui(page, store_id, conn):
         except Exception as err:
             conn.rollback()
             print(f"Search Inventory error : {err}")
-    input_inventory = flet.TextField(label=" Inventory ID or Film Title ↵", on_submit=query_inventory, hint_text=" Press Enter to Search",
-        text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=True)
+    input_inventory = input_text(
+        " Inventory ID or Film Title ↵", on_submit=query_inventory, hint_text=" Press Enter to Search")
+
     header = flet.Container(
         content = flet.Row(
             controls=[
-                flet.Text("ID", expand=Ratios.id, text_align="center"),
+                header_text("ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
-                flet.Text("Title", expand=Ratios.name, text_align="center"),
+                header_text("Title", expand=Ratios.name),
                 flet.VerticalDivider(width=1),
-                flet.Text("Store", expand=Ratios.store, text_align="center"),
+                header_text("Store", expand=Ratios.store),
                 flet.VerticalDivider(width=1),
-                flet.Text("Status", expand=Ratios.status, text_align="center"),
+                header_text("Status", expand=Ratios.status),
                 flet.VerticalDivider(width=1),
-                flet.Text("Last Rental Date", expand=Ratios.date, text_align="center"),
+                header_text("Last Rental Date", expand=Ratios.date),
                 flet.VerticalDivider(width=1),
-                flet.Text("Rental Rate", expand=Ratios.rate, text_align="center"),
-            ], alignment=flet.MainAxisAlignment.START, spacing=5
-        ), padding=10, border_radius=5, height=40
+                header_text("Rental Rate", expand=Ratios.rate),
+            ], alignment=flet.MainAxisAlignment.START, spacing=5, height=20
+        ), margin=5
     )
     view_inventory = flet.Column(
         controls=[

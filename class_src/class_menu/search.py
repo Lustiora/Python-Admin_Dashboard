@@ -1,5 +1,5 @@
 import flet
-from .menu_search_customer import build_customer_ui
+from .search_customer_ui import build_customer_ui
 from .menu_search_inventory import build_inventory_ui
 from .search_rental_ui import build_rental_ui
 from .search_payment_ui import build_payment_ui

@@ -3,6 +3,7 @@ from math import ceil
 from class_window import Font, Ratios
 from class_query import Search
 from class_popup import Popup
+from material import input_text, header_text, context_menu, data_text
 
 def today_status(query, view_page, status_name:str, status_query, status_color=None, select_page=None):
     return flet.Container(
@@ -38,17 +39,17 @@ def view_header():
     return flet.Container(
         content=flet.Row(
             controls=[
-                flet.Text("ID", expand=Ratios.id, text_align="center"),
+                header_text("ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
-                flet.Text("Name", expand=Ratios.name, text_align="center"),
+                header_text("Name", expand=Ratios.name),
                 flet.VerticalDivider(width=1),
-                flet.Text("Title", expand=Ratios.title, text_align="center"),
+                header_text("Title", expand=Ratios.title),
                 flet.VerticalDivider(width=1),
-                flet.Text("Rental Date", expand=Ratios.date, text_align="center"),
+                header_text("Rental Date", expand=Ratios.date),
                 flet.VerticalDivider(width=1),
-                flet.Text("Due Date", expand=Ratios.date, text_align="center"),
+                header_text("Due Date", expand=Ratios.date),
                 flet.VerticalDivider(width=1),
-                flet.Text("Status", expand=Ratios.status, text_align="center"),
+                header_text("Status", expand=Ratios.status),
             ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
         ), margin=5, border_radius=5
     )
@@ -65,53 +66,38 @@ def view_table(row, status_normal, status_color):
             controls=[
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        str(row[0]), color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[0])),
+                    data_text(str(row[0]), color=status_normal, expand=True),
                 ], expand=Ratios.id, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        row[1], color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[1]),
+                    data_text(row[1], color=status_normal, expand=True, max_lines=1),
                 ], expand=Ratios.name, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
                     flet.Column([
-                        flet.Text(
-                            row[2], color=status_normal, max_lines=1, tooltip=row[7],
-                            overflow=flet.TextOverflow.ELLIPSIS),
-                        flet.Text(
-                            row[6], color=status_normal, max_lines=1, tooltip=row[7]),
+                        data_text(row[2], color=status_normal, max_lines=1),
+                        data_text(row[6], color=status_normal, max_lines=1),
                     ],expand=True, spacing=0),
                     flet.Container(width=4),
                 ], expand=Ratios.title, alignment=flet.MainAxisAlignment.SPACE_BETWEEN, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        str(row[3]), color=status_normal, expand=True,
-                        max_lines=2, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[3])),
+                    data_text(str(row[3]), color=status_normal, expand=True, max_lines=2, text_align="left"),
                 ], expand=Ratios.date, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        str(row[4]), color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[4])),
+                    data_text(str(row[4]), color=status_normal, expand=True, max_lines=1),
                 ], expand=Ratios.date, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
                     flet.Column([
-                        flet.Text(
-                            status, color=status_color, max_lines=1, tooltip=row[5],
-                            overflow=flet.TextOverflow.ELLIPSIS),
-                        flet.Text(
-                            days, color=status_color, max_lines=1, tooltip=row[5],
-                            overflow=flet.TextOverflow.ELLIPSIS),
+                        data_text(status, color=status_color, max_lines=1),
+                        data_text(days, color=status_color, max_lines=1),
                     ], expand=True, spacing=0),
                 ], expand=Ratios.status, spacing=0),
             ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
@@ -291,7 +277,11 @@ def build_rental_ui(page, store_id, conn):
             cursor.execute(Search.rental_search_id_query, (store_id, cart_customer_id, view_page,))
             rental_id_data = cursor.fetchall()
             if not rental_id_data:
-                print(f"Customer ID Not Found : {input_rental.value}")
+                print(f"Rental ID Not Found : {input_rental.value}")
+                popup.show_error_open(
+                    message=f"Rental ID Not Found [{input_rental.value}]"
+                )
+                input_rental.focus()
             view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
                                    connect_module_page, connect_module_count[0], page_num, select_page)
             conn.commit()
@@ -321,10 +311,10 @@ def build_rental_ui(page, store_id, conn):
         status_query=due_today_data
     )
 
-    input_rental = flet.TextField(
-        hint_text=" Press Enter to Search", on_submit=lambda e:rental_search_data_query(None, view_page, 0),
-        label=" Rental ID or Customer Name ↵", text_size=Font.big_fontsize, expand=Ratios.id,
-        content_padding=10, max_length=30, autofocus=True
+    input_rental = input_text(
+        " Rental ID or Customer Name ↵",
+        on_submit=lambda e:rental_search_data_query(None, view_page, 0),
+        hint_text=" Press Enter to Search"
     )
 
     page_num = flet.CupertinoSlidingSegmentedButton(

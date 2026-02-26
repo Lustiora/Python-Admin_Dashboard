@@ -9,6 +9,8 @@
        * fetchone() 을 사용하여 First Row 만 받아서 Status 출력
        * fetchall() 을 추가로 사용하여 First Row 이후의 Film Status 출력
   3. UI 정렬 상태 개선 및 가독성 강화
+  4. search_customer_ui 컨텍스트 메뉴 추가
+  5. 중복 사용 코드 material.py 이전 및 최적화
 
 * **2026-02-25**
   1. search_payment_ui 구현 완료

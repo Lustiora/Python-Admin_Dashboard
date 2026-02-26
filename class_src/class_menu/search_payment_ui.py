@@ -3,6 +3,7 @@ from class_window import Font, Ratios
 from class_popup import Popup
 from class_query import Search
 from math import ceil
+from material import input_text, header_text, context_menu, data_text
 
 def view_table(conn, row, receipt_details, receipt_container, status_normal, status_color, btn_color, btn_bgcolor):
     if "Overdue" in row[7]:
@@ -18,53 +19,38 @@ def view_table(conn, row, receipt_details, receipt_container, status_normal, sta
             controls=[
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        payment_id, color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[0])),
+                    data_text(payment_id, color=status_normal, expand=True,max_lines=1),
                 ], expand=Ratios.id, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        row[1], color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[1]),
+                    data_text(row[1], color=status_normal, expand=True, max_lines=1),
                 ], expand=Ratios.name, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        str(row[2]), color=status_normal, expand=True,
-                        max_lines=2, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[2])),
+                    data_text(str(row[2]), color=status_normal, expand=True, max_lines=2, text_align="left"),
                 ], expand=Ratios.date, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
                     flet.Column([
-                        flet.Text(
-                            row[3], color=status_normal, max_lines=1, tooltip=row[9],
-                            overflow=flet.TextOverflow.ELLIPSIS),
-                        flet.Text(
-                            row[8], color=status_normal, max_lines=1, tooltip=row[9]),
+                        data_text(row[3], color=status_normal, max_lines=1),
+                        data_text(row[8], color=status_normal, max_lines=1),
                     ],expand=True, spacing=0),
                     flet.Container(width=4),
                 ], expand=Ratios.title, alignment=flet.MainAxisAlignment.SPACE_BETWEEN, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    flet.Text(
-                        f"${str(row[4])}", color=status_normal, expand=True,
-                        max_lines=1, overflow=flet.TextOverflow.ELLIPSIS, tooltip=str(row[4])),
+                    data_text(f"${str(row[4])}", color=status_normal, expand=True, max_lines=1),
                 ], expand=Ratios.rate, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
                     flet.Column([
-                        flet.Text(
-                            status, color=status_color, max_lines=1, tooltip=row[7],
-                            overflow=flet.TextOverflow.ELLIPSIS),
-                        flet.Text(
-                            days, color=status_color, max_lines=1, tooltip=row[7],
-                            overflow=flet.TextOverflow.ELLIPSIS),
+                        data_text(status, color=status_color, max_lines=1),
+                        data_text(days, color=status_color, max_lines=1),
                     ], expand=True, spacing=0),
                 ], expand=Ratios.status, spacing=0),
                 flet.VerticalDivider(width=1),
@@ -81,19 +67,19 @@ def view_header():
     return flet.Container(
         content=flet.Row(
             controls=[
-                flet.Text("ID", expand=Ratios.id, text_align="center"),
+                header_text("ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
-                flet.Text("Name", expand=Ratios.name, text_align="center"),
+                header_text("Name", expand=Ratios.name),
                 flet.VerticalDivider(width=1),
-                flet.Text("Payment Date", expand=Ratios.date, text_align="center"),
+                header_text("Payment Date", expand=Ratios.date),
                 flet.VerticalDivider(width=1),
-                flet.Text("Title", expand=Ratios.title, text_align="center"),
+                header_text("Title", expand=Ratios.title),
                 flet.VerticalDivider(width=1),
-                flet.Text("Total Amount", expand=Ratios.rate, text_align="center"),
+                header_text("Total Amount", expand=Ratios.rate),
                 flet.VerticalDivider(width=1),
-                flet.Text("Status", expand=Ratios.status, text_align="center"),
+                header_text("Status", expand=Ratios.status),
                 flet.VerticalDivider(width=1),
-                flet.Text("Actions", expand=Ratios.status, text_align="center"),
+                header_text("Actions", expand=Ratios.status),
             ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
         ), margin=5, border_radius=5
     )
@@ -313,7 +299,11 @@ def build_payment_ui(page, store_id, conn):
             cursor.execute(Search.payment_search_id_query, (store_id, cart_customer_id, view_page,))
             payment_id_data = cursor.fetchall()
             if not payment_id_data:
-                print(f"Customer ID Not Found [{input_payment.value}]")
+                print(f"Payment ID Not Found {input_payment.value}")
+                popup.show_error_open(
+                    message=f"Payment ID Not Found [{input_payment.value}]"
+                )
+                input_payment.focus()
             view_table_payment_data(conn, payment_data, payment_id_data, connect_module, connect_module_count,
                                     connect_module_page, connect_module_count[0], page_num, select_page, receipt_details, receipt_container)
             conn.commit()
@@ -347,10 +337,10 @@ def build_payment_ui(page, store_id, conn):
                     scroll=flet.ScrollMode.AUTO,
                 )]))
 
-    input_payment = flet.TextField(
-        hint_text=" Press Enter to Search", on_submit=lambda e:search_payment(None, view_page, 0),
-        label=" Payment ID or Customer Name ↵", text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10,
-        max_length=30, autofocus=True)
+    input_payment = input_text(" Payment ID or Customer Name ↵",
+        on_submit=lambda e:search_payment(None, view_page, 0),
+        hint_text=" Press Enter to Search"
+    )
 
     receipt_container = flet.Container(
         content=receipt(conn),
