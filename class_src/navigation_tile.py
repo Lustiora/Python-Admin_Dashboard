@@ -5,15 +5,7 @@ from class_menu.delete import *
 from class_menu.add import *
 from class_popup import Popup
 
-def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id):
-    popup = Popup(page=page)
-    basic_content = flet.Container(
-        content=view_search_inventory(page, staff_store_id, conn),
-        alignment=flet.alignment.center,
-        expand=True,
-        border_radius=5,
-        padding=20
-    )
+def navigation(page: flet.Page, conn, staff_store_id, basic_content):
     def on_nav_change(index):
         if index == 0: # 메인화면
             basic_content.content = view_home()
@@ -59,11 +51,24 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
             basic_content.content = view_statistic()
         elif index == 6: # 관리
             basic_content.content = view_manager()
-        elif index == 7: # 접속 상태
-            basic_content.content = view_status(login_db, login_host, login_port, staff_store_address, staff_user)
+        # elif index == 7: # 접속 상태
+        #     basic_content.content = view_status(login_db, login_host, login_port, staff_store_address, staff_user)
 
         basic_content.update()
-    tile_column = flet.Column(
+
+    ex_tile = flet.Container(
+        width=180,
+        padding=2,
+        border_radius=5,
+        content=tile_column(page, on_nav_change)
+    )
+
+    return ex_tile, basic_content
+
+def tile_column(page: flet.Page, on_nav_change):
+    popup = Popup(page=page)
+
+    return flet.Column(
         controls=[
             flet.ListTile(
                 leading=flet.Icon(flet.Icons.HOME),
@@ -180,10 +185,10 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
                 title=flet.Text("Manager"),
                 on_click=lambda e: on_nav_change(6)
             ),flet.Divider(
-            ),flet.ListTile(
-                leading=flet.Icon(flet.Icons.SIGNAL_CELLULAR_ALT),
-                title=flet.Text("Dashboard"),
-                on_click=lambda e: on_nav_change(7)
+            # ),flet.ListTile(
+            #     leading=flet.Icon(flet.Icons.SIGNAL_CELLULAR_ALT),
+            #     title=flet.Text("Dashboard"),
+            #     on_click=lambda e: on_nav_change(7)
             ),flet.ListTile(
                 leading=flet.Icon(flet.Icons.EXIT_TO_APP),
                 title=flet.Text("Exit"),
@@ -191,10 +196,3 @@ def navigation(page: flet.Page, conn, login_db, login_host, login_port, staff_us
             )
         ]
     )
-    ex_tile = flet.Container(
-        width=180,
-        padding=2,
-        border_radius=5,
-        content=tile_column
-    )
-    return ex_tile, basic_content

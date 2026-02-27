@@ -20,6 +20,70 @@ import flet, time, os, sys, configparser, psycopg2, base64
 from monitoring import connect_test
 from class_popup import Popup
 from navigation_tile import navigation
+from class_menu.search import view_search_rental, view_search_customer, view_search_payment
+
+class MainManager:
+    def __init__(self, page: flet.Page, conn, staff_store_id):
+        self.page = page
+        self.conn = conn
+        self.staff_store_id = staff_store_id
+
+        # -- Statusbar --
+        self.server_status = flet.Text(value="Server Status", text_align=flet.TextAlign.RIGHT)
+        self.server_time = flet.Text(value="Server Time", text_align=flet.TextAlign.LEFT)
+        self.connect_status = flet.Container(
+            content=flet.Row([
+                self.server_time, self.server_status
+            ], alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
+            height=24,
+            alignment=flet.alignment.center_left,
+            padding=flet.padding.only(left=10, right=10),
+            border_radius=5,
+            border=flet.border.all(color=flet.Colors.BLACK)
+        )
+
+        self.basic_container = flet.Container(
+            content=view_search_customer(page, staff_store_id, conn),
+            alignment=flet.alignment.center,
+            expand=True,
+            border_radius=5,
+            padding=20,
+        )
+
+        self.ex_tile = navigation(self.page, self.conn, self.staff_store_id, self.basic_container)[0]
+
+        self.basic_content = navigation(self.page, self.conn, self.staff_store_id, self.basic_container)[1]
+
+        self.content = flet.Column([self.basic_content, self.connect_status], expand=True)
+
+        self.basic_main_content = flet.Row(
+            [
+                flet.Column([self.ex_tile
+                             ], scroll=flet.ScrollMode.AUTO, alignment=flet.MainAxisAlignment.START),
+                flet.VerticalDivider(width=1),
+                self.content,
+            ], expand=True, vertical_alignment=flet.CrossAxisAlignment.START
+        )
+
+        self.page.add(self.basic_main_content)
+
+        self.page.update()
+
+        self.page.session.set("manager", self)
+
+    def update_main_page(self, index, customer_name):
+        # -- Main Content --
+        if index == 0:
+            print("Page Update 'Rental'")
+            self.basic_content.content = view_search_rental(self.page, self.staff_store_id, self.conn, customer_name)
+            self.basic_content.update()
+        elif index == 1:
+            print("Page Update 'Payment'")
+            self.basic_content.content = view_search_payment(self.page, self.staff_store_id, self.conn, customer_name)
+            self.basic_content.update()
+        # elif index == 2:
+        #     self.basic_content.content = view_search_rental(self.page, self.staff_store_id, self.conn)
+        #     self.basic_content.update()
 
 # -- Module --
 def run_main(page: flet.Page):
@@ -36,9 +100,9 @@ def run_main(page: flet.Page):
 
     # -- Decoding --
     if config.read(config_file):
-        login_db = config['DB Connect']['db']
-        login_host = config['DB Connect']['host']
-        login_port = config['DB Connect']['port']
+        # login_db = config['DB Connect']['db']
+        # login_host = config['DB Connect']['host']
+        # login_port = config['DB Connect']['port']
         encrypted_pw = config['DB Connect']['password']
         pw_bytes = base64.b64decode(encrypted_pw)
         decrypted_pw = pw_bytes.decode('utf-8')
@@ -52,8 +116,8 @@ def run_main(page: flet.Page):
     else:
         return
 
-    staff_user = "Superuser"
-    staff_store_address = "Test Address"
+    # staff_user = "Superuser"
+    # staff_store_address = "Test Address"
     staff_store_id = 1
 
     popup = Popup(page=page)
@@ -75,37 +139,12 @@ def run_main(page: flet.Page):
     page.window.prevent_close = True
     page.window.on_event = popup.show_open
 
-    # -- Statusbar --
-    server_status = flet.Text(value="Server Status", text_align=flet.TextAlign.RIGHT)
-    server_time = flet.Text(value="Server Time", text_align=flet.TextAlign.LEFT)
-    connect_status =flet.Container(
-        content=flet.Row([server_time, server_status], alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
-        height=24,
-        alignment=flet.alignment.center_left,
-        padding=flet.padding.only(left=10, right=10),
-        border_radius=5,
-        border=flet.border.all(color=flet.Colors.BLACK)
-    )
-
-    # -- Main Area --
-    ex_tile, basic_content = navigation(
-        page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id
-    )
-
     # -- Page --
-    page.add(
-        flet.Row([
-            flet.Column([ex_tile
-                ],scroll=flet.ScrollMode.AUTO, alignment=flet.MainAxisAlignment.START),
-            flet.VerticalDivider(width=1),
-            flet.Column([basic_content, connect_status],expand=True),
-                ], expand=True, vertical_alignment=flet.CrossAxisAlignment.START
-        )
-    )
-    connect_test(conn, server_status, server_time, connect_status, page)
-
-    # -- Update --
-    page.update()
+    # main_handler = MainManager(page=page, conn=conn, login_db=login_db, login_host=login_host, login_port=login_port,
+    #                 staff_user=staff_user, staff_store_address=staff_store_address, staff_store_id=staff_store_id)
+    main_handler = MainManager(page=page, conn=conn, staff_store_id=staff_store_id)
+    # main_handler.main_page()
+    connect_test(conn, main_handler.server_status, main_handler.server_time, main_handler.connect_status, page)
 
 # -- Run Test --
 if __name__ == "__main__":

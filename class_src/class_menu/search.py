@@ -43,8 +43,8 @@ def view_search_inventory(page, store_id, conn):
         ], spacing=20
     )
 
-def view_search_rental(page, store_id, conn):
-    total_rentals, overdue, due_today, input_rental, view_rental = build_rental_ui(page, store_id, conn)
+def view_search_rental(page, store_id, conn, customer_name=None):
+    total_rentals, overdue, due_today, input_rental, view_rental = build_rental_ui(page, store_id, conn, customer_name)
     return flet.Column(
         controls=[
             flet.Row([
@@ -59,8 +59,8 @@ def view_search_rental(page, store_id, conn):
         ], spacing=20
     )
 
-def view_search_payment(page, store_id, conn):
-    input_payment, view_payment, receipt_details = build_payment_ui(page, store_id, conn)
+def view_search_payment(page, store_id, conn, customer_name=None):
+    input_payment, view_payment, receipt_details = build_payment_ui(page, store_id, conn, customer_name)
     return flet.Row([
         flet.Column(
             controls=[

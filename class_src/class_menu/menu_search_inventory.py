@@ -13,7 +13,7 @@ def build_inventory_ui(page, store_id, conn):
             cart_inventory_id.append(int(input_inventory.value)) # ANY(%s) 조회를 위해 상자 보관
             # print(f"Search Inventory ID : {int(input_inventory.value)}")
         except:
-            str_film_title = f"%{input_inventory.value}%"
+            str_film_title = f"%{input_inventory.value.strip()}%"
             # print("Not ID -> Title Search")
             cursor = conn.cursor()
             try:
@@ -25,9 +25,9 @@ def build_inventory_ui(page, store_id, conn):
                         cart_inventory_id.append(row[0]) # .append로 상자에 보관
                     # print(f"List Check : {cart_inventory_id}")
                 else:
-                    print(f"Not Film Title : {input_inventory.value}")
+                    print(f"Not Film Title : {input_inventory.value.strip()}")
                     popup.show_error_open(
-                        message=f"Film Title Not Found [{input_inventory.value}]"
+                        message=f"Film Title Not Found [{input_inventory.value.strip()}]"
                     )
                     input_inventory.focus()
                     return # 조회 실패시 쿼리 실행 방지
@@ -80,22 +80,23 @@ def build_inventory_ui(page, store_id, conn):
                     )
                 inventory_id_data.update()
             else:
-                print(f"Inventory ID Not Found {input_inventory.value}")
+                print(f"Inventory ID Not Found {input_inventory.value.strip()}")
                 popup.show_error_open(
-                    message=f"Inventory ID Not Found [{input_inventory.value}]"
+                    message=f"Inventory ID Not Found [{input_inventory.value.strip()}]"
                 )
                 input_inventory.focus()
             conn.commit()
         except Exception as err:
             conn.rollback()
             print(f"Search Inventory error : {err}")
+
     input_inventory = input_text(
         " Inventory ID or Film Title ↵", on_submit=query_inventory, hint_text=" Press Enter to Search")
 
     header = flet.Container(
         content = flet.Row(
             controls=[
-                header_text("ID", expand=Ratios.id),
+                header_text("Inventory ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
                 header_text("Title", expand=Ratios.name),
                 flet.VerticalDivider(width=1),

@@ -1,5 +1,25 @@
 ## [README](/README.md)
 
+* **2026-02-27**
+  1. search_customer_ui.py
+     * view_table, view_header 모듈 분리
+     * test_main_ui.py를 사용하여 rental, payment Page 검색 이전 기능 추가 (고객정보 연동)
+  2. navigation_tile.py
+     * Dashboard Page Block → 매게변수 과사용으로 인한 가독성 하락 및 관리 곤란
+     * config 정보를 직접 가져다 쓰는걸로 변경 예정
+     * tile_column 모듈 분리
+     * 중복 사용 코드 material.py 이전 예정
+  3. test_main_ui.py
+     * MainManager Class 추가 (컨텍스트 메뉴 → 페이지 전환)
+       * self.page.session.set("manager", self)
+       * material.py context_customer_id_data 함수
+       * my_manager = page.session.get("manager")
+           if my_manager:
+               my_manager.update_main_page(index=0, customer_name=customer_name)
+     * test Page 관리 이전 navigation_tile.py → test_main_ui.py
+  4. search_rental_ui.py
+     * rental_search_data_context 검색 모듈 분리
+
 * **2026-02-26**
   1. search_payment_ui
      * 검색 후 다른 페이지를 선택하고 검색 시 페이지가 이전 페이지에 그대로 있는 오류 수정

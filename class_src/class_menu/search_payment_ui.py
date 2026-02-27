@@ -67,7 +67,7 @@ def view_header():
     return flet.Container(
         content=flet.Row(
             controls=[
-                header_text("ID", expand=Ratios.id),
+                header_text("Payment ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
                 header_text("Name", expand=Ratios.name),
                 flet.VerticalDivider(width=1),
@@ -80,7 +80,7 @@ def view_header():
                 header_text("Status", expand=Ratios.status),
                 flet.VerticalDivider(width=1),
                 header_text("Actions", expand=Ratios.status),
-            ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
+            ], alignment=flet.MainAxisAlignment.START, spacing=5, height=20
         ), margin=5, border_radius=5
     )
 
@@ -241,7 +241,7 @@ def view_close_receipt(e, receipt_details):
     receipt_details.visible = False
     receipt_details.update()
 
-def build_payment_ui(page, store_id, conn):
+def build_payment_ui(page, store_id, conn, initial_value=""):
     payment_data = flet.ListView(expand=True, spacing=0)
     view_page = 0
     connect_module = []
@@ -258,7 +258,7 @@ def build_payment_ui(page, store_id, conn):
             print(f"Error select view page {connect_module}")
             return
 
-    def payment_search_data_query(e, view_page, select_page):
+    def payment_search_data_query(e, view_page, select_page, initial_value=None):
         popup = Popup(page=page)
         connect_module_page = 0
         cart_customer_id = []
@@ -267,7 +267,10 @@ def build_payment_ui(page, store_id, conn):
             cart_customer_id.append(int(input_payment.value))
             # print(f"Search payment ID {int(input_payment.value)}")
         except:
-            customer_name = f"%{input_payment.value}%"
+            if initial_value:
+                customer_name = f"%{initial_value}%"
+            else:
+                customer_name = f"%{input_payment.value.strip()}%"
             # print(f"Search Customer Name {input_payment.value}")
             cursor = conn.cursor()
             try:
@@ -277,9 +280,9 @@ def build_payment_ui(page, store_id, conn):
                     for row in customer_name_list:
                         cart_customer_id.append(row[0])
                 else:
-                    print(f"Customer Name Not Found [{input_payment.value}]")
+                    print(f"Customer Name Not Found [{input_payment.value.strip()}]")
                     popup.show_error_open(
-                        message=f"Customer Name Not Found [{input_payment.value}]"
+                        message=f"Customer Name Not Found [{input_payment.value.strip()}]"
                     )
                     input_payment.focus()
                     return
@@ -299,9 +302,9 @@ def build_payment_ui(page, store_id, conn):
             cursor.execute(Search.payment_search_id_query, (store_id, cart_customer_id, view_page,))
             payment_id_data = cursor.fetchall()
             if not payment_id_data:
-                print(f"Payment ID Not Found {input_payment.value}")
+                print(f"Payment ID Not Found {input_payment.value.strip()}")
                 popup.show_error_open(
-                    message=f"Payment ID Not Found [{input_payment.value}]"
+                    message=f"Payment ID Not Found [{input_payment.value.strip()}]"
                 )
                 input_payment.focus()
             view_table_payment_data(conn, payment_data, payment_id_data, connect_module, connect_module_count,
@@ -337,7 +340,7 @@ def build_payment_ui(page, store_id, conn):
                     scroll=flet.ScrollMode.AUTO,
                 )]))
 
-    input_payment = input_text(" Payment ID or Customer Name ↵",
+    input_payment = input_text(" Payment ID or Customer Name ↵", value=initial_value,
         on_submit=lambda e:search_payment(None, view_page, 0),
         hint_text=" Press Enter to Search"
     )
@@ -380,5 +383,9 @@ def build_payment_ui(page, store_id, conn):
         spacing=5,
         controls=[view_header(), payment_data, page_row]
     )
+
+    if initial_value:
+        payment_search_data_query(None, 0, 0, initial_value)
+        input_payment.autofocus = False
 
     return input_payment, view_payment, receipt_details
