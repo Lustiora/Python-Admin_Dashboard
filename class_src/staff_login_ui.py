@@ -47,9 +47,6 @@ class LoginManager:
                 user_data = cursor.fetchone()
                 print("User Login ...")
                 if user_data:
-                    login_db = self.config['DB Connect']['db']
-                    login_host = self.config['DB Connect']['host']
-                    login_port = self.config['DB Connect']['port']
                     staff_user = user_data[0]
                     staff_pw = user_data[1]
                     staff_store_address = user_data[2]
@@ -63,18 +60,25 @@ class LoginManager:
                     self.page.clean()
                     conn.commit()
                     from main_ui import run_main
-                    run_main(self.page, conn, login_db, login_host, login_port, staff_user, staff_store_address, staff_store_id)
+                    run_main(self.page, conn, staff_user, staff_store_address, staff_store_id)
                 else:
                     conn.commit()
                     if self.count <= 0:
                         print(f"Login Failed : OUT")
                         popup.show_error_open(
-                            message=f"Please Contact the Administrator\nPhone : {self.call}",
+                            title="Login Attempt Failed",
+                            message = "Access restricted due to repeated authentication failures. \n"
+                                      "The program will exit for security purposes. \n"
+                                      f"HQ Liaison Contact : {self.call}",
                             actions=[flet.TextButton("Exit", on_click=popup.show_main_close, autofocus=True)]
                         )
                     else:
-                        print(f"Login Failed | Count (3) : {self.count}")
-                        popup.show_error_open(f"Connect Failed\nCount (3) : {self.count}")
+                        conn.rollback()
+                        print(f"Remaining Attempts: {self.count} / 3")
+                        popup.show_error_open(
+                            title="Login Attempt Failed",
+                            message = f"Invalid ID or Password. \n[Remaining Attempts: {self.count} / 3]"
+                        )
                         return
             except Exception as err:
                 conn.rollback()

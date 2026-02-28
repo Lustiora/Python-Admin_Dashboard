@@ -4,7 +4,10 @@ from class_query import Search
 from class_popup import Popup
 from material import input_text, header_text, context_menu, data_text
 
-def build_inventory_ui(page, store_id, conn):
+def build_inventory_ui(**kwargs):
+    page = kwargs.get("page")
+    store_id = kwargs.get("staff_store_id")
+    conn = kwargs.get("conn")
     popup = Popup(page=page)
     inventory_id_data = flet.ListView(expand=True, spacing=0)
     def query_inventory(e):
@@ -26,19 +29,19 @@ def build_inventory_ui(page, store_id, conn):
                     # print(f"List Check : {cart_inventory_id}")
                 else:
                     print(f"Not Film Title : {input_inventory.value.strip()}")
+                    input_inventory.focus()
                     popup.show_error_open(
                         message=f"Film Title Not Found [{input_inventory.value.strip()}]"
                     )
-                    input_inventory.focus()
                     return # 조회 실패시 쿼리 실행 방지
                 conn.commit()
             except Exception as err:
                 conn.rollback()
                 print(f"Error. Not Film Title {err}")
+                input_inventory.focus()
                 popup.show_error_open(
                     message="Error. Not Film Title"
                 )
-                input_inventory.focus()
                 return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
         try:
@@ -81,10 +84,10 @@ def build_inventory_ui(page, store_id, conn):
                 inventory_id_data.update()
             else:
                 print(f"Inventory ID Not Found {input_inventory.value.strip()}")
+                input_inventory.focus()
                 popup.show_error_open(
                     message=f"Inventory ID Not Found [{input_inventory.value.strip()}]"
                 )
-                input_inventory.focus()
             conn.commit()
         except Exception as err:
             conn.rollback()

@@ -17,7 +17,7 @@ class Popup:
 
         self.error = flet.AlertDialog(
             modal=True,
-            title=flet.Text("Connection Failed"),
+            title=flet.Text("Failed"),
             content=flet.Text("Your ID or password is incorrect."),
             actions_alignment=flet.MainAxisAlignment.END,
             actions=[
@@ -39,7 +39,7 @@ class Popup:
         self.page.window.close()
         self.page.window.destroy()  # 윈도우 창 종료 명령어
 
-    def show_error_open(self, message: str, actions=None):
+    def show_error_open(self, message: str, actions=None, title=None):
         self.error.content.value = message
         if actions is not None:
             self.error.actions = actions
@@ -47,6 +47,10 @@ class Popup:
             self.error.actions = [
                 flet.TextButton("OK", on_click=self.show_error_close, autofocus=True),
             ]
+        if title is not None:
+            self.error.title.value = title
+        else:
+            self.error.title.value = "Failed"
         # noinspection PyCallingNonCallable
         self.page.open(self.error)
 

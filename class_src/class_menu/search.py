@@ -13,8 +13,8 @@ def view_container(view_content):
         border=flet.border.all(color=flet.Colors.BLACK),
     )
 
-def view_search_customer(page, store_id, conn):
-    input_customer, view_customer = build_customer_ui(page, store_id, conn) # Module Return Value get
+def view_search_customer(**kwargs):
+    input_customer, view_customer = build_customer_ui(**kwargs) # Module Return Value get
     return flet.Column(
         controls=[
             flet.Row([
@@ -28,8 +28,8 @@ def view_search_customer(page, store_id, conn):
         ], spacing=20
     )
 
-def view_search_inventory(page, store_id, conn):
-    input_inventory, view_inventory = build_inventory_ui(page, store_id, conn)  # Module Return Value get
+def view_search_inventory(**kwargs):
+    input_inventory, view_inventory = build_inventory_ui(**kwargs)  # Module Return Value get
     return flet.Column(
         controls=[
             flet.Row([
@@ -43,8 +43,8 @@ def view_search_inventory(page, store_id, conn):
         ], spacing=20
     )
 
-def view_search_rental(page, store_id, conn, customer_name=None):
-    total_rentals, overdue, due_today, input_rental, view_rental = build_rental_ui(page, store_id, conn, customer_name)
+def view_search_rental(customer_name=None, **kwargs):
+    total_rentals, overdue, due_today, input_rental, view_rental = build_rental_ui(customer_name, **kwargs)
     return flet.Column(
         controls=[
             flet.Row([
@@ -59,8 +59,8 @@ def view_search_rental(page, store_id, conn, customer_name=None):
         ], spacing=20
     )
 
-def view_search_payment(page, store_id, conn, customer_name=None):
-    input_payment, view_payment, receipt_details = build_payment_ui(page, store_id, conn, customer_name)
+def view_search_payment(customer_name=None, **kwargs):
+    input_payment, view_payment, receipt_details = build_payment_ui(customer_name, **kwargs)
     return flet.Row([
         flet.Column(
             controls=[

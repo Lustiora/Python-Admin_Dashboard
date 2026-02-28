@@ -1,6 +1,5 @@
 import flet
 from class_window import Font, Ratios
-# from test_main_ui import MainPage
 
 def input_text(content=None, on_submit=None, hint_text=None, value=None, autofocus=True):
     return flet.TextField(label=content, on_submit=on_submit, hint_text=hint_text, value=value,
@@ -27,7 +26,38 @@ def context_menu(content, disabled=False, height=35, color=flet.Colors.BLACK, we
         ), disabled=disabled, height=height, on_click=on_click
     )
 
-def context_customer_id_data(e, page, customer_name, connect_page):
+def context_customer_id_data(e, connect_page, **kwargs):
+    page = kwargs.get("page")
+    staff_store_id = kwargs.get("staff_store_id")
+    customer_last_rental_store_id = kwargs.get("customer_last_rental_store_id")
+
+    def show_location_error_open(e):
+        page.open(location_error)
+
+    def show_location_error_close(e):
+        page.close(location_error)
+        connect(connect_page, **kwargs)
+
+    location_error = flet.AlertDialog(
+        modal=True,
+        title=flet.Text("Warning"),
+        content=flet.Text("Last rental location does not match the current store.\n"
+                          "Data may not be available.\n\n"
+                          "Please use 'APage' for inquiries."),
+        actions_alignment=flet.MainAxisAlignment.END,
+        actions=[
+            flet.TextButton("OK", on_click=show_location_error_close, autofocus=True),
+        ]
+    )
+
+    if staff_store_id != customer_last_rental_store_id:
+        show_location_error_open(None)
+    else:
+        connect(connect_page, **kwargs)
+
+def connect(connect_page, **kwargs):
+    page = kwargs.get("page")
+    customer_name = kwargs.get("customer_name")
     if connect_page == "rental":
         try:
             my_manager = page.session.get("manager")
@@ -42,7 +72,3 @@ def context_customer_id_data(e, page, customer_name, connect_page):
                 my_manager.update_main_page(index=1, customer_name=customer_name)
         except Exception as err:
             print(err)
-    # elif connect_page == "edit":
-    #     print(f"{customer_name}, {connect_page} | Edit 21")
-    # elif connect_page == "delete":
-    #     print(f"{customer_name}, {connect_page} | Delete")

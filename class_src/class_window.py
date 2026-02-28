@@ -18,12 +18,13 @@ class Font:
 class Ratios:
     # Menu Search Customer
     store = 2
-    id = 1
+    id = 2
     name = 2
-    email = 3
+    email = 2
     title = 3
     phone = 2
     address = 2
     date = 2
+    last_date = 3
     status = 2
     rate = 2

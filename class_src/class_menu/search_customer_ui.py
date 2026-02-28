@@ -21,60 +21,84 @@ def view_header():
                 flet.VerticalDivider(width=1),
                 header_text("Address", expand=Ratios.address),
                 flet.VerticalDivider(width=1),
-                header_text("Create Date", expand=Ratios.date),
+                header_text("Last Rental Date", expand=Ratios.last_date),
                 flet.VerticalDivider(width=1),
                 header_text("Status", expand=Ratios.status),
             ], alignment=flet.MainAxisAlignment.START, spacing=5, height=20
         ), margin=5
     )
 
-def view_table(page, store_id, row, status_color, store_color):
-    if row[7] == 'Overdue':
+def view_table(page, staff_store_id, row, status_color, store_color):
+    customer_store = row[0]
+    customer_name = row[1]
+    customer_id = str(row[2])
+    customer_email = row[3]
+    customer_phone = row[4]
+    customer_address = row[5]
+    customer_last_rental_date = row[6]
+    customer_status = row[7]
+    customer_store_id = row[8]
+    customer_last_rental_store_id = row[9]
+
+    customer_params = {
+        "page": page,
+        "customer_name": customer_name,
+        "staff_store_id": staff_store_id,
+        "customer_last_rental_store_id": customer_last_rental_store_id,
+    }
+
+    if customer_status == 'Overdue':
         status_color = Font.status_overdue
-    if row[8] == store_id:
-        if row[0] == '🇦🇺 Woodridge':
-            store_color = flet.Colors.ORANGE
-        if row[0] == '🇨🇦 Lethbridge':
+    if customer_store_id == staff_store_id:
+        if customer_store == '🇦🇺 Woodridge':
             store_color = flet.Colors.BLUE
+        elif customer_store == '🇨🇦 Lethbridge':
+            store_color = flet.Colors.ORANGE
     else:
-        store_color = flet.Colors.RED_ACCENT
+        store_color = flet.Colors.GREY_500
     return flet.Container(
     content=flet.Row(
         controls=[
-            data_text(row[0], expand=Ratios.store, color=store_color),
+            data_text(customer_store, expand=Ratios.store, color=store_color),
             flet.VerticalDivider(width=1),
-            data_text(row[1], expand=Ratios.name),
+            flet.Row([
+                flet.Container(width=4),
+                data_text(customer_name, color=status_color, expand=True, max_lines=2, text_align="left"),
+            ], expand=Ratios.name, spacing=0),
             flet.VerticalDivider(width=1),
-            data_text(str(row[2]), expand=Ratios.id),
+            data_text(customer_id, expand=Ratios.id),
             flet.VerticalDivider(width=1),
-            data_text(row[3], expand=Ratios.email),
+            data_text(customer_email, expand=Ratios.email),
             flet.VerticalDivider(width=1),
-            data_text(row[4], expand=Ratios.phone),
+            data_text(customer_phone, expand=Ratios.phone),
             flet.VerticalDivider(width=1),
-            data_text(row[5], expand=Ratios.address),
+            data_text(customer_address, expand=Ratios.address),
             flet.VerticalDivider(width=1),
-            data_text(str(row[6])[:10], expand=Ratios.date),
+            flet.Row([
+                flet.Container(width=4),
+                data_text(customer_last_rental_date, color=status_color, expand=True, max_lines=2, text_align="left"),
+            ], expand=Ratios.last_date, spacing=0),
             flet.VerticalDivider(width=1),
             flet.Row(expand=Ratios.status, controls=[
                 flet.Text(
-                    row[7], text_align="center",
+                    customer_status, text_align="center",
                     no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, tooltip=row[7],
                     color=status_color, expand=3),
                 flet.PopupMenuButton(
                     items=[
-                        context_menu(row[1], True, 20, weight=flet.FontWeight.BOLD,
+                        context_menu(customer_name, True, 20, weight=flet.FontWeight.BOLD,
                                      alignment=flet.alignment.center, icon=flet.Icons.PERSON),
                         flet.PopupMenuItem(height=1),
                         context_menu("Rentals Data", icon=flet.Icons.CALENDAR_MONTH,
-                                     on_click=lambda e:context_customer_id_data(None, page, row[1], "rental")),
+                                     on_click=lambda e:context_customer_id_data(None, "rental", **customer_params)),
                         context_menu("Payments Data", icon=flet.Icons.ATTACH_MONEY,
-                                     on_click=lambda e:context_customer_id_data(None, page, row[1], "payment")),
+                                     on_click=lambda e:context_customer_id_data(None, "payment", **customer_params)),
                         flet.PopupMenuItem(height=1),
                         context_menu("Edit", icon=flet.Icons.MODE_EDIT_OUTLINE,
-                                     on_click=lambda e:context_customer_id_data(None, page, row[1], "edit")),
+                                     on_click=lambda e:context_customer_id_data(None, "edit", **customer_params)),
                         context_menu(content="Delete", color=flet.Colors.ERROR,
                                      icon=flet.Icons.DELETE_OUTLINED,
-                                     on_click=lambda e:context_customer_id_data(None, page, row[1], "delete")),
+                                     on_click=lambda e:context_customer_id_data(None, "delete", **customer_params)),
                     ], expand=1, shadow_color=flet.Colors.GREY_100, icon=flet.Icons.MENU, icon_size=30,
                     padding=0
                 )
@@ -82,7 +106,10 @@ def view_table(page, store_id, row, status_color, store_color):
         ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
     ), margin=5, border_radius=5, expand=True)
 
-def build_customer_ui(page, store_id, conn):
+def build_customer_ui(**kwargs):
+    page = kwargs.get("page")
+    staff_store_id = kwargs.get("staff_store_id")
+    conn = kwargs.get("conn")
     popup = Popup(page=page)
     customer_id_data = flet.ListView(expand=True, spacing=0)
     def query_customer(e):
@@ -92,11 +119,11 @@ def build_customer_ui(page, store_id, conn):
             # cart_customer_id = int(input_customer.value) -> ID 상자를 만들지 않는 경우 사용가능 | ANY(%s) -> ERROR
             # print(f"Search Customer ID : {int(input_customer.value)}")
         except:
-            str_customer_name = f"%{input_customer.value.strip()}%"
+            customer_name = f"%{input_customer.value.strip()}%"
             # print("Not ID -> Name Search")
             cursor = conn.cursor()
             try:
-                cursor.execute(Search.customer_name_query,(str_customer_name,str_customer_name,))
+                cursor.execute(Search.customer_name_query,(customer_name,))
                 customer_name_id = cursor.fetchall()
                 if customer_name_id:
                     # print(f"Name Check : {input_customer.value}")
@@ -105,19 +132,19 @@ def build_customer_ui(page, store_id, conn):
                     # print(f"List Check : {cart_customer_id}")
                 else:
                     print(f"Not Customer Name : {input_customer.value.strip()}")
+                    input_customer.focus()
                     popup.show_error_open(
                         message=f"Customer Name Not Found [{input_customer.value.strip()}]"
                     )
-                    input_customer.focus()
                     return # 조회 실패시 쿼리 실행 방지
                 conn.commit()
             except Exception as err:
                 conn.rollback()
                 print(f"Error. Customer Search : {err}")
+                input_customer.focus()
                 popup.show_error_open(
                     message="Error. Customer Search"
                 )
-                input_customer.focus()
                 return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
         try:
@@ -129,15 +156,15 @@ def build_customer_ui(page, store_id, conn):
                     status_color = Font.status_normal
                     store_color = Font.status_normal
                     customer_id_data.controls.append(
-                        view_table(page, store_id, row, status_color, store_color)
+                        view_table(page, staff_store_id, row, status_color, store_color)
                     )
                 customer_id_data.update()
             else:
                 print(f"Customer ID Not Found {int(input_customer.value.strip())}")
+                input_customer.focus()
                 popup.show_error_open(
                     message=f"Customer ID Not Found [{input_customer.value.strip()}]"
                 )
-                input_customer.focus()
             conn.commit()
         except Exception as err:
             conn.rollback()

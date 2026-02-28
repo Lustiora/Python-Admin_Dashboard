@@ -1,5 +1,21 @@
 ## [README](/README.md)
 
+* **2026-02-28**
+  1. 매개변수 딕셔너리 사용으로 함수 사용 최적화 _(\**params, \**kwargs, \**customer_params)_
+  2. search_customer_ui.py
+     * 검색 이전 기능 (고객정보 연동)
+       * 에러 : 고객 정보 페이지에서는 정상 또는 연체중 표시되어있으나 검색 이전 시 해당 하는 상태가 없거나 조회가 되지않음.
+       * 원인 : 고객정보 검색 쿼리 및 로직 논리오류.
+         * 고객정보 검색 시에는 Staff Login Store 정보를 사용하여 검색하지 않고 등록된 모든 고객을 출력.
+         * 하지만 검색 이전된 Rental, Payment Page에서는 Staff Login Store 정보를 사용하여 출력 정보 필터링.
+       * 해결 :
+         * View Table customer_data Create. 기존 쿼리 개선 및 검색 최적화.
+         * 검색 이전 기능 이벤트에서 Staff Store ID, Last Rental Store ID 를 확인하여 안내 팝업 출력.
+         * 고객 생성 날짜 → 검색 시 마지막 대여 위치 및 날짜 출력으로 변경.
+         * Staff Store ID 와 일치하지 않는 Customer Store ID 의 경우 색상을 연하게 하여 시인성 개선.
+  3. UI 상태 개선 (Focus 순서 변경 → 팝업보다 입력칸이 먼저 Focus 되는 경우 방지)
+  4. navigation_tile.py (Edit, Delete Menu 삭제) 
+
 * **2026-02-27**
   1. search_customer_ui.py
      * view_table, view_header 모듈 분리
@@ -8,7 +24,7 @@
      * Dashboard Page Block → 매게변수 과사용으로 인한 가독성 하락 및 관리 곤란
      * config 정보를 직접 가져다 쓰는걸로 변경 예정
      * tile_column 모듈 분리
-     * 중복 사용 코드 material.py 이전 예정
+     * 중복 사용 코드 material.py 이전
   3. test_main_ui.py
      * MainManager Class 추가 (컨텍스트 메뉴 → 페이지 전환)
        * self.page.session.set("manager", self)

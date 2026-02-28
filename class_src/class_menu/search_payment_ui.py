@@ -241,7 +241,10 @@ def view_close_receipt(e, receipt_details):
     receipt_details.visible = False
     receipt_details.update()
 
-def build_payment_ui(page, store_id, conn, initial_value=""):
+def build_payment_ui(initial_value="", **kwargs):
+    page = kwargs.get("page")
+    store_id = kwargs.get("staff_store_id")
+    conn = kwargs.get("conn")
     payment_data = flet.ListView(expand=True, spacing=0)
     view_page = 0
     connect_module = []
@@ -261,52 +264,53 @@ def build_payment_ui(page, store_id, conn, initial_value=""):
     def payment_search_data_query(e, view_page, select_page, initial_value=None):
         popup = Popup(page=page)
         connect_module_page = 0
-        cart_customer_id = []
+        cart_payment_id = []
         connect_count = []
         try:
-            cart_customer_id.append(int(input_payment.value))
-            # print(f"Search payment ID {int(input_payment.value)}")
+            cart_payment_id.append(int(input_payment.value))
         except:
             if initial_value:
                 customer_name = f"%{initial_value}%"
+                not_name = initial_value
             else:
                 customer_name = f"%{input_payment.value.strip()}%"
-            # print(f"Search Customer Name {input_payment.value}")
+                not_name = input_payment.value
             cursor = conn.cursor()
             try:
                 cursor.execute(Search.payment_search_name_query, (store_id, customer_name))
                 customer_name_list = cursor.fetchall()
                 if customer_name_list:
                     for row in customer_name_list:
-                        cart_customer_id.append(row[0])
+                        cart_payment_id.append(row[0])
                 else:
-                    print(f"Customer Name Not Found [{input_payment.value.strip()}]")
+                    print(f"Customer not found or no Payment history at this location. : {not_name}")
                     popup.show_error_open(
-                        message=f"Customer Name Not Found [{input_payment.value.strip()}]"
+                        message=f"Customer not found or no Payment history at this location."
                     )
-                    input_payment.focus()
+                    if not initial_value:
+                        input_payment.focus()
                     return
                 conn.commit()
             except Exception as err:
                 conn.rollback()
                 print(f"Error. Customer Name Search {err}")
         cursor = conn.cursor()
-        if cart_customer_id:
+        if cart_payment_id:
             connect_module_count.clear()
-            cursor.execute(Search.payment_search_count_query, (store_id, cart_customer_id,))
+            cursor.execute(Search.payment_search_count_query, (store_id, cart_payment_id,))
             connect_count.append(cursor.fetchone())
             for count in connect_count:
                 connect_module_count.append(int(count[0]))
         try:
             cursor = conn.cursor()
-            cursor.execute(Search.payment_search_id_query, (store_id, cart_customer_id, view_page,))
+            cursor.execute(Search.payment_search_id_query, (store_id, cart_payment_id, view_page,))
             payment_id_data = cursor.fetchall()
             if not payment_id_data:
-                print(f"Payment ID Not Found {input_payment.value.strip()}")
-                popup.show_error_open(
-                    message=f"Payment ID Not Found [{input_payment.value.strip()}]"
-                )
+                print(f"Payment ID Not Found {input_payment.value}")
                 input_payment.focus()
+                popup.show_error_open(
+                    message=f"Payment ID Not Found [{input_payment.value}]"
+                )
             view_table_payment_data(conn, payment_data, payment_id_data, connect_module, connect_module_count,
                                     connect_module_page, connect_module_count[0], page_num, select_page, receipt_details, receipt_container)
             conn.commit()

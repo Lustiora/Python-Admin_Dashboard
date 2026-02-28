@@ -104,7 +104,9 @@ def view_table(row, status_normal, status_color):
         ), margin=5, border_radius=5, expand=True
     )
 
-def view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count, connect_module_page:int, query, page_num, select_page):
+def view_table_rental_data(
+        rental_data, rental_id_data, connect_module, connect_module_count, connect_module_page:int,
+        query, page_num, select_page):
     # print(f"page_num.selected_index : {page_num.selected_index}")
     # print(f"connect_module_page : {connect_module_page}")
     # print(f"connect_module : {connect_module}")
@@ -163,63 +165,11 @@ def view_table_rental_data(rental_data, rental_id_data, connect_module, connect_
         rental_data.update()
     # print(f"count_pages : {count_pages}")
 
-def rental_search_data_context(conn, page, cart_customer_id, store_id, connect_module_count, connect_count,
-                               view_page, rental_data, connect_module, connect_module_page, page_num, select_page,
-                               input_rental, initial_value):
+def build_rental_ui(initial_value="", **kwargs):
+    page = kwargs.get("page")
+    store_id = kwargs.get("staff_store_id")
+    conn = kwargs.get("conn")
     popup = Popup(page=page)
-    try:
-        cart_customer_id.append(int(input_rental.value))
-        # print(f"Search Rental ID {int(input_rental.value)}")
-    except:
-        if initial_value:
-            customer_name = f"%{initial_value}%"
-        else:
-            print("not initial_value")
-            customer_name = f"%{input_rental.value.strip()}%"
-        # print(f"Search Customer Name {input_rental.value}")
-        cursor = conn.cursor()
-        try:
-            cursor.execute(Search.rental_search_name_query, (store_id, customer_name))
-            customer_name_list = cursor.fetchall()
-            if customer_name_list:
-                for row in customer_name_list:
-                    cart_customer_id.append(row[0])
-            else:
-                print(f"Customer Name Not Found : {input_rental.value.strip()}")
-                popup.show_error_open(
-                    message=f"Customer Name Not Found [{input_rental.value.strip()}]"
-                )
-                input_rental.focus()
-                return
-            conn.commit()
-        except Exception as err:
-            conn.rollback()
-            print(f"Error. Customer Name Search : {err}")
-    cursor = conn.cursor()
-    if cart_customer_id:
-        connect_module_count.clear()
-        cursor.execute(Search.rental_search_count_query, (store_id, cart_customer_id,))
-        connect_count.append(cursor.fetchone())
-        for count in connect_count:
-            connect_module_count.append(int(count[0]))
-    try:
-        cursor = conn.cursor()
-        cursor.execute(Search.rental_search_id_query, (store_id, cart_customer_id, view_page,))
-        rental_id_data = cursor.fetchall()
-        if not rental_id_data:
-            print(f"Rental ID Not Found : {input_rental.value.strip()}")
-            popup.show_error_open(
-                message=f"Rental ID Not Found [{input_rental.value.strip()}]"
-            )
-            input_rental.focus()
-        view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
-                               connect_module_page, connect_module_count[0], page_num, select_page)
-        conn.commit()
-    except Exception as err:
-        conn.rollback()
-        print(f"Search Rental error {err}")
-
-def build_rental_ui(page, store_id, conn, initial_value=""):
     rental_data = flet.ListView(expand=True, spacing=0)
     view_page = 0
     connect_module = []
@@ -295,11 +245,61 @@ def build_rental_ui(page, store_id, conn, initial_value=""):
     # Search
     def rental_search_data_query(e, view_page, select_page, initial_value=None):
         connect_module_page = 0
-        cart_customer_id = []
+        cart_rental_id = []
         connect_count = []
-        rental_search_data_context(conn, page, cart_customer_id, store_id, connect_module_count, connect_count,
-                                        view_page, rental_data, connect_module, connect_module_page, page_num,
-                                        select_page, input_rental, initial_value)
+        try:
+            cart_rental_id.append(int(input_rental.value))
+            # print(f"Search Rental ID {int(input_rental.value)}")
+        except:
+            if initial_value:
+                customer_name = f"%{initial_value}%"
+                not_name = initial_value
+            else:
+                customer_name = f"%{input_rental.value.strip()}%"
+                not_name = input_rental.value
+                # print(f"Search Customer Name {input_rental.value}")
+            cursor = conn.cursor()
+            try:
+                cursor.execute(Search.rental_search_name_query, (store_id, customer_name))
+                customer_name_list = cursor.fetchall()
+                if customer_name_list:
+                    for row in customer_name_list:
+                        cart_rental_id.append(row[0])
+                else:
+                    print(f"Customer not found or no Rental history at this location. : {not_name}, {store_id}")
+                    popup.show_error_open(
+                        message=f"Customer not found or no Rental history at this location."
+                    )
+                    if not initial_value:
+                        input_rental.focus()
+                    return
+                conn.commit()
+            except Exception as err:
+                conn.rollback()
+                print(f"Error. Customer Name Search : {err}")
+        cursor = conn.cursor()
+        if cart_rental_id:
+            connect_module_count.clear()
+            cursor.execute(Search.rental_search_count_query, (store_id, cart_rental_id,))
+            connect_count.append(cursor.fetchone())
+            for count in connect_count:
+                connect_module_count.append(int(count[0]))
+        try:
+            cursor = conn.cursor()
+            cursor.execute(Search.rental_search_id_query, (store_id, cart_rental_id, view_page,))
+            rental_id_data = cursor.fetchall()
+            if not rental_id_data:
+                print(f"Rental ID Not Found : {input_rental.value}")
+                input_rental.focus()
+                popup.show_error_open(
+                    message=f"Rental ID Not Found [{input_rental.value}]"
+                )
+            view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
+                                   connect_module_page, connect_module_count[0], page_num, select_page)
+            conn.commit()
+        except Exception as err:
+            conn.rollback()
+            print(f"Search Rental error {err}")
 
     total_rentals = today_status(
         query=rental_search_total_query,
@@ -330,7 +330,7 @@ def build_rental_ui(page, store_id, conn, initial_value=""):
     )
 
     page_num = flet.CupertinoSlidingSegmentedButton(
-        visible=True, # True = 표시, False = 숨김
+        visible=False, # True = 표시, False = 숨김
         selected_index=0,
         on_change=lambda e: select_view_page(e.data),
         controls=[
