@@ -1,10 +1,13 @@
 ## [README](/README.md)
 
+* 반납된 상태에서는 반납 버튼 조작을 막고 연체된 상태에서는 '연체료 납부가 필요'하다는 팝업 등 버튼 기능 구현 예정.
+* 고객 정보 수정 페이지 구현 예정.
+
 * **2026-03-01**
   1. View Table customer_data 방어로직 추가 (대여기록 없는 신규 고객의 경우)
   2. UI 상태 개선
      * customer, inventory의 경우 Connect Store와 무관하게 조회.
-     * 하지만 그외의 경우를 확실히 하기위해 page title 좌측 Store Status를 출력하여 혼돈 방지.
+     * 하지만 그 외의 경우를 확실히 하기위해 page title 좌측 Store Status를 출력하여 혼돈 방지.
   3. search_customer_ui.py
      * 검색 이전 기능 Delete 활성화 및 팝업 추가.
   4. delete.py
@@ -20,6 +23,10 @@
        * if :  focus, update 및 팝업출력 (직접 조회하는 경우에만 동작)
        * else : controls clear (자동 업데이트 되는 경우에만 동작)
   6. Test SQL Script, View Table Script 추가
+  7. search_rental_ui.py
+     * View Table rental_history Create (상세 대여 상품 목록 조회용)
+     * 목록 조회 후 상세한 대여 상품 목록을 출력 및 반납, 취소 버튼 리스트 표시. (Payment Receipt 재사용)
+     * 고객조회 → 대여기록 or 결제기록 조회 → 상세대여기록 조회 및 반납 or 결제 영수증 프린트 및 이메일 전송 화면까지 구현.
 
 * **2026-02-28**
   1. 매개변수 딕셔너리 사용으로 함수 사용 최적화 _(\**params, \**kwargs, \**customer_params)_

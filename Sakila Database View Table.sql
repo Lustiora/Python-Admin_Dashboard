@@ -76,6 +76,35 @@ group by
 	r.return_date ,
 	i.store_id);
 
+create or replace view public.rental_history as (
+with all_d as (
+select
+	r.rental_id ,
+	c.first_name || ' ' || c.last_name as name ,
+	f.title ,
+	f.poster_path ,
+	to_char(r.rental_date,'YYYY-MM-DD HH24:MI:SS') as rental_date ,
+	r.rental_date::date + f.rental_duration as due_date ,
+	case 
+		when r.return_date is null 
+			and current_date > (r.rental_date::date + f.rental_duration) then 'Overdue'
+		when r.return_date is null 
+			and current_date <= (r.rental_date::date + f.rental_duration) then 'Unreturned'
+		else to_char(r.return_date,'YYYY-MM-DD')
+	end as return_data , 
+	r.return_date::date as return_date ,
+	c.activebool
+from rental r
+inner join customer c on r.customer_id = c.customer_id 
+inner join inventory i on i.inventory_id = any(r.inventory_id)
+inner join film f on i.film_id = f.film_id
+) , union_all as (
+select rental_id , name , title , poster_path , rental_date , due_date , return_data , return_date from all_d
+union all
+select distinct rental_id , name , Null , Null , rental_date , due_date , return_data , return_date from all_d)
+select * from union_all
+);
+
 CREATE OR REPLACE VIEW public.rental_full_status as (
 select
 	r.customer_id as customer_id , -- "고객 ID"

@@ -54,22 +54,25 @@ def view_search_rental(customer_name=None, **kwargs):
     elif store_id == 2:
         customer_store = "🇦🇺 Woodridge"
         store_color = Font.store_Woodridge
-    total_rentals, overdue, due_today, input_rental, view_rental = build_rental_ui(customer_name, **kwargs)
-    return flet.Column(
-        controls=[
-            flet.Row([
-                flet.Text(customer_store, color=store_color, size=Font.big_fontsize),
-                flet.Text("Rental Status Overview", style=flet.TextThemeStyle.TITLE_LARGE,
-                          weight=flet.FontWeight.BOLD),
-            ], height=40, spacing=10),
-            flet.Divider(),
-            flet.Row([total_rentals, overdue, due_today], spacing=20),
-            flet.Row([input_rental, ], height=60),
-            flet.Column([
-                view_container(view_rental)
-            ], alignment=flet.alignment.center, expand=True),
-        ], spacing=20
-    )
+    total_rentals, overdue, due_today, input_rental, view_rental, rental_history = build_rental_ui(customer_name, **kwargs)
+    return flet.Row([
+        flet.Column(
+            controls=[
+                flet.Row([
+                    flet.Text(customer_store, color=store_color, size=Font.big_fontsize),
+                    flet.Text("Rental Status Overview", style=flet.TextThemeStyle.TITLE_LARGE,
+                              weight=flet.FontWeight.BOLD),
+                ], height=40, spacing=10),
+                flet.Divider(),
+                flet.Row([total_rentals, overdue, due_today], spacing=20),
+                flet.Row([input_rental, ], height=60),
+                flet.Column([
+                    view_container(view_rental)
+                ], alignment=flet.alignment.center, expand=True),
+            ], expand=5, spacing=20
+        ),
+        rental_history
+    ], spacing=20)
 
 def view_search_payment(customer_name=None, **kwargs):
     store_id = kwargs.get("staff_store_id")

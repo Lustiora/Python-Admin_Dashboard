@@ -54,13 +54,15 @@ def view_header():
         ), margin=5, border_radius=5
     )
 
-def view_table(row, status_normal, status_color):
+def view_table(conn, row, rental_history, history_container, status_normal, status_color, btn_color, btn_bgcolor):
     if "Overdue" in row[5]:
         status = row[5].split(" (")[0]
         days = row[5].split("due ")[1]
     else:
         status = row[5]
         days = ""
+    rental_id = str(row[0])
+    status_view = flet.Text(status, expand=True, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
     return flet.Container(
         content=flet.Row(
             controls=[
@@ -93,20 +95,19 @@ def view_table(row, status_normal, status_color):
                     data_text(str(row[4]), color=status_normal, expand=True, max_lines=1),
                 ], expand=Ratios.date, spacing=0),
                 flet.VerticalDivider(width=1),
-                flet.Row([
-                    flet.Container(width=4),
-                    flet.Column([
-                        data_text(status, color=status_color, max_lines=1),
-                        data_text(days, color=status_color, max_lines=1),
-                    ], expand=True, spacing=0),
-                ], expand=Ratios.status, spacing=0),
+                flet.Button(content=status_view, expand=Ratios.status,
+                            on_click=lambda e: view_open_history(None, conn, rental_history, history_container,
+                                                                 rental_id),
+                            color=btn_color, bgcolor=btn_bgcolor,
+                            style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
+                                                   overlay_color=flet.Colors.INVERSE_PRIMARY)),
             ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
         ), margin=5, border_radius=5, expand=True
     )
 
 def view_table_rental_data(
-        rental_data, rental_id_data, connect_module, connect_module_count, connect_module_page:int,
-        query, page_num, select_page):
+        conn, rental_data, rental_id_data, connect_module, connect_module_count, connect_module_page:int,
+        query, page_num, select_page, rental_history, history_container):
     # print(f"page_num.selected_index : {page_num.selected_index}")
     # print(f"connect_module_page : {connect_module_page}")
     # print(f"connect_module : {connect_module}")
@@ -126,14 +127,20 @@ def view_table_rental_data(
         for row in rental_id_data:
             status_normal = Font.status_overdue
             status_color = Font.status_overdue
+            btn_color = Font.status_overdue_btn_color
+            btn_bgcolor = Font.status_overdue_btn_bgcolor
             if row[5] == 'Returned':
                 status_normal = Font.status_normal
                 status_color = Font.status_returned
+                btn_color = Font.status_normal_btn_color
+                btn_bgcolor = Font.status_normal_btn_bgcolor
             if row[5] == 'Unreturned':
                 status_normal = Font.status_normal
                 status_color = Font.status_unreturned
+                btn_color = Font.status_unreturned_btn_color
+                btn_bgcolor = Font.status_unreturned_btn_bgcolor
             rental_data.controls.append(
-                view_table(row, status_normal, status_color)
+                view_table(conn, row, rental_history, history_container, status_normal, status_color, btn_color, btn_bgcolor)
             )
             connect_module_count.append(row[0])
         connect_module.clear()
@@ -164,6 +171,95 @@ def view_table_rental_data(
                                             alignment=flet.MainAxisAlignment.CENTER, )))
         rental_data.update()
     # print(f"count_pages : {count_pages}")
+
+def history(conn, rental_id:int=None):
+    rental_history_data = flet.ListView(expand=True, spacing=0)
+    view_rental_id = flet.Text("ID", weight=flet.FontWeight.BOLD)
+    view_rental_name = flet.Text("Name", weight=flet.FontWeight.BOLD, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
+    view_rental_date = flet.Text("Rental Date", weight=flet.FontWeight.BOLD, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
+    view_rental_due_date = flet.Text("Due Date")
+    view_return_data = flet.Text("Return Date")
+
+    tmdb_api_image = "https://image.tmdb.org/t/p/w200"
+
+    cursor = conn.cursor()
+    try:
+        rental_history_data.controls.clear()
+        cursor.execute(Search.rental_history_data_query,(rental_id,))
+        data = cursor.fetchone()
+        if data:
+            view_rental_id.value = data[0]
+            view_rental_name.value = data[1]
+            view_rental_date.value = data[4]
+            view_rental_due_date.value = str(data[5])
+            if data[6] == 'Overdue':
+                view_return_data = flet.Text(data[6], weight=flet.FontWeight.BOLD, color=Font.status_overdue)
+            elif data[6] == 'Unreturned':
+                view_return_data = flet.Text(data[6], weight=flet.FontWeight.BOLD, color=Font.status_unreturned)
+            else:
+                view_return_data = flet.Text(data[6], color=Font.status_returned)
+            # view_return_date = data[7]
+        film_data = cursor.fetchall()
+        if film_data:
+            for row in film_data:
+                rental_history_data.controls.append(
+                    flet.Container(
+                        expand=True,
+                        padding=10,
+                        content=flet.Column([
+                            flet.Row([
+                                flet.Image(src=f"{tmdb_api_image}{row[3]}",width=60, height=90),
+                                flet.Text(row[2]),
+                            ]),
+                            flet.Divider(height=1),
+                        ], spacing=20)
+                    )
+                )
+        if rental_history_data.page:
+            rental_history_data.update()
+        conn.commit()
+    except Exception as err:
+        conn.rollback()
+        print(f"Error : {err}")
+    return flet.Column([
+        flet.Row([flet.Text("Rental ID:"),view_rental_id,],
+                 width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
+        flet.Row([flet.Text("Customer:"),view_rental_name,],
+                 width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
+        flet.Divider(height=1),
+        rental_history_data,
+        flet.Divider(height=1),
+        flet.Row([flet.Text("Rental Date:"),view_rental_date,],
+                 width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
+        flet.Row([flet.Text("Due Date:"),view_rental_due_date,],
+                 width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
+        flet.Row([flet.Text("Return Date:"),view_return_data,],
+                 width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
+        flet.Button("Return", width=float('inf'), height=50,
+                    color=flet.Colors.ON_PRIMARY_CONTAINER,
+                    bgcolor=flet.Colors.PRIMARY_CONTAINER,
+                    style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
+                                           overlay_color=flet.Colors.INVERSE_PRIMARY)),
+        flet.Button("Cancel", width=float('inf'), height=50,
+                    color=flet.Colors.ON_PRIMARY_CONTAINER,
+                    bgcolor=flet.Colors.PRIMARY_CONTAINER,
+                    style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
+                                           overlay_color=flet.Colors.INVERSE_PRIMARY)),
+    ], expand=True, width=250)
+
+def view_open_history(e, conn, rental_history, history_container, rental_id):
+    # print("open receipt")
+    if not rental_id:
+        return
+    else:
+        rental_history.visible = True
+        history_container.content = history(conn, rental_id)
+        rental_history.update()
+
+def view_close_history(e, rental_history):
+    # print("close receipt")
+    rental_history.visible = False
+    rental_history.update()
 
 def build_rental_ui(initial_value="", **kwargs):
     page = kwargs.get("page")
@@ -209,8 +305,8 @@ def build_rental_ui(initial_value="", **kwargs):
             cursor = conn.cursor()
             cursor.execute(Search.return_search_total_query, (store_id, view_page))
             rental_id_data = cursor.fetchall()
-            view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
-                                   connect_module_page, total_rental_data, page_num, select_page)
+            view_table_rental_data(conn, rental_data, rental_id_data, connect_module, connect_module_count,
+               connect_module_page, total_rental_data, page_num, select_page, rental_history, history_container)
             conn.commit()
         except Exception as err:
             conn.rollback()
@@ -222,8 +318,8 @@ def build_rental_ui(initial_value="", **kwargs):
             cursor = conn.cursor()
             cursor.execute(Search.rental_search_overdue_query, (store_id, view_page,))
             rental_id_data = cursor.fetchall()
-            view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
-                                   connect_module_page, overdue_data, page_num, select_page)
+            view_table_rental_data(conn, rental_data, rental_id_data, connect_module, connect_module_count,
+               connect_module_page, overdue_data, page_num, select_page, rental_history, history_container)
             conn.commit()
         except Exception as err:
             conn.rollback()
@@ -235,8 +331,8 @@ def build_rental_ui(initial_value="", **kwargs):
             cursor = conn.cursor()
             cursor.execute(Search.rental_search_due_today_query, (store_id, view_page,))
             rental_id_data = cursor.fetchall()
-            view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
-                                   connect_module_page, due_today_data, page_num, select_page)
+            view_table_rental_data(conn, rental_data, rental_id_data, connect_module, connect_module_count,
+               connect_module_page, due_today_data, page_num, select_page, rental_history, history_container)
             conn.commit()
         except Exception as err:
             conn.rollback()
@@ -294,8 +390,8 @@ def build_rental_ui(initial_value="", **kwargs):
                 popup.show_error_open(
                     message=f"Rental ID Not Found [{input_rental.value}]"
                 )
-            view_table_rental_data(rental_data, rental_id_data, connect_module, connect_module_count,
-                                   connect_module_page, connect_module_count[0], page_num, select_page)
+            view_table_rental_data(conn, rental_data, rental_id_data, connect_module, connect_module_count,
+               connect_module_page, connect_module_count[0], page_num, select_page, rental_history, history_container)
             conn.commit()
         except Exception as err:
             conn.rollback()
@@ -349,6 +445,40 @@ def build_rental_ui(initial_value="", **kwargs):
                     scroll=flet.ScrollMode.AUTO,
     )]))
 
+    history_container = flet.Container(
+        content=history(conn),
+        expand=True,
+        padding=10,
+        border_radius=5,
+        border=flet.border.all(color=flet.Colors.BLACK),
+    )
+
+    rental_history = flet.Row([
+        flet.VerticalDivider(width=1),
+        flet.Column(
+            controls=[
+                flet.Row([
+                    flet.Container(
+                        expand=3,
+                        alignment=flet.alignment.center_left,
+                        padding=flet.padding.only(left=10),
+                        content=flet.Text("Rental Details", style=flet.TextThemeStyle.TITLE_LARGE,
+                                          weight=flet.FontWeight.BOLD),
+                    ), flet.Container(
+                        expand=1,
+                        alignment=flet.alignment.center_right,
+                        content=flet.IconButton(
+                            icon=flet.Icons.CLOSE_ROUNDED,
+                            on_click=lambda e: view_close_history(None, rental_history)
+                        ),
+                    ),
+                ], height=40, spacing=0,
+                ), history_container
+            ], width=250,
+        )
+    ], spacing=20, visible=False, )
+
+
     view_rental = flet.Column(
         expand=True,
         spacing=5,
@@ -361,4 +491,4 @@ def build_rental_ui(initial_value="", **kwargs):
     if not initial_value:
         rental_search_total_query(None, 0,0)
 
-    return total_rentals, overdue, due_today, input_rental, view_rental
+    return total_rentals, overdue, due_today, input_rental, view_rental, rental_history

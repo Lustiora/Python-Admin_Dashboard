@@ -977,3 +977,16 @@ left join film f on i.film_id = f.film_id
 where c.customer_id = '53' 
 order by c.customer_id , last_rental_date desc
 
+select 
+    rental_id ,
+    name ,
+    title ,
+    poster_path ,
+    rental_date ,
+    due_date ,
+    return_data ,
+    return_date
+from rental_history
+where rental_id = 8716
+order by title desc
+

@@ -185,6 +185,22 @@ class Search:
         limit 10 offset %s
         """
 
+    rental_history_data_query \
+        = """
+        select 
+            rental_id ,
+            name ,
+            title ,
+            poster_path ,
+            rental_date ,
+            due_date ,
+            return_data ,
+            return_date
+        from rental_history
+        where rental_id = %s
+        order by title desc
+        """
+
     #############################################
     # class_menu search payment
     #############################################
