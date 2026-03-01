@@ -1,5 +1,26 @@
 ## [README](/README.md)
 
+* **2026-03-01**
+  1. View Table customer_data 방어로직 추가 (대여기록 없는 신규 고객의 경우)
+  2. UI 상태 개선
+     * customer, inventory의 경우 Connect Store와 무관하게 조회.
+     * 하지만 그외의 경우를 확실히 하기위해 page title 좌측 Store Status를 출력하여 혼돈 방지.
+  3. search_customer_ui.py
+     * 검색 이전 기능 Delete 활성화 및 팝업 추가.
+  4. delete.py
+     * material.py 에서 받아온 고객이름, 고객 ID 와 매칭되는 고객 데이터 `activebool = False`.
+     * rental, payment page `where activebool is True` 추가. 
+  5. 검색창 입력 정보를 유지하며 삭제 이후 페이지 자동 업데이트.
+     * 검색창 입력정보 search_customer_ui.py → material.py → search_customer_ui.py 
+     * 문제 1 : 검색창 입력정보가 단일 데이터였고 해당 데이터를 삭제 이후 자동 업데이트 안되는 이슈
+       * 원인 : Listview 안의 데이터가 없는경우 (not Listview.page) controls 정리가 필요.
+     * 문제 2 : TextField Control must be added to the page first.
+       * 원인 : 문제 1의 원인과 마찬가지로 Listview.page 가 없는경우 TextField(input_customer)의 포커스 지정에서 오류 발생.
+     * 해결 : Listview.page
+       * if :  focus, update 및 팝업출력 (직접 조회하는 경우에만 동작)
+       * else : controls clear (자동 업데이트 되는 경우에만 동작)
+  6. Test SQL Script, View Table Script 추가
+
 * **2026-02-28**
   1. 매개변수 딕셔너리 사용으로 함수 사용 최적화 _(\**params, \**kwargs, \**customer_params)_
   2. search_customer_ui.py

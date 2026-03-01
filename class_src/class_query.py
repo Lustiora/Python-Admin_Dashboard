@@ -7,22 +7,23 @@ class Search:
         = """
         select customer_id
         from customer_data
-        where name ilike %s
+        where activebool is true
+        and name ilike %s
         """
 
     customer_id_query\
         = """
         select 
-	        case when customer_store = 1 then '🇨🇦 Lethbridge' else '🇦🇺 Woodridge' end as store ,
-            name ,
             customer_id ,
+	        customer_store ,
+            name ,
             email ,
             phone ,
             address ,
-            case when inventory_store = 1 then '🇨🇦 ' else '🇦🇺 ' end || last_rental_date ,
+            last_rental_date ,
             status ,
             customer_store ,
-            inventory_store
+            last_rental_store
         from customer_data
         where activebool is true
         and customer_id = ANY(%s)
@@ -278,4 +279,15 @@ class Rental:
                 where p.rental_id = %s)
         where payment.rental_id = %s;
         commit; 
+        """
+
+class Delete:
+    customer_delete_query\
+        = """
+        begin;
+        update customer
+        set activebool = False
+        where customer_id = %s
+        and first_name || ' ' || last_name = %s;
+        commit;
         """

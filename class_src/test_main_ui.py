@@ -96,9 +96,10 @@ class MainManager:
             print("Page Update 'Payment'")
             self.basic_content.content = view_search_payment(customer_name, **params)
             self.basic_content.update()
-        # elif index == 2:
-        #     self.basic_content.content = view_search_rental(self.page, self.staff_store_id, self.conn)
-        #     self.basic_content.update()
+        elif index == 2:
+            print("Page Update 'Customer'")
+            self.basic_content.content = view_search_customer(customer_name, **params)
+            self.basic_content.update()
 
 # -- Module --
 def run_main(page: flet.Page):

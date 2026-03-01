@@ -14,6 +14,8 @@ class Font:
     status_overdue_btn_bgcolor = flet.Colors.ERROR_CONTAINER
     status_unreturned_btn_color = flet.Colors.ON_TERTIARY_CONTAINER
     status_unreturned_btn_bgcolor = flet.Colors.TERTIARY_CONTAINER
+    store_Lethbridge = flet.Colors.ORANGE
+    store_Woodridge = flet.Colors.BLUE
 
 class Ratios:
     # Menu Search Customer

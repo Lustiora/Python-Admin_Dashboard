@@ -60,7 +60,6 @@ def tile_column(page: flet.Page, on_nav_change):
                 leading=flet.Icon(flet.Icons.HOME),
                 title=flet.Text("Home"),
                 on_click=lambda e: on_nav_change(0)
-            ),flet.Divider(
             ),flet.ExpansionTile(
                 leading=flet.Icon(flet.Icons.SCREEN_SEARCH_DESKTOP_ROUNDED),
                 title=flet.Text("Search"),
@@ -80,7 +79,6 @@ def tile_column(page: flet.Page, on_nav_change):
                     list_tile_menu("Actor", on_nav_change, 4.4),
                     list_tile_menu("Category", on_nav_change, 4.5),
                 ]
-            ),flet.Divider(
             ),flet.ListTile(
                 leading=flet.Icon(flet.Icons.QUERY_STATS),
                 title=flet.Text("Statistic"),

@@ -271,10 +271,10 @@ def build_payment_ui(initial_value="", **kwargs):
         except:
             if initial_value:
                 customer_name = f"%{initial_value}%"
-                not_name = initial_value
+                input_data = initial_value
             else:
                 customer_name = f"%{input_payment.value.strip()}%"
-                not_name = input_payment.value
+                input_data = input_payment.value
             cursor = conn.cursor()
             try:
                 cursor.execute(Search.payment_search_name_query, (store_id, customer_name))
@@ -283,7 +283,7 @@ def build_payment_ui(initial_value="", **kwargs):
                     for row in customer_name_list:
                         cart_payment_id.append(row[0])
                 else:
-                    print(f"Customer not found or no Payment history at this location. : {not_name}")
+                    print(f"Customer not found or no Payment history at this location. : {input_data}")
                     popup.show_error_open(
                         message=f"Customer not found or no Payment history at this location."
                     )

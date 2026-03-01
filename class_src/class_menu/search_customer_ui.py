@@ -9,11 +9,11 @@ def view_header():
     return flet.Container(
         content=flet.Row(
             controls=[
+                header_text("Customer ID", expand=Ratios.id),
+                flet.VerticalDivider(width=1),
                 header_text("Store", expand=Ratios.store),
                 flet.VerticalDivider(width=1),
                 header_text("Name", expand=Ratios.name),
-                flet.VerticalDivider(width=1),
-                header_text("Customer ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
                 header_text("Email", expand=Ratios.email),
                 flet.VerticalDivider(width=1),
@@ -28,10 +28,21 @@ def view_header():
         ), margin=5
     )
 
-def view_table(page, staff_store_id, row, status_color, store_color):
-    customer_store = row[0]
-    customer_name = row[1]
-    customer_id = str(row[2])
+def view_table(row, input_data, **kwargs):
+    page = kwargs.get("page")
+    staff_store_id = kwargs.get("staff_store_id")
+    conn = kwargs.get("conn")
+    status_color = Font.status_normal
+    store_color = Font.status_normal
+    customer_id = str(row[0])
+    customer_store = row[1]
+    if row[1] == 1:
+        customer_store = "🇨🇦 Lethbridge"
+        store_color = Font.store_Lethbridge
+    elif row[1] == 2:
+        customer_store = "🇦🇺 Woodridge"
+        store_color = Font.store_Woodridge
+    customer_name = row[2]
     customer_email = row[3]
     customer_phone = row[4]
     customer_address = row[5]
@@ -40,33 +51,38 @@ def view_table(page, staff_store_id, row, status_color, store_color):
     customer_store_id = row[8]
     customer_last_rental_store_id = row[9]
 
+    rental_flag = None
+    if row[9] == 1:
+        rental_flag = "🇨🇦 "
+    elif row[9] == 2:
+        rental_flag = "🇦🇺 "
+
     customer_params = {
         "page": page,
         "customer_name": customer_name,
         "staff_store_id": staff_store_id,
         "customer_last_rental_store_id": customer_last_rental_store_id,
+        "customer_id": customer_id,
+        "conn": conn,
+        "input_data": input_data,
     }
 
     if customer_status == 'Overdue':
         status_color = Font.status_overdue
-    if customer_store_id == staff_store_id:
-        if customer_store == '🇦🇺 Woodridge':
-            store_color = flet.Colors.BLUE
-        elif customer_store == '🇨🇦 Lethbridge':
-            store_color = flet.Colors.ORANGE
-    else:
+    if not customer_store_id == staff_store_id:
         store_color = flet.Colors.GREY_500
+
     return flet.Container(
     content=flet.Row(
         controls=[
+            data_text(customer_id, expand=Ratios.id),
+            flet.VerticalDivider(width=1),
             data_text(customer_store, expand=Ratios.store, color=store_color),
             flet.VerticalDivider(width=1),
             flet.Row([
                 flet.Container(width=4),
-                data_text(customer_name, color=status_color, expand=True, max_lines=2, text_align="left"),
+                data_text(customer_name, color=status_color, expand=True, text_align="left"),
             ], expand=Ratios.name, spacing=0),
-            flet.VerticalDivider(width=1),
-            data_text(customer_id, expand=Ratios.id),
             flet.VerticalDivider(width=1),
             data_text(customer_email, expand=Ratios.email),
             flet.VerticalDivider(width=1),
@@ -75,8 +91,8 @@ def view_table(page, staff_store_id, row, status_color, store_color):
             data_text(customer_address, expand=Ratios.address),
             flet.VerticalDivider(width=1),
             flet.Row([
-                flet.Container(width=4),
-                data_text(customer_last_rental_date, color=status_color, expand=True, max_lines=2, text_align="left"),
+                flet.Text(value=rental_flag, width=25),
+                data_text(customer_last_rental_date, color=status_color, expand=True, text_align="left"),
             ], expand=Ratios.last_date, spacing=0),
             flet.VerticalDivider(width=1),
             flet.Row(expand=Ratios.status, controls=[
@@ -106,20 +122,25 @@ def view_table(page, staff_store_id, row, status_color, store_color):
         ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
     ), margin=5, border_radius=5, expand=True)
 
-def build_customer_ui(**kwargs):
+def build_customer_ui(initial_value="", **kwargs):
     page = kwargs.get("page")
-    staff_store_id = kwargs.get("staff_store_id")
     conn = kwargs.get("conn")
     popup = Popup(page=page)
     customer_id_data = flet.ListView(expand=True, spacing=0)
-    def query_customer(e):
+    def query_customer(e, initial_value=None):
+        input_data = None
         cart_customer_id = [] # ID 상자
         try:
             cart_customer_id.append(int(input_customer.value)) # ANY(%s) 조회를 위해 상자 보관
             # cart_customer_id = int(input_customer.value) -> ID 상자를 만들지 않는 경우 사용가능 | ANY(%s) -> ERROR
             # print(f"Search Customer ID : {int(input_customer.value)}")
         except:
-            customer_name = f"%{input_customer.value.strip()}%"
+            if initial_value:
+                customer_name = f"%{initial_value}%"
+                input_data = initial_value
+            else:
+                customer_name = f"%{input_customer.value.strip()}%"
+                input_data = input_customer.value
             # print("Not ID -> Name Search")
             cursor = conn.cursor()
             try:
@@ -131,11 +152,15 @@ def build_customer_ui(**kwargs):
                         cart_customer_id.append(row[0]) # .append로 상자에 보관
                     # print(f"List Check : {cart_customer_id}")
                 else:
-                    print(f"Not Customer Name : {input_customer.value.strip()}")
-                    input_customer.focus()
-                    popup.show_error_open(
-                        message=f"Customer Name Not Found [{input_customer.value.strip()}]"
-                    )
+                    if customer_id_data.page:
+                        customer_id_data.update()
+                        input_customer.focus()
+                        print(f"Not Customer Name : {input_data}")
+                        popup.show_error_open(
+                            message=f"Customer Name Not Found [{input_data}]"
+                        )
+                    else:
+                        customer_id_data.controls.clear()
                     return # 조회 실패시 쿼리 실행 방지
                 conn.commit()
             except Exception as err:
@@ -153,17 +178,16 @@ def build_customer_ui(**kwargs):
             if customer_data:
                 customer_id_data.controls.clear()
                 for row in customer_data:
-                    status_color = Font.status_normal
-                    store_color = Font.status_normal
                     customer_id_data.controls.append(
-                        view_table(page, staff_store_id, row, status_color, store_color)
+                        view_table(row, input_data, **kwargs)
                     )
-                customer_id_data.update()
+                if customer_id_data.page:
+                    customer_id_data.update()
             else:
-                print(f"Customer ID Not Found {int(input_customer.value.strip())}")
+                print(f"Customer ID Not Found {input_customer.value}")
                 input_customer.focus()
                 popup.show_error_open(
-                    message=f"Customer ID Not Found [{input_customer.value.strip()}]"
+                    message=f"Customer ID Not Found [{input_customer.value}]"
                 )
             conn.commit()
         except Exception as err:
@@ -171,7 +195,7 @@ def build_customer_ui(**kwargs):
             print(f"Search Customer error : {err}")
 
     input_customer = input_text(
-        " Customer ID or Name ↵", on_submit=query_customer, hint_text=" Press Enter to Search")
+        " Customer ID or Name ↵", value=initial_value, on_submit=query_customer, hint_text=" Press Enter to Search")
 
     view_customer = flet.Column(
         controls=[
@@ -179,5 +203,9 @@ def build_customer_ui(**kwargs):
         ],
         expand=True, spacing=5
     )
+
+    if initial_value:
+        query_customer(None, initial_value)
+        input_customer.autofocus = False
 
     return input_customer, view_customer

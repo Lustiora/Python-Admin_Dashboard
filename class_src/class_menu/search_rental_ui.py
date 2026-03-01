@@ -253,10 +253,10 @@ def build_rental_ui(initial_value="", **kwargs):
         except:
             if initial_value:
                 customer_name = f"%{initial_value}%"
-                not_name = initial_value
+                input_data = initial_value
             else:
                 customer_name = f"%{input_rental.value.strip()}%"
-                not_name = input_rental.value
+                input_data = input_rental.value
                 # print(f"Search Customer Name {input_rental.value}")
             cursor = conn.cursor()
             try:
@@ -266,7 +266,7 @@ def build_rental_ui(initial_value="", **kwargs):
                     for row in customer_name_list:
                         cart_rental_id.append(row[0])
                 else:
-                    print(f"Customer not found or no Rental history at this location. : {not_name}, {store_id}")
+                    print(f"Customer not found or no Rental history at this location. : {input_data}")
                     popup.show_error_open(
                         message=f"Customer not found or no Rental history at this location."
                     )

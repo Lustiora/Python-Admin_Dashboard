@@ -57,18 +57,21 @@ def build_inventory_ui(**kwargs):
                         status_color = Font.status_overdue
                     if row[6] == store_id:
                         if row[2] == '🇦🇺 Woodridge':
-                            store_color = flet.Colors.ORANGE
-                        if row[2] == '🇨🇦 Lethbridge':
-                            store_color = flet.Colors.BLUE
+                            store_color = Font.store_Woodridge
+                        elif row[2] == '🇨🇦 Lethbridge':
+                            store_color = Font.store_Lethbridge
                     else:
-                        store_color = Font.status_overdue
+                        store_color = flet.Colors.GREY_500
                     inventory_id_data.controls.append(
                         flet.Container(
                             content=flet.Row(
                                 controls=[
                                     data_text(str(row[0]), expand=Ratios.id),
                                     flet.VerticalDivider(width=1),
-                                    data_text(row[1], expand=Ratios.name, text_align="left"),
+                                    flet.Row(
+                                        [flet.Container(width=4),
+                                        data_text(row[1], expand=True, text_align="left")]
+                                    , expand=Ratios.name, spacing=0),
                                     flet.VerticalDivider(width=1),
                                     data_text(row[2], expand=Ratios.store, color=store_color),
                                     flet.VerticalDivider(width=1),
