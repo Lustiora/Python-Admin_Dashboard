@@ -65,7 +65,7 @@ class LoginManager:
                     conn.commit()
                     if self.count <= 0:
                         print(f"Login Failed : OUT")
-                        popup.show_error_open(
+                        popup.show_popup_open(
                             title="Login Attempt Failed",
                             message = "Access restricted due to repeated authentication failures. \n"
                                       "The program will exit for security purposes. \n"
@@ -75,7 +75,7 @@ class LoginManager:
                     else:
                         conn.rollback()
                         print(f"Remaining Attempts: {self.count} / 3")
-                        popup.show_error_open(
+                        popup.show_popup_open(
                             title="Login Attempt Failed",
                             message = f"Invalid ID or Password. \n[Remaining Attempts: {self.count} / 3]"
                         )

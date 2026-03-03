@@ -14,6 +14,20 @@ class DBConnect:
         self.port = None
         self.username = None
         self.password = None
+        self.max_try_count = 5
+        self.try_count = self.max_try_count
+
+        self.login_retry = flet.AlertDialog(
+            modal=True,
+            title=flet.Text("Login Failed"),
+            content=flet.Text("Auto-Login Failed. Reconnect?"),
+            actions_alignment=flet.MainAxisAlignment.END,
+            actions=[
+                flet.TextButton("OK", on_click=self.show_login_retry, autofocus=True),
+                flet.TextButton("Cancel", on_click=self.show_login_retry_close)
+            ]
+        )
+
         # -- Platform --
         if sys.platform == "win32":
             appdata = os.getenv("APPDATA")
@@ -24,6 +38,24 @@ class DBConnect:
         self.config_file = os.path.join(config_dir, "config.ini")
         os.makedirs(config_dir, exist_ok=True)
         self.config = configparser.ConfigParser()
+
+    def show_login_retry(self, e):
+        self.page.close(self.login_retry)
+        time.sleep(0.1) # Ghost Popup 방지
+        self.try_count = self.max_try_count
+        # noinspection PyCallingNonCallable
+        self.login_try()
+
+    def show_login_retry_open(self):
+        # noinspection PyCallingNonCallable
+        self.page.open(self.login_retry)
+
+    def show_login_retry_close(self, e):
+        self.page.close(self.login_retry)
+        time.sleep(0.1) # Ghost Popup 방지
+        self.page.clean()
+        self.page.update()
+        self.login_ui()
 
     def login_ui(self):
         # -- Label --
@@ -70,19 +102,19 @@ class DBConnect:
     def db_connect_event(self, e):
         # type: ignore : .value 경고 제거
         if not self.db.value: # type: ignore
-            self.popup.show_error_open("Please Login Database")
+            self.popup.show_popup_open("Please Login Database")
             return
         if not self.host.value: # type: ignore
-            self.popup.show_error_open("Please Login Host")
+            self.popup.show_popup_open("Please Login Host")
             return
         if not self.port.value: # type: ignore
-            self.popup.show_error_open("Please Login Port")
+            self.popup.show_popup_open("Please Login Port")
             return
         if not self.username.value: # type: ignore
-            self.popup.show_error_open("Please Login ID")
+            self.popup.show_popup_open("Please Login ID")
             return
         if not self.password.value: # type: ignore
-            self.popup.show_error_open("Please Login Password")
+            self.popup.show_popup_open("Please Login Password")
             return
         print(f"Connecting to {self.host.value}...") # type: ignore
         self.login_try()
@@ -90,26 +122,31 @@ class DBConnect:
     def login_try(self):
         if self.config.read(self.config_file):
             print("Loading Config")
-            try:
+            for count in range(self.try_count):
+                print(f"Try Count {count+1}")
                 # -- Decoding --
                 encrypted_pw = self.config['DB Connect']['password']
                 pw_bytes = base64.b64decode(encrypted_pw)
                 decrypted_pw = pw_bytes.decode('utf-8')
-                conn = psycopg2.connect(
-                    dbname=self.config['DB Connect']['db'],
-                    host=self.config['DB Connect']['host'],
-                    port=self.config['DB Connect']['port'],
-                    user=self.config['DB Connect']['user'],
-                    password=decrypted_pw
-                )
-                conn.commit()
-                print("Auto Login Connection Established")
-                self.staff_view()
-            except Exception as e:
-                print(f"Auto Login Failed:\n{e}")
-                self.popup.show_error_open("Auto-Login Failed")
-                self.page.clean()
-                self.login_ui()
+                try:
+                    conn = psycopg2.connect(
+                        dbname=self.config['DB Connect']['db'],
+                        host=self.config['DB Connect']['host'],
+                        port=self.config['DB Connect']['port'],
+                        user=self.config['DB Connect']['user'],
+                        password=decrypted_pw
+                    )
+                    conn.commit()
+                    print("Auto Login Connection Established")
+                    self.staff_view()
+                    return
+                except Exception as err:
+                    print(err)
+                    self.try_count = self.try_count - 1
+                    time.sleep(1)
+            if self.try_count == 0:
+                print("Auto Loading Config Failed")
+                self.show_login_retry_open()
         else:
             print("Unable to Load")
             try:
@@ -125,9 +162,9 @@ class DBConnect:
                 self.staff_view()
             except Exception as err:
                 print(f"Unable [load] Error : {err}")
-                self.popup.show_error_open("Connection Failed")
+                self.popup.show_popup_open("Connection Failed")
                 # noinspection PyCallingNonCallable
-                self.page.open(self.popup.error)
+                self.page.open(self.popup.show)
                 return
 
     def save_config(self):

@@ -76,7 +76,7 @@ class Search:
             rental_date ,
             due_day ,
             case when over_due is null then 'Unreturned'
-                else 'Overdue'||' ('||over_due * interval '1 day'||')'
+                else 'Overdue'
             end as status ,
             count_title ,
             full_title
@@ -105,7 +105,7 @@ class Search:
             rental_date ,
             due_day ,
             case when over_due is null then 'Unreturned'
-                else 'Overdue'||' ('||over_due * interval '1 day'||')'
+                else 'Overdue'
             end as status ,
             count_title ,
             full_title
@@ -135,7 +135,7 @@ class Search:
             rental_date ,
             due_day ,
             case when over_due is null then 'Unreturned'
-                else 'Overdue'||' ('||over_due * interval '1 day'||')'
+                else 'Overdue'
             end as status ,
             count_title ,
             full_title
@@ -173,7 +173,7 @@ class Search:
             due_day ,
             case 
                 when return_date is null and over_due is null then 'Unreturned'
-                when return_date is null and over_due is not null then 'Overdue'||' ('||over_due * interval '1 day'||')'
+                when return_date is null and over_due is not null then 'Overdue'
                 else 'Returned'
             end as status ,
             count_title ,
@@ -276,25 +276,25 @@ class Rental:
         begin;
         update rental 
         set return_date = now() 
-        where rental_id = %s;
+        where rental_id = %(rid)s;
         update payment
         set 
             payment_date = now() , 
             amount = (
                 select	
-                    case 
-                        when (r.return_date::date - r.rental_date::date) > f.rental_duration
-                        then least(((r.return_date::date - r.rental_date::date) - f.rental_duration) * 1.0 , f.replacement_cost)
+                    sum(case 
+                        when (coalesce(r.return_date::date, current_date) - r.rental_date::date) > f.rental_duration
+                            then least(((coalesce(r.return_date::date, current_date) - r.rental_date::date) - f.rental_duration) * 1.0 , f.replacement_cost)
                     else 0
-                    end + f.rental_rate
+                    end + f.rental_rate)
                 from payment p
                 left join rental r on p.rental_id = r.rental_id
-                inner join customer c on r.customer_id = c.customer_id
-                inner join inventory i on r.inventory_id = i.inventory_id 
+                inner join inventory i on i.inventory_id = any(r.inventory_id)
                 inner join film f on i.film_id = f.film_id
-                where p.rental_id = %s)
-        where payment.rental_id = %s;
-        commit; 
+                where p.rental_id = %(rid)s
+            )
+        where payment.rental_id = %(rid)s;
+        commit;
         """
 
 class Delete:

@@ -1,8 +1,8 @@
 import flet
-from class_window import Font, Ratios
+from class_window import Colors, Ratios
 from class_query import Search
 from class_popup import Popup
-from material import input_text, header_text, context_menu, data_text
+import material as mat
 
 def build_inventory_ui(**kwargs):
     page = kwargs.get("page")
@@ -30,7 +30,7 @@ def build_inventory_ui(**kwargs):
                 else:
                     print(f"Not Film Title : {input_inventory.value.strip()}")
                     input_inventory.focus()
-                    popup.show_error_open(
+                    popup.show_popup_open(
                         message=f"Film Title Not Found [{input_inventory.value.strip()}]"
                     )
                     return # 조회 실패시 쿼리 실행 방지
@@ -39,7 +39,7 @@ def build_inventory_ui(**kwargs):
                 conn.rollback()
                 print(f"Error. Not Film Title {err}")
                 input_inventory.focus()
-                popup.show_error_open(
+                popup.show_popup_open(
                     message="Error. Not Film Title"
                 )
                 return # 조회 실패시 쿼리 실행 방지
@@ -51,35 +51,35 @@ def build_inventory_ui(**kwargs):
             if inventory_data:
                 inventory_id_data.controls.clear()
                 for row in inventory_data:
-                    status_color = Font.status_normal
-                    store_color = Font.status_normal
+                    status_color = Colors.status_normal
+                    store_color = Colors.status_normal
                     if row[3] == 'Checked out':
-                        status_color = Font.status_overdue
+                        status_color = Colors.status_overdue
                     if row[6] == store_id:
                         if row[2] == '🇦🇺 Woodridge':
-                            store_color = Font.store_Woodridge
+                            store_color = Colors.store_Woodridge
                         elif row[2] == '🇨🇦 Lethbridge':
-                            store_color = Font.store_Lethbridge
+                            store_color = Colors.store_Lethbridge
                     else:
                         store_color = flet.Colors.GREY_500
                     inventory_id_data.controls.append(
                         flet.Container(
                             content=flet.Row(
                                 controls=[
-                                    data_text(str(row[0]), expand=Ratios.id),
+                                    mat.data_text(str(row[0]), expand=Ratios.id),
                                     flet.VerticalDivider(width=1),
                                     flet.Row(
                                         [flet.Container(width=4),
-                                        data_text(row[1], expand=True, text_align="left")]
+                                        mat.data_text(row[1], expand=True, text_align="left")]
                                     , expand=Ratios.name, spacing=0),
                                     flet.VerticalDivider(width=1),
-                                    data_text(row[2], expand=Ratios.store, color=store_color),
+                                    mat.data_text(row[2], expand=Ratios.store, color=store_color),
                                     flet.VerticalDivider(width=1),
-                                    data_text(row[3], expand=Ratios.status, color=status_color),
+                                    mat.data_text(row[3], expand=Ratios.status, color=status_color),
                                     flet.VerticalDivider(width=1),
-                                    data_text(str(row[4]), expand=Ratios.date),
+                                    mat.data_text(str(row[4]), expand=Ratios.date),
                                     flet.VerticalDivider(width=1),
-                                    data_text(str(row[5]), expand=Ratios.rate),
+                                    mat.data_text(str(row[5]), expand=Ratios.rate),
                                 ], alignment=flet.MainAxisAlignment.START, spacing=5, height=30
                             ), margin=5, border_radius=5, expand=True
                         )
@@ -88,7 +88,7 @@ def build_inventory_ui(**kwargs):
             else:
                 print(f"Inventory ID Not Found {input_inventory.value.strip()}")
                 input_inventory.focus()
-                popup.show_error_open(
+                popup.show_popup_open(
                     message=f"Inventory ID Not Found [{input_inventory.value.strip()}]"
                 )
             conn.commit()
@@ -96,23 +96,23 @@ def build_inventory_ui(**kwargs):
             conn.rollback()
             print(f"Search Inventory error : {err}")
 
-    input_inventory = input_text(
+    input_inventory = mat.input_text(
         " Inventory ID or Film Title ↵", on_submit=query_inventory, hint_text=" Press Enter to Search")
 
     header = flet.Container(
         content = flet.Row(
             controls=[
-                header_text("Inventory ID", expand=Ratios.id),
+                mat.header_text("Inventory ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
-                header_text("Title", expand=Ratios.name),
+                mat.header_text("Title", expand=Ratios.name),
                 flet.VerticalDivider(width=1),
-                header_text("Store", expand=Ratios.store),
+                mat.header_text("Store", expand=Ratios.store),
                 flet.VerticalDivider(width=1),
-                header_text("Status", expand=Ratios.status),
+                mat.header_text("Status", expand=Ratios.status),
                 flet.VerticalDivider(width=1),
-                header_text("Last Rental Date", expand=Ratios.date),
+                mat.header_text("Last Rental Date", expand=Ratios.date),
                 flet.VerticalDivider(width=1),
-                header_text("Rental Rate", expand=Ratios.rate),
+                mat.header_text("Rental Rate", expand=Ratios.rate),
             ], alignment=flet.MainAxisAlignment.START, spacing=5, height=20
         ), margin=5
     )

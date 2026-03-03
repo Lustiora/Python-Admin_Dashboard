@@ -990,3 +990,53 @@ from rental_history
 where rental_id = 8716
 order by title desc
 
+with all_d as (
+select
+	r.rental_id ,
+	c.first_name || ' ' || c.last_name as name ,
+	f.title ,
+	f.poster_path ,
+	to_char(r.rental_date,'YYYY-MM-DD HH24:MI:SS') as rental_date ,
+	r.rental_date::date + f.rental_duration as due_date ,
+	case 
+		when r.return_date is null 
+			and current_date > (r.rental_date::date + f.rental_duration) then 'Overdue' || ' (' || (current_date - r.rental_date::date) * interval '1Day' || ')'
+		when r.return_date is null 
+			and current_date <= (r.rental_date::date + f.rental_duration) then 'Unreturned'
+		else to_char(r.return_date,'YYYY-MM-DD')
+	end as return_data , 
+	r.return_date::date as return_date ,
+	c.activebool
+from rental r
+inner join customer c on r.customer_id = c.customer_id 
+inner join inventory i on i.inventory_id = any(r.inventory_id)
+inner join film f on i.film_id = f.film_id
+) , union_all as (
+select rental_id , name , title , poster_path , rental_date , due_date , return_data , return_date from all_d
+union all
+select distinct rental_id , name , Null , Null , rental_date , due_date , return_data , return_date from all_d)
+select * from union_all
+
+select * from payment
+
+begin;
+update rental 
+set return_date = now() 
+where rental_id = %s;
+update payment
+set 
+    payment_date = now() , 
+    amount = (
+		select	
+		    sum(case 
+		        when (coalesce(r.return_date::date, current_date) - r.rental_date::date) > f.rental_duration
+		        	then least(((coalesce(r.return_date::date, current_date) - r.rental_date::date) - f.rental_duration) * 1.0 , f.replacement_cost)
+		    else 0
+		    end + f.rental_rate)
+		from payment p
+		left join rental r on p.rental_id = r.rental_id
+		inner join inventory i on i.inventory_id = any(r.inventory_id)
+		inner join film f on i.film_id = f.film_id
+		where p.rental_id = %s)
+where payment.rental_id = %s;
+commit;

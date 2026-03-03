@@ -1,8 +1,5 @@
 # Log Print
 import logging, warnings
-
-from click import style
-
 level=logging.INFO # DEBUG, INFO, WARNING, ERROR, CRITICAL
 # ============================================================================
 # [Logging Levels]
@@ -51,7 +48,7 @@ class MainManager:
         }
 
         self.basic_container = flet.Container(
-            content=view_search_customer(**params),
+            content=view_search_rental(**params),
             alignment=flet.alignment.center,
             expand=True,
             border_radius=5,
@@ -81,7 +78,7 @@ class MainManager:
 
         self.page.session.set("manager", self)
 
-    def update_main_page(self, index, customer_name):
+    def update_main_page(self, index, page_index=None, customer_name=None, rental_id=None):
         params = {
             "page": self.page,
             "conn": self.conn,
@@ -89,8 +86,8 @@ class MainManager:
         }
         # -- Main Content --
         if index == 0:
-            print("Page Update 'Rental'")
-            self.basic_content.content = view_search_rental(customer_name, **params)
+            print(f"Page Update 'Rental' {page_index}")
+            self.basic_content.content = view_search_rental(page_index, rental_id, customer_name, **params)
             self.basic_content.update()
         elif index == 1:
             print("Page Update 'Payment'")

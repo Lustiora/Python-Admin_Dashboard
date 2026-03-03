@@ -6,7 +6,7 @@ def connect_test(conn, server_status, server_time, connect_status, page: flet.Pa
     popup = Popup(page=page)
     def restart_main(e):
         page.window.prevent_close = False
-        popup.show_error_close(True)
+        popup.show_popup_close(True)
         time.sleep(0.1)
         page.clean()
         page.update()
@@ -32,10 +32,10 @@ def connect_test(conn, server_status, server_time, connect_status, page: flet.Pa
         # connect_status.bgcolor = flet.Colors.ERROR_CONTAINER
         connect_status.update()
         print(f"Error: {err}")
-        popup.show_error_open(
+        popup.show_popup_open(
             message="Disconnected\nProgram Restart?",
             actions=[
                 flet.TextButton("OK", on_click=restart_main),
-                flet.TextButton("Cancel", on_click=popup.show_error_close)
+                flet.TextButton("Cancel", on_click=popup.show_popup_close)
             ],
         )

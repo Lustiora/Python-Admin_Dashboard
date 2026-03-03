@@ -1,9 +1,9 @@
 import flet
-from class_window import Font, Ratios
+from class_window import Colors, Ratios
 from class_popup import Popup
 from class_query import Search
 from math import ceil
-from material import input_text, header_text, context_menu, data_text
+import material as mat
 
 def view_table(conn, row, receipt_details, receipt_container, status_normal, status_color, btn_color, btn_bgcolor):
     if "Overdue" in row[7]:
@@ -19,38 +19,38 @@ def view_table(conn, row, receipt_details, receipt_container, status_normal, sta
             controls=[
                 flet.Row([
                     flet.Container(width=4),
-                    data_text(payment_id, color=status_normal, expand=True,max_lines=1),
+                    mat.data_text(payment_id, color=status_normal, expand=True,max_lines=1),
                 ], expand=Ratios.id, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    data_text(row[1], color=status_normal, expand=True, max_lines=1),
+                    mat.data_text(row[1], color=status_normal, expand=True, max_lines=1),
                 ], expand=Ratios.name, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    data_text(str(row[2]), color=status_normal, expand=True, max_lines=2, text_align="left"),
+                    mat.data_text(str(row[2]), color=status_normal, expand=True, max_lines=2, text_align="left"),
                 ], expand=Ratios.date, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
                     flet.Column([
-                        data_text(row[3], color=status_normal, max_lines=1),
-                        data_text(row[8], color=status_normal, max_lines=1),
+                        mat.data_text(row[3], color=status_normal, max_lines=1),
+                        mat.data_text(row[8], color=status_normal, max_lines=1),
                     ],expand=True, spacing=0),
                     flet.Container(width=4),
                 ], expand=Ratios.title, alignment=flet.MainAxisAlignment.SPACE_BETWEEN, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
-                    data_text(f"${str(row[4])}", color=status_normal, expand=True, max_lines=1),
+                    mat.data_text(f"${str(row[4])}", color=status_normal, expand=True, max_lines=1),
                 ], expand=Ratios.rate, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Row([
                     flet.Container(width=4),
                     flet.Column([
-                        data_text(status, color=status_color, max_lines=1),
-                        data_text(days, color=status_color, max_lines=1),
+                        mat.data_text(status, color=status_color, max_lines=1),
+                        mat.data_text(days, color=status_color, max_lines=1),
                     ], expand=True, spacing=0),
                 ], expand=Ratios.status, spacing=0),
                 flet.VerticalDivider(width=1),
@@ -67,19 +67,19 @@ def view_header():
     return flet.Container(
         content=flet.Row(
             controls=[
-                header_text("Payment ID", expand=Ratios.id),
+                mat.header_text("Payment ID", expand=Ratios.id),
                 flet.VerticalDivider(width=1),
-                header_text("Name", expand=Ratios.name),
+                mat.header_text("Name", expand=Ratios.name),
                 flet.VerticalDivider(width=1),
-                header_text("Payment Date", expand=Ratios.date),
+                mat.header_text("Payment Date", expand=Ratios.date),
                 flet.VerticalDivider(width=1),
-                header_text("Title", expand=Ratios.title),
+                mat.header_text("Title", expand=Ratios.title),
                 flet.VerticalDivider(width=1),
-                header_text("Total Amount", expand=Ratios.rate),
+                mat.header_text("Total Amount", expand=Ratios.rate),
                 flet.VerticalDivider(width=1),
-                header_text("Status", expand=Ratios.status),
+                mat.header_text("Status", expand=Ratios.status),
                 flet.VerticalDivider(width=1),
-                header_text("Actions", expand=Ratios.status),
+                mat.header_text("Actions", expand=Ratios.status),
             ], alignment=flet.MainAxisAlignment.START, spacing=5, height=20
         ), margin=5, border_radius=5
     )
@@ -103,20 +103,20 @@ def view_table_payment_data(conn, payment_data, payment_id_data, connect_module,
         connect_module_count.clear()
         payment_data.controls.clear()
         for row in payment_id_data:
-            status_normal = Font.status_overdue
-            status_color = Font.status_overdue
-            btn_color = Font.status_overdue_btn_color
-            btn_bgcolor = Font.status_overdue_btn_bgcolor
+            status_normal = Colors.status_overdue
+            status_color = Colors.status_overdue
+            btn_color = Colors.status_overdue_btn_color
+            btn_bgcolor = Colors.status_overdue_btn_bgcolor
             if row[7] == 'Returned':
-                status_normal = Font.status_normal
-                status_color = Font.status_returned
-                btn_color = Font.status_normal_btn_color
-                btn_bgcolor = Font.status_normal_btn_bgcolor
+                status_normal = Colors.status_normal
+                status_color = Colors.status_returned
+                btn_color = Colors.status_normal_btn_color
+                btn_bgcolor = Colors.status_normal_btn_bgcolor
             if row[7] == 'Unreturned':
-                status_normal = Font.status_normal
-                status_color = Font.status_unreturned
-                btn_color = Font.status_unreturned_btn_color
-                btn_bgcolor = Font.status_unreturned_btn_bgcolor
+                status_normal = Colors.status_normal
+                status_color = Colors.status_unreturned
+                btn_color = Colors.status_unreturned_btn_color
+                btn_bgcolor = Colors.status_unreturned_btn_bgcolor
             payment_data.controls.append(
                 view_table(conn, row, receipt_details, receipt_container, status_normal, status_color, btn_color, btn_bgcolor)
             )
@@ -215,16 +215,8 @@ def receipt(conn, payment_id:int=None):
                  width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
         flet.Row([view_payment_total_text, view_payment_total_amount,],
                  width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
-        flet.Button("Print Receipt", width=float('inf'), height=50,
-                    color=flet.Colors.ON_PRIMARY_CONTAINER,
-                    bgcolor=flet.Colors.PRIMARY_CONTAINER,
-                    style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
-                                           overlay_color=flet.Colors.INVERSE_PRIMARY)),
-        flet.Button("Email Receipt", width=float('inf'), height=50,
-                    color=flet.Colors.ON_PRIMARY_CONTAINER,
-                    bgcolor=flet.Colors.PRIMARY_CONTAINER,
-                    style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
-                                           overlay_color=flet.Colors.INVERSE_PRIMARY)),
+        mat.details_btn("Print Receipt"),
+        mat.details_btn("Email Receipt"),
     ], expand=True, width=250)
 
 def view_open_receipt(e, conn, receipt_details, receipt_container, payment_id):
@@ -284,7 +276,7 @@ def build_payment_ui(initial_value="", **kwargs):
                         cart_payment_id.append(row[0])
                 else:
                     print(f"Customer not found or no Payment history at this location. : {input_data}")
-                    popup.show_error_open(
+                    popup.show_popup_open(
                         message=f"Customer not found or no Payment history at this location."
                     )
                     if not initial_value:
@@ -308,7 +300,7 @@ def build_payment_ui(initial_value="", **kwargs):
             if not payment_id_data:
                 print(f"Payment ID Not Found {input_payment.value}")
                 input_payment.focus()
-                popup.show_error_open(
+                popup.show_popup_open(
                     message=f"Payment ID Not Found [{input_payment.value}]"
                 )
             view_table_payment_data(conn, payment_data, payment_id_data, connect_module, connect_module_count,
@@ -344,7 +336,7 @@ def build_payment_ui(initial_value="", **kwargs):
                     scroll=flet.ScrollMode.AUTO,
                 )]))
 
-    input_payment = input_text(" Payment ID or Customer Name ↵", value=initial_value,
+    input_payment = mat.input_text(" Payment ID or Customer Name ↵", value=initial_value,
         on_submit=lambda e:search_payment(None, view_page, 0),
         hint_text=" Press Enter to Search"
     )

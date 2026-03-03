@@ -87,7 +87,7 @@ select
 	r.rental_date::date + f.rental_duration as due_date ,
 	case 
 		when r.return_date is null 
-			and current_date > (r.rental_date::date + f.rental_duration) then 'Overdue'
+			and current_date > (r.rental_date::date + f.rental_duration) then 'Overdue' || ' (' || (current_date - r.rental_date::date) * interval '1Day' || ')'
 		when r.return_date is null 
 			and current_date <= (r.rental_date::date + f.rental_duration) then 'Unreturned'
 		else to_char(r.return_date,'YYYY-MM-DD')
