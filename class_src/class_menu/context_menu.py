@@ -1,5 +1,6 @@
 import flet
 from class_menu.delete import customer_delete
+from class_menu.edit import customer_edit
 
 def context_menu(
         content, disabled=False, height=35, color=flet.Colors.BLACK, weight=None,
@@ -22,7 +23,7 @@ def context_customer_id_data(e, connect_page, **kwargs):
         if connect_page == "delete":
             delete_popup()
         elif connect_page == "edit":
-            pass
+            customer_edit(**kwargs)
         else:
             if staff_store_id != customer_last_rental_store_id:
                 page.open(location_error)

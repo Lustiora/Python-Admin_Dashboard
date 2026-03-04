@@ -20,6 +20,8 @@ class Ratios:
     rate = 2
 
 class Colors:
+    customer_id = flet.Colors.PRIMARY
+
     status_normal = flet.Colors.BLACK
 
     status_returned = flet.Colors.GREEN

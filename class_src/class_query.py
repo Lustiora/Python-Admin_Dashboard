@@ -271,7 +271,7 @@ class Rental:
     # class_menu add return
     #############################################
 
-    payment_return_query\
+    rental_return_query\
         = """   
         begin;
         update rental 
@@ -297,6 +297,24 @@ class Rental:
         commit;
         """
 
+    return_rollback_query\
+        = """
+        begin;
+        update rental 
+        set return_date = null
+        where rental_id = %(rid)s;
+        update payment
+        set amount = (
+            select sum(f.rental_rate)
+            from rental r
+            inner join inventory i on i.inventory_id = any(r.inventory_id)
+            inner join film f on i.film_id = f.film_id 
+            where r.rental_id = %(rid)s
+            )
+        where payment.rental_id = %(rid)s;
+        commit;
+        """
+
 class Delete:
     customer_delete_query\
         = """
@@ -307,3 +325,68 @@ class Delete:
         and first_name || ' ' || last_name = %s;
         commit;
         """
+
+class Edit:
+    city_list_query\
+        = """
+        select city
+        from city
+        """
+
+    customer_status_query\
+        = """
+        select 
+            c.customer_id ,
+            c.first_name ,
+            c.last_name ,
+            c.email ,
+            a.phone ,
+            a.address ,
+            a.postal_code ,
+            c3.country ,
+            c2.city ,
+            c.activebool
+        from customer c
+        inner join address a on c.address_id = a.address_id 
+        inner join city c2 on a.city_id = c2.city_id 
+        inner join country c3 on c2.country_id = c3.country_id
+        where c.customer_id = %s
+        and c.first_name || ' ' || c.last_name = %s
+        """
+
+    customer_edit_query_1\
+        = """
+        begin;
+        update customer
+        set first_name = %s,
+            last_name = %s,
+            email = %s,
+            activebool is %s
+        where customer_id = %s;
+        commit;
+        """
+    customer_edit_query_2\
+        = """
+        begin;
+        update address
+        set address = %s,
+            postal_code = %s,
+            phone = %s,
+            city_id = (select city_id from city where city ilike %s)
+        where address = (
+            select address_id from customer where customer_id = %s);
+        commit;
+        """
+    customer_edit_query_3\
+        = """
+        begin;
+        insert into city (city, country_id)
+        values (%s, %s);
+        commit;
+        """
+    customer_edit_query_4\
+        = """
+begin;
+update 
+commit;
+"""

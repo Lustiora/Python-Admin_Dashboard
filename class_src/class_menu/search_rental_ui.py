@@ -5,6 +5,9 @@ from class_query import Search, Rental
 from class_popup import Popup
 import material as mat
 
+class His:
+    history_customer = None
+
 def today_status(query, view_page, status_name:str, status_query, status_color=None, select_page=None):
     return flet.Container(
         on_click=lambda e:query(None, view_page, select_page),
@@ -182,34 +185,58 @@ def history(page, conn, connect_module_page=None, rental_id:int=None, customer_n
     cancel_btn_disabled = True
     on_click_actions = None
 
-    def reversed_rental_data(e):
-        print("reversed_rental_data")
-        rental_history_data.update()
-        # try:
-        #     cursor = conn.cursor()
-        #     cursor.execute(Rental.payment_return_query,{'rid':rental_id})
-        #     conn.commit()
-        #     popup.show_popup_close(None)
-        #     if rental_history_data.page:
-        #         rental_history_data.update()
-        #         print("update")
-        # except Exception as err:
-        #     print(err)
-        #     return
+    # print(customer_name , rental_id)
 
-    def rental_data_return(e):
-        print("rental_data_return")
+    if customer_name and rental_id:
+        His.history_customer = {
+            "name": customer_name,
+            "id": rental_id,
+            "page": connect_module_page
+        }
+        # print(His.history_customer.get("name"))
+    print(His.history_customer)
+
+    def reversed_rental_data(e):
+        # print("reversed_rental_data")
+        if His.history_customer:
+            customer_name = His.history_customer.get("name")
+            rental_id = His.history_customer.get("id")
+            connect_module_page = His.history_customer.get("page")
+        rental_history_data.update()
         try:
             cursor = conn.cursor()
-            cursor.execute(Rental.payment_return_query, {'rid': rental_id})
+            cursor.execute(Rental.return_rollback_query, {'rid': rental_id})
             conn.commit()
             popup.show_popup_close(None)
             if rental_history_data.page:
                 rental_history_data.update()
-                print("update")
+                # print("update")
             my_manager = page.session.get("manager")
             if my_manager:
-                my_manager.update_main_page(index=0, page_index=connect_module_page, rental_id=rental_id, customer_name=customer_name)
+                my_manager.update_main_page(index=0, page_index=connect_module_page, rental_id=rental_id,
+                                            customer_name=customer_name)
+        except Exception as err:
+            print(err)
+            return
+
+    def rental_data_return(e):
+        # print("rental_data_return")
+        if His.history_customer:
+            customer_name = His.history_customer.get("name")
+            rental_id = His.history_customer.get("id")
+            connect_module_page = His.history_customer.get("page")
+        try:
+            cursor = conn.cursor()
+            cursor.execute(Rental.rental_return_query, {'rid': rental_id})
+            conn.commit()
+            popup.show_popup_close(None)
+            if rental_history_data.page:
+                rental_history_data.update()
+                # print("update")
+            my_manager = page.session.get("manager")
+            if my_manager:
+                my_manager.update_main_page(index=0, page_index=connect_module_page, rental_id=rental_id,
+                                            customer_name=customer_name)
         except Exception as err:
             print(err)
             return
@@ -229,9 +256,15 @@ def history(page, conn, connect_module_page=None, rental_id:int=None, customer_n
             view_rental_due_date.value = str(data[5])
             if data[7] is not None:
                 def cancel_actions(e):
+                    message = flet.Text(
+                        spans=[
+                            flet.TextSpan("Cancel this Return Data?\n\n"),
+                            flet.TextSpan("Note: The transaction will also be reversed.", style=flet.TextStyle(
+                                weight=flet.FontWeight.BOLD, color="red"))
+                        ]
+                    )
                     popup.show_popup_open(
-                        "Cancel this Return Data?\n\nNote: The transaction will also be reversed.",
-                        title="Warning", actions=actions(reversed_rental_data)
+                        content=message, title="Warning", actions=actions(reversed_rental_data)
                     )
                 return_btn_disabled = True
                 cancel_btn_disabled = False
@@ -274,10 +307,10 @@ def history(page, conn, connect_module_page=None, rental_id:int=None, customer_n
                         content=flet.Column([
                             flet.Row([
                                 flet.Image(src=f"{tmdb_api_image}{row[3]}",width=60, height=90),
-                                flet.Text(row[2]),
+                                flet.Text(row[2], expand=True, no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, max_lines=3),
                             ]),
                             flet.Divider(height=1),
-                        ], spacing=20)
+                        ], spacing=20, expand=True)
                     )
                 )
         if rental_history_data.page:
@@ -359,6 +392,9 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
 
     def rental_search_total_query(e, view_page, select_page):
         connect_module_page = 1
+        if input_rental.page:
+            input_rental.value = None
+            input_rental.update()
         try:
             cursor = conn.cursor()
             cursor.execute(Search.return_search_total_query, (store_id, view_page))
@@ -372,6 +408,9 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
 
     def rental_search_overdue_query(e, view_page, select_page):
         connect_module_page = 2
+        if input_rental.page:
+            input_rental.value = None
+            input_rental.update()
         try:
             cursor = conn.cursor()
             cursor.execute(Search.rental_search_overdue_query, (store_id, view_page,))
@@ -385,6 +424,9 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
 
     def rental_search_due_today_query(e, view_page, select_page):
         connect_module_page = 3
+        if input_rental.page:
+            input_rental.value = None
+            input_rental.update()
         try:
             cursor = conn.cursor()
             cursor.execute(Search.rental_search_due_today_query, (store_id, view_page,))
@@ -409,6 +451,9 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
                 customer_name = f"%{initial_value}%"
                 input_data = initial_value
             else:
+                if rental_history.page:
+                    rental_history.visible = False
+                    rental_history.update()
                 customer_name = f"%{input_rental.value.strip()}%"
                 input_data = input_rental.value
                 # print(f"Search Customer Name {input_rental.value}")
@@ -420,12 +465,12 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
                     for row in customer_name_list:
                         cart_rental_id.append(row[0])
                 else:
+                    if not initial_value:
+                        input_rental.focus()
                     print(f"Customer not found or no Rental history at this location. : {input_data}")
                     popup.show_popup_open(
                         message=f"Customer not found or no Rental history at this location."
                     )
-                    if not initial_value:
-                        input_rental.focus()
                     return
                 conn.commit()
             except Exception as err:
@@ -543,38 +588,31 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
         controls=[view_header(), rental_data, page_row]
     )
 
-    if initial_value:
-        if index == 0:
-            if initial_id:
-                rental_search_data_query(None, 0, 0, initial_value)
-                if not rental_history.visible:
-                    rental_history.visible = True
-                history_container.content = history(page=page, conn=conn, rental_id=initial_id)
-                if rental_history.page:
-                    rental_history.update()
-                input_rental.autofocus = False
-        else:
-            rental_search_data_query(None, 0, 0, initial_value)
-            input_rental.autofocus = False
+    print(initial_value, initial_id, index)
+    if index: # 1
+        # print(index)
+        if index == 1:
+            input_rental.value = None
+            rental_search_total_query(None, 0, 0)
+        elif index == 2:
+            input_rental.value = None
+            rental_search_overdue_query(None, 0, 0)
+        elif index == 3:
+            input_rental.value = None
+            rental_search_due_today_query(None, 0, 0)
     else:
-        if index:
-            if index == 0:
-                rental_search_data_query(None, 0, 0)
-            elif index == 1:
-                rental_search_total_query(None, 0, 0)
-            elif index == 2:
-                rental_search_overdue_query(None, 0, 0)
-            elif index == 3:
-                rental_search_due_today_query(None, 0, 0)
-            if initial_id:
-                if not rental_history.visible:
-                    rental_history.visible = True
-                history_container.content = history(page, conn, index, initial_id)
-                if rental_history.page:
-                    rental_history.update()
-                input_rental.autofocus = False
+        if initial_value: # 3
+            # print("Not Index", index,"and initial_value", initial_value)
+            rental_search_data_query(None, 0, 0, initial_value)
         else:
-            rental_search_total_query(None, 0,0)
-
+            rental_search_total_query(None, 0, 0)
+    if initial_id:  # 2
+        # print(initial_id)
+        if not rental_history.visible:
+            rental_history.visible = True
+        history_container.content = history(page=page, conn=conn, rental_id=initial_id)
+        if rental_history.page:
+            rental_history.update()
+        input_rental.autofocus = False
 
     return total_rentals, overdue, due_today, input_rental, view_rental, rental_history

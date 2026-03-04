@@ -1,6 +1,19 @@
 ## [README](/README.md)
 
-* 고객 정보 수정 페이지 구현 예정.
+* **2026-03-04**
+  1. search_rental_ui.py
+     * 대여 반납 페이징 기능 로직 구현.
+     * 반납 이력 취소시 경고 및 기능 구현.
+       * select page 이전 기능은 구현하지 않음.
+         * 이유 : details에서 변환 상태 확인이 가능하고 해당 페이지에 값이 하나밖에 없던 상황에서 사용 시 오동작 예상됨.
+       * 문제 : 반납 직후 반납이력 취소 시 페이징기능이 롤백.
+       * 원인 : history 함수가 페이징 기능에 보내는 값이 None 처리되어 발생.
+       * 해결 : 클래스 변수를 추가하여 전송값이 None인 경우 변수에 저장된 값을 사용하는것으로 전환.
+  2. search_customer_ui.py
+     * 고객 정보 수정 팝업 구현 및 쿼리 작성중.
+       * 출력정보 : customer_id , first_name , last_name , email , phone , address , postal_code , country , city , activebool
+       * Customer , Address Table Update 쿼리 작성 완료.
+       * City , Country Table Disable Value Insert Query 작성중.
 
 * **2026-03-03**
   1. Auto Login Logic 실패 시 자동으로 재시도 여부 선택 팝업 구현 Try Count `10s`

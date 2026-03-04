@@ -48,7 +48,7 @@ class MainManager:
         }
 
         self.basic_container = flet.Container(
-            content=view_search_rental(**params),
+            content=view_search_customer("ao",**params),
             alignment=flet.alignment.center,
             expand=True,
             border_radius=5,

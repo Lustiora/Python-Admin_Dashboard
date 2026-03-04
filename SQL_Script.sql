@@ -1040,3 +1040,45 @@ set
 		where p.rental_id = %s)
 where payment.rental_id = %s;
 commit;
+
+select 
+	r.rental_id , 
+	sum(f.rental_rate) , -- 대여료 합산
+	sum(f.replacement_cost) , -- 분실료 합산
+	r.rental_date::date , -- 대여일
+	r.rental_date::date + max(f.rental_duration) , -- 반납예정일
+	case when ((current_date - (r.rental_date::date + max(f.rental_duration))) * 1.0) < 0 then 0
+	else (current_date - (r.rental_date::date + max(f.rental_duration))) * 1.0 end , -- 연체일 * 연체료
+	least(case when ((current_date - (r.rental_date::date + max(f.rental_duration))) * 1.0) < 0 then 0
+	else (current_date - (r.rental_date::date + max(f.rental_duration))) * 1.0 end,sum(f.replacement_cost)) -- 연체일 * 연체료 , 분실료 중 작은 값
+from rental r
+inner join inventory i on i.inventory_id = any(r.inventory_id)
+inner join film f on i.film_id = f.film_id 
+where r.rental_id = 15594
+group by r.rental_id
+order by 5 desc
+
+select 
+	sum(f.rental_rate), null
+from rental r
+inner join inventory i on i.inventory_id = any(r.inventory_id)
+inner join film f on i.film_id = f.film_id 
+where r.rental_id = 15594;
+
+select 
+    c.customer_id ,
+    c.first_name ,
+    c.last_name ,
+    c.email ,
+    a.phone ,
+    a.address ,
+    a.postal_code ,
+    c3.country ,
+    c2.city ,
+    c.activebool
+from customer c
+inner join address a on c.address_id = a.address_id 
+inner join city c2 on a.city_id = c2.city_id 
+inner join country c3 on c2.country_id = c3.country_id
+--where c.customer_id = %s
+--and c.first_name || ' ' || c.last_name = %s
