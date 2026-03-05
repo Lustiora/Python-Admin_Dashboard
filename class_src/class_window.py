@@ -20,13 +20,15 @@ class Ratios:
     rate = 2
 
 class Colors:
+    border_color = flet.Colors.OUTLINE
+
     customer_id = flet.Colors.PRIMARY
 
-    status_normal = flet.Colors.BLACK
+    status_normal = None
 
     status_returned = flet.Colors.GREEN
-    status_normal_btn_color = flet.Colors.ON_PRIMARY_CONTAINER
-    status_normal_btn_bgcolor = flet.Colors.PRIMARY_CONTAINER
+    status_normal_btn_color = flet.Colors.ON_SECONDARY_CONTAINER
+    status_normal_btn_bgcolor = flet.Colors.SECONDARY_CONTAINER
     status_normal_btn_overlay = flet.Colors.with_opacity(0.12, status_normal_btn_color)
 
     status_overdue = flet.Colors.ERROR
@@ -34,9 +36,9 @@ class Colors:
     status_overdue_btn_bgcolor = flet.Colors.ERROR_CONTAINER
     status_overdue_btn_overlay = flet.Colors.with_opacity(0.12, status_overdue_btn_color)
 
-    status_unreturned = flet.Colors.BLUE
-    status_unreturned_btn_color = flet.Colors.ON_TERTIARY_CONTAINER
-    status_unreturned_btn_bgcolor = flet.Colors.TERTIARY_CONTAINER
+    status_unreturned = flet.Colors.PRIMARY
+    status_unreturned_btn_color = flet.Colors.ON_PRIMARY_CONTAINER
+    status_unreturned_btn_bgcolor = flet.Colors.PRIMARY_CONTAINER
     status_unreturned_btn_overlay = flet.Colors.with_opacity(0.12, status_unreturned_btn_color)
 
     status_disabled_btn_color = flet.Colors.OUTLINE

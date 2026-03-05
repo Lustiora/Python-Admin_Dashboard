@@ -16,11 +16,13 @@ def build_inventory_ui(**kwargs):
             cart_inventory_id.append(int(input_inventory.value)) # ANY(%s) 조회를 위해 상자 보관
             # print(f"Search Inventory ID : {int(input_inventory.value)}")
         except:
-            str_film_title = f"%{input_inventory.value.strip()}%"
+            # print(input_inventory.value.split())
+            str_film_title_tag = f"{"&".join(input_inventory.value.split())}"
+            # print(str_film_title_tag)
             # print("Not ID -> Title Search")
             cursor = conn.cursor()
             try:
-                cursor.execute(Search.film_title_query,(str_film_title,))
+                cursor.execute(Search.film_title_tag_query,(str_film_title_tag,))
                 film_title = cursor.fetchall()
                 if film_title:
                     # print(f"Title Check : {input_inventory.value}")
@@ -28,19 +30,19 @@ def build_inventory_ui(**kwargs):
                         cart_inventory_id.append(row[0]) # .append로 상자에 보관
                     # print(f"List Check : {cart_inventory_id}")
                 else:
-                    print(f"Not Film Title : {input_inventory.value.strip()}")
+                    print(f"Not Film Title or Tag : {input_inventory.value.strip()}")
                     input_inventory.focus()
                     popup.show_popup_open(
-                        message=f"Film Title Not Found [{input_inventory.value.strip()}]"
+                        message=f"Film Title or Tag Not Found [{input_inventory.value.strip()}]"
                     )
                     return # 조회 실패시 쿼리 실행 방지
                 conn.commit()
             except Exception as err:
                 conn.rollback()
-                print(f"Error. Not Film Title {err}")
+                print(f"Error. Not Film Title or Tag {err}")
                 input_inventory.focus()
                 popup.show_popup_open(
-                    message="Error. Not Film Title"
+                    message="Error. Not Film Title or Tag"
                 )
                 return # 조회 실패시 쿼리 실행 방지
         cursor = conn.cursor()
@@ -97,7 +99,7 @@ def build_inventory_ui(**kwargs):
             print(f"Search Inventory error : {err}")
 
     input_inventory = mat.input_text(
-        " Inventory ID or Film Title ↵", on_submit=query_inventory, hint_text=" Press Enter to Search")
+        " Inventory ID or Film Title or Tag ↵", on_submit=query_inventory, hint_text=" Press Enter to Search")
 
     header = flet.Container(
         content = flet.Row(

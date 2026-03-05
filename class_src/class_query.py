@@ -33,11 +33,12 @@ class Search:
     # class_menu search inventory
     #############################################
 
-    film_title_query\
+    film_title_tag_query\
         = """
-        select distinct inventory_id
-        from inventory_data
-        where title ilike %s 
+        select i.inventory_id 
+        from inventory i
+        inner join film f on i.film_id = f.film_id
+        where f.fulltext @@ to_tsquery('english', %s)
         """
 
     inventory_id_query\
@@ -333,6 +334,12 @@ class Edit:
         from city
         """
 
+    country_list_query\
+        ="""
+        select country
+        from country
+        """
+
     customer_status_query\
         = """
         select 
@@ -354,39 +361,30 @@ class Edit:
         and c.first_name || ' ' || c.last_name = %s
         """
 
-    customer_edit_query_1\
+    customer_address_check_query\
+        = """
+        select count(*) 
+        from city c 
+        inner join country c2 on c.country_id = c2.country_id 
+        where c.city = %s 
+        and c2.country = %s
+        """
+
+    customer_edit_query\
         = """
         begin;
         update customer
         set first_name = %s,
             last_name = %s,
             email = %s,
-            activebool is %s
+            activebool = %s
         where customer_id = %s;
-        commit;
-        """
-    customer_edit_query_2\
-        = """
-        begin;
         update address
         set address = %s,
             postal_code = %s,
             phone = %s,
             city_id = (select city_id from city where city ilike %s)
-        where address = (
+        where address_id = (
             select address_id from customer where customer_id = %s);
         commit;
         """
-    customer_edit_query_3\
-        = """
-        begin;
-        insert into city (city, country_id)
-        values (%s, %s);
-        commit;
-        """
-    customer_edit_query_4\
-        = """
-begin;
-update 
-commit;
-"""

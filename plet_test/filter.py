@@ -1,6 +1,6 @@
 import flet
 # Filter
-filter_rental = flet.Row(
+flet.Row(
     controls=[
         flet.Dropdown(
             label="Filter",

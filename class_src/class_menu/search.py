@@ -1,18 +1,10 @@
 import flet
 from class_window import Font, Colors
 from .search_customer_ui import build_customer_ui
-from .menu_search_inventory import build_inventory_ui
+from .search_inventory_ui import build_inventory_ui
 from .search_rental_ui import build_rental_ui
 from .search_payment_ui import build_payment_ui
-
-def view_container(view_content):
-    return flet.Container(
-        alignment=flet.alignment.top_left,
-        expand=True,
-        content=flet.SelectionArea(content=view_content),
-        border_radius=5,
-        border=flet.border.all(color=flet.Colors.BLACK),
-    )
+from material import view_container
 
 def view_search_customer(customer_name=None, **kwargs):
     input_customer, view_customer = build_customer_ui(customer_name, **kwargs) # Module Return Value get

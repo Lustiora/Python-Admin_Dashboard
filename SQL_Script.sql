@@ -1082,3 +1082,17 @@ inner join city c2 on a.city_id = c2.city_id
 inner join country c3 on c2.country_id = c3.country_id
 --where c.customer_id = %s
 --and c.first_name || ' ' || c.last_name = %s
+
+select count(*) from city c inner join country c2 on c.country_id = c2.country_id where c.city = 'Abha' and c2.country = 'Saudi Arabia';
+
+select fulltext from film where fulltext @@ to_tsquery('english', 'doom')
+
+select i.inventory_id 
+from inventory i
+inner join film f on i.film_id = f.film_id
+where f.fulltext @@ to_tsquery('english', 'Iron&Lung')
+
+select i.inventory_id 
+from inventory i
+inner join film f on i.film_id = f.film_id
+where f.title ilike 'Iron Lung'

@@ -1,13 +1,14 @@
-from class_menu.m_menu import *
+from class_menu.menu_ui import *
 from class_menu.search import *
 from class_menu.add import *
 from class_popup import Popup
+from material import list_tile, list_tile_menu
 
 def navigation(staff_user, staff_store_address, basic_content, **kwargs):
     page = kwargs["page"]
     def on_nav_change(index):
         if index == 0: # 메인화면
-            basic_content.content = view_home()
+            basic_content.content = view_home(**kwargs)
         elif index == 1.1: # 고객 조회
             basic_content.content = view_search_customer(**kwargs)
         elif index == 1.2: # 재고 조회
@@ -44,55 +45,41 @@ def navigation(staff_user, staff_store_address, basic_content, **kwargs):
 
     return ex_tile, basic_content
 
-def list_tile_menu(title, event, index):
-    return flet.ListTile(
-        title=flet.Text(title),
-        content_padding=flet.padding.only(left=40),
-        on_click=lambda e: event(index)
-    )
-
 def tile_column(page: flet.Page, on_nav_change):
     popup = Popup(page=page)
 
     return flet.Column(
         controls=[
-            flet.ListTile(
-                leading=flet.Icon(flet.Icons.HOME),
-                title=flet.Text("Home"),
-                on_click=lambda e: on_nav_change(0)
-            ),flet.ExpansionTile(
-                leading=flet.Icon(flet.Icons.SCREEN_SEARCH_DESKTOP_ROUNDED),
-                title=flet.Text("Search"),
-                controls=[
-                    list_tile_menu("Customer", on_nav_change, 1.1),
-                    list_tile_menu("Inventory", on_nav_change, 1.2),
-                    list_tile_menu("Rental", on_nav_change, 1.3),
-                    list_tile_menu("Payment", on_nav_change, 1.4),
-                ]
-            ),flet.ExpansionTile(
+            list_tile(icon=flet.Icons.HOME, title="Home", event=on_nav_change, index=0),
+            list_tile(title="Rental", event=on_nav_change, index=1.3, icon=flet.Icons.SHOPPING_CART),
+            list_tile(title="Payment", event=on_nav_change, index=1.4, icon=flet.Icons.PAYMENT),
+            list_tile(title="Customer", event=on_nav_change, index=1.1, icon=flet.Icons.PEOPLE),
+            list_tile(title="Inventory", event=on_nav_change, index=1.2, icon=flet.Icons.INVENTORY),
+            # flet.ExpansionTile(
+            #     leading=flet.Icon(flet.Icons.SCREEN_SEARCH_DESKTOP_ROUNDED),
+            #     title=flet.Text("Search"),
+            #     controls=[
+            #         list_tile_menu("Customer", on_nav_change, 1.1),
+            #         list_tile_menu("Inventory", on_nav_change, 1.2),
+            #         list_tile_menu("Rental", on_nav_change, 1.3),
+            #         list_tile_menu("Payment", on_nav_change, 1.4),
+            # ]),
+            flet.Divider(),
+            flet.ExpansionTile(
                 leading=flet.Icon(flet.Icons.ADD_BOX),
                 title=flet.Text("Add"),
                 controls=[
-                    list_tile_menu("Customer", on_nav_change, 4.1),
-                    list_tile_menu("Inventory", on_nav_change, 4.2),
-                    list_tile_menu("Film", on_nav_change, 4.3),
-                    list_tile_menu("Actor", on_nav_change, 4.4),
-                    list_tile_menu("Category", on_nav_change, 4.5),
-                ]
-            ),flet.ListTile(
-                leading=flet.Icon(flet.Icons.QUERY_STATS),
-                title=flet.Text("Statistic"),
-                on_click=lambda e: on_nav_change(5)
-            ),flet.ListTile(
-                leading=flet.Icon(flet.Icons.MANAGE_ACCOUNTS),
-                title=flet.Text("Manager"),
-                on_click=lambda e: on_nav_change(6)
-            ),flet.Divider(
-            ),flet.ListTile(
-                leading=flet.Icon(flet.Icons.SIGNAL_CELLULAR_ALT),
-                title=flet.Text("Dashboard"),
-                on_click=lambda e: on_nav_change(7)
-            ),flet.ListTile(
+                    list_tile_menu("Add Customer", on_nav_change, 4.1),
+                    list_tile_menu("Add Inventory", on_nav_change, 4.2),
+                    list_tile_menu("Add Film", on_nav_change, 4.3),
+                    list_tile_menu("Add Actor", on_nav_change, 4.4),
+                    list_tile_menu("Add Category", on_nav_change, 4.5),
+                ]),
+            list_tile(icon=flet.Icons.QUERY_STATS, title="Statistic", event=on_nav_change, index=5),
+            list_tile(icon=flet.Icons.MANAGE_ACCOUNTS, title="Manager", event=on_nav_change, index=6),
+            flet.Divider(),
+            list_tile(icon=flet.Icons.SIGNAL_CELLULAR_ALT, title="Dashboard", event=on_nav_change, index=7),
+            flet.ListTile(
                 leading=flet.Icon(flet.Icons.EXIT_TO_APP),
                 title=flet.Text("Exit"),
                 on_click=lambda e: (setattr(e, "data", "close"), popup.show_open(e))

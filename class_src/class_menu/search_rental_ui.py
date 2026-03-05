@@ -17,7 +17,7 @@ def today_status(query, view_page, status_name:str, status_query, status_color=N
         height=80,
         ink=True,
         alignment=flet.alignment.center_left,
-        border=flet.border.all(color=flet.Colors.BLACK),
+        border=flet.border.all(color=Colors.border_color),
         content=flet.Column([
             flet.Text(status_name, style=flet.TextThemeStyle.TITLE_MEDIUM, color=status_color),
             flet.Text(status_query, style=flet.TextThemeStyle.HEADLINE_SMALL, weight=flet.FontWeight.BOLD, color=status_color)
@@ -194,7 +194,7 @@ def history(page, conn, connect_module_page=None, rental_id:int=None, customer_n
             "page": connect_module_page
         }
         # print(His.history_customer.get("name"))
-    print(His.history_customer)
+    # print(His.history_customer)
 
     def reversed_rental_data(e):
         # print("reversed_rental_data")
@@ -553,7 +553,7 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
         expand=True,
         padding=10,
         border_radius=5,
-        border=flet.border.all(color=flet.Colors.BLACK),
+        border=flet.border.all(color=Colors.border_color),
     )
 
     rental_history = flet.Row([
@@ -588,7 +588,7 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
         controls=[view_header(), rental_data, page_row]
     )
 
-    print(initial_value, initial_id, index)
+    # print(initial_value, initial_id, index)
     if index: # 1
         # print(index)
         if index == 1:

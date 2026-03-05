@@ -1,5 +1,32 @@
 ## [README](/README.md)
 
+* customer edit popup을 토대로 add 페이지 제작예정.
+
+* **2026-03-05**
+  1. search_customer_ui.py → edit.py
+     * 고객 정보 수정 팝업 및 DB 저장 로직 구현.
+     * 팝업 content Animation Event 및 경고문 추가.
+       * Phone가 숫자, 하이픈만 이외의 문자가 사용된경우 경고.
+       * Postal Code가 숫자 이외의 문자가 사용된 경우 경고.
+       * Address(Country, City)가 일치하지 않는 경우 경고.
+  2. navigation_tile.py
+     * 중복 사용 코드 material.py 이전.
+     * Search ExpansionTile 제거 및 내용 상시 표시, 순서변경.
+  3. m_menu.py
+     * view_home 레이아웃 구성 변경.
+     * logo image BlendMode 적용으로 Theme colors 반영.
+  4. Theme Mode 구현 중.
+     * Default: OS System Theme Mode ⇔ Event: Dark Theme Mode.
+     * ~~Page Container Border Color를 Theme Mode에 따라 반영되게 하려고 하였으나 Theme Mode에 연동되는 색상값과 명령어 부재.~~
+     * ~~Theme Mode 변화 이후 Page 이전 시 Border Color 반영은 가능하게 할수있으나 실시간 연동은 별도의 로직이 필요한듯하여 차후 재설계.~~
+       * Theme colors 의 경우 반영되는것을 확인하여 적용 (PRIMARY, ERROR, OUTLINE, ...)
+  5. search_inventory_ui.py
+     * 검색 쿼리 및 input value 값 수정.
+       * **film title(type `varchar(255)`) 기준 검색 (cost 140) → film fulltext(type `tsvector`) 기준 검색 (cost 35)**
+       * 검색값을 공백을 기준으로 나눠서 박스에 저장 (split())
+       * 박스안에 나눠진 값사이에 text or 공백을 넣고 한줄로 나열 ("`text`".join(`value`))
+         * str_film_title_tag = `f"{"&".join(input_inventory.value.split())}"`
+
 * **2026-03-04**
   1. search_rental_ui.py
      * 대여 반납 페이징 기능 로직 구현.

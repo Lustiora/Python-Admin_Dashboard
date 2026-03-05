@@ -1,9 +1,10 @@
 import flet
 from class_menu.delete import customer_delete
 from class_menu.edit import customer_edit
+from class_window import Colors
 
 def context_menu(
-        content, disabled=False, height=35, color=flet.Colors.BLACK, weight=None,
+        content, disabled=False, height=35, color=Colors.status_normal, weight=None,
         alignment=flet.alignment.center_left, icon=None, on_click=None):
     return flet.PopupMenuItem(
         content=flet.Container(

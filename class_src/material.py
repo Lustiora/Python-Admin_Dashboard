@@ -1,9 +1,33 @@
 import flet
 from class_window import Font, Ratios, Colors
 
+def view_container(view_content):
+    return flet.Container(
+        alignment=flet.alignment.top_left,
+        expand=True,
+        content=flet.SelectionArea(content=view_content),
+        border_radius=5,
+        border=flet.border.all(color=Colors.border_color),
+    )
+
+def list_tile(title, event, index=None, icon=None):
+    return flet.ListTile(
+        leading=flet.Icon(icon),
+        title=flet.Text(title),
+        on_click=lambda e: event(index)
+    )
+
+def list_tile_menu(title, event, index):
+    return flet.ListTile(
+        title=flet.Text(title),
+        content_padding=flet.padding.only(left=40),
+        on_click=lambda e: event(index)
+    )
+
 def input_text(content=None, on_submit=None, hint_text=None, value=None, autofocus=True):
     return flet.TextField(label=content, on_submit=on_submit, hint_text=hint_text, value=value,
-       text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=autofocus
+        text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=autofocus,
+        border_color=Colors.border_color
     )
 
 def header_text(content=None, expand=None):

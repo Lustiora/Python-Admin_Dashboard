@@ -346,7 +346,7 @@ def build_payment_ui(initial_value="", **kwargs):
         expand=True,
         padding=10,
         border_radius=5,
-        border=flet.border.all(color=flet.Colors.BLACK),
+        border=flet.border.all(color=Colors.border_color),
     )
 
     receipt_details = flet.Row([
