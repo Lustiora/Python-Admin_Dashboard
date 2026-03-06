@@ -24,7 +24,7 @@ class Colors:
 
     customer_id = flet.Colors.PRIMARY
 
-    status_normal = None
+    status_normal = flet.Colors.ON_SURFACE
 
     status_returned = flet.Colors.GREEN
     status_normal_btn_color = flet.Colors.ON_SECONDARY_CONTAINER

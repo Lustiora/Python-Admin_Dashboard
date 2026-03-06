@@ -4,6 +4,8 @@ from monitoring import connect_test
 from class_popup import Popup
 from navigation_tile import navigation
 from class_menu.search import view_search_rental, view_search_customer, view_search_payment
+from class_menu.menu_ui import view_home
+from class_window import Colors
 
 class MainManager:
     def __init__(self, page: flet.Page, conn, staff_user, staff_store_address, staff_store_id):
@@ -12,6 +14,9 @@ class MainManager:
         self.staff_user = staff_user
         self.staff_store_address = staff_store_address
         self.staff_store_id = staff_store_id
+
+        self.page_theme = []
+        self.page.theme_mode = flet.ThemeMode.SYSTEM
 
         # -- Statusbar --
         self.server_status = flet.Text(value="Server Status", text_align=flet.TextAlign.RIGHT)
@@ -24,22 +29,26 @@ class MainManager:
             alignment=flet.alignment.center_left,
             padding=flet.padding.only(left=10, right=10),
             border_radius=5,
-            border=flet.border.all(color=flet.Colors.BLACK)
+            border=flet.border.all(color=Colors.border_color)
         )
 
         params = {
             "page": self.page,
             "staff_store_id": self.staff_store_id,
             "conn": self.conn,
+            "theme_mode":self.page.theme_mode,
         }
 
         self.basic_container = flet.Container(
-            content=view_search_customer(**params),
+            content=view_home(**params),
             alignment=flet.alignment.center,
             expand=True,
             border_radius=5,
             padding=20,
         )
+
+        self.theme_switch = flet.Switch(value=True, on_change=self.toggle_theme)
+        self.select_theme = flet.Icon(name=flet.Icons.LIGHT_MODE_OUTLINED)
 
         self.ex_tile = navigation(
             self.staff_user, self.staff_store_address, self.basic_container, **params)[0]
@@ -50,12 +59,22 @@ class MainManager:
         self.content = flet.Column([self.basic_content, self.connect_status], expand=True)
 
         self.basic_main_content = flet.Row(
-            [
-                flet.Column([self.ex_tile
-                             ], scroll=flet.ScrollMode.AUTO, alignment=flet.MainAxisAlignment.START),
+            expand=True,
+            vertical_alignment=flet.CrossAxisAlignment.START,
+            controls=[
+                flet.Column(
+                    scroll=flet.ScrollMode.AUTO,
+                    horizontal_alignment=flet.CrossAxisAlignment.CENTER,
+                    controls=[
+                        self.ex_tile,
+                        flet.Row(
+                            controls=[
+                                self.theme_switch, self.select_theme
+                        ]),
+                ]),
                 flet.VerticalDivider(width=1),
                 self.content,
-            ], expand=True, vertical_alignment=flet.CrossAxisAlignment.START
+            ]
         )
 
         self.page.add(self.basic_main_content)
@@ -64,7 +83,7 @@ class MainManager:
 
         self.page.session.set("manager", self)
 
-    def update_main_page(self, index, customer_name):
+    def update_main_page(self, index, page_index=None, customer_name=None, rental_id=None):
         params = {
             "page": self.page,
             "conn": self.conn,
@@ -72,16 +91,32 @@ class MainManager:
         }
         # -- Main Content --
         if index == 0:
-            print("Page Update 'Rental'")
-            self.basic_content.content = view_search_rental(customer_name, **params)
+            print(f"Page Update 'Rental' {page_index}")
+            self.basic_content.content = view_search_rental(page_index, rental_id, customer_name, **params)
             self.basic_content.update()
         elif index == 1:
             print("Page Update 'Payment'")
             self.basic_content.content = view_search_payment(customer_name, **params)
             self.basic_content.update()
-        # elif index == 2:
-        #     self.basic_content.content = view_search_rental(self.page, self.staff_store_id, self.conn)
-        #     self.basic_content.update()
+        elif index == 2:
+            print("Page Update 'Customer'")
+            self.basic_content.content = view_search_customer(customer_name, **params)
+            self.basic_content.update()
+
+    def toggle_theme(self, e):
+        if self.page.theme_mode != flet.ThemeMode.DARK:
+            self.page_theme.append(f"{self.page.theme_mode}")
+            self.page.theme_mode = flet.ThemeMode.DARK
+            self.select_theme.name = flet.Icons.DARK_MODE
+        else:
+            if self.page_theme:
+                self.page.theme_mode = self.page_theme[0]
+                self.select_theme.name = flet.Icons.LIGHT_MODE_OUTLINED
+                self.page_theme.clear()
+            else:
+                return
+        if self.page:
+            self.page.update()
 
 # -- Module --
 def run_main(page: flet.Page, conn, staff_user, staff_store_address, staff_store_id):

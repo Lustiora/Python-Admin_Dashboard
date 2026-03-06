@@ -316,7 +316,15 @@ class Rental:
         commit;
         """
 
-class Delete:
+class Customer:
+    #############################################
+    # class_menu customer add, edit, delete
+    #############################################
+
+    customer_add_query\
+        = """
+        """
+
     customer_delete_query\
         = """
         begin;
@@ -327,16 +335,15 @@ class Delete:
         commit;
         """
 
-class Edit:
     city_list_query\
         = """
-        select city
+        select city, city_id
         from city
         """
 
     country_list_query\
         ="""
-        select country
+        select country, country_id
         from country
         """
 
@@ -351,7 +358,9 @@ class Edit:
             a.address ,
             a.postal_code ,
             c3.country ,
+            c3.country_id ,
             c2.city ,
+            c2.city_id ,
             c.activebool
         from customer c
         inner join address a on c.address_id = a.address_id 
@@ -366,8 +375,8 @@ class Edit:
         select count(*) 
         from city c 
         inner join country c2 on c.country_id = c2.country_id 
-        where c.city = %s 
-        and c2.country = %s
+        where c.city_id = %s 
+        and c2.country_id = %s
         """
 
     customer_edit_query\
@@ -383,8 +392,23 @@ class Edit:
         set address = %s,
             postal_code = %s,
             phone = %s,
-            city_id = (select city_id from city where city ilike %s)
+            city_id = %s
         where address_id = (
             select address_id from customer where customer_id = %s);
         commit;
         """
+
+    customer_insert_query\
+        = """
+        with new_address_id as (
+            insert into address (address, city_id, postal_code, phone) 
+            values (%s, %s, %s, %s)
+            RETURNING address_id
+        )
+        insert into customer (store_id, first_name, last_name, email, active, address_id)
+        values (%s, %s, %s, %s, 1, (select address_id from new_address_id))
+        RETURNING customer_id;
+        """
+
+# class Delete:
+# class Edit:

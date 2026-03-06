@@ -1,6 +1,7 @@
 from class_menu.menu_ui import *
 from class_menu.search import *
 from class_menu.add import *
+from class_menu.customer_status import customer
 from class_popup import Popup
 from material import list_tile, list_tile_menu
 
@@ -18,7 +19,7 @@ def navigation(staff_user, staff_store_address, basic_content, **kwargs):
         elif index == 1.4: # 결제이력 조회
             basic_content.content = view_search_payment(**kwargs)
         elif index == 4.1: # 고객 추가
-            basic_content.content = view_add_customer()
+            customer("add",**kwargs)
         elif index == 4.2: # 재고 추가
             basic_content.content = view_add_inventory()
         elif index == 4.3: # 영화 추가

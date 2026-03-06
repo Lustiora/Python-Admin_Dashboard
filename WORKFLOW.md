@@ -1,6 +1,24 @@
 ## [README](/README.md)
 
-* customer edit popup을 토대로 add 페이지 제작예정.
+* payment 영수증 프린트 기능 구현 예정
+
+* **2026-03-06**
+  1. edit.py
+     * 이메일 필터링 추가 및 경고.
+       * 이메일 구조가 정상인지 아닌지 (google.com, out.com, ...)
+       * 최상위 도메인을 사용하였는지 아닌지 (com, net, org, ...)
+  2. add.py, edit.py, delete.py → customer_status.py
+     * customer 관리 편의를 위한 이전.
+     * 일부 중복 사용 코드 class 전환 및 변수 지정.
+       * class 전환 이후 중복 사용 코드 압축 및 배제. (Code Line 536 → 391) 
+     * Edit Status Save Query Fix.
+       * City, Country text 조회, 저장 → id 조회, 저장.
+       * Seq Scan(cost 4.2) → Index Scan(cost 0.15)
+     * 연락처 검증 필터링 재정립.
+       * 문제 : 숫자만 사용하던 하이픈만 사용하던 허용.
+       * 해결 : if not (len("".join(c for c in c_phone if c.isdigit())) == 10 and c_phone.count("-") == 2):
+  3. main_ui.py
+     * test 완료된 내역 업데이트.
 
 * **2026-03-05**
   1. search_customer_ui.py → edit.py

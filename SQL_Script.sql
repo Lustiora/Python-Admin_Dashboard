@@ -326,7 +326,8 @@ group by team_name ;
 
 select * from customer c ;
 
-select s.username , s.password , s.store_id , s.active from staff s where s.username = 'Mike' and s."password" = '8cb2237d0679ca88db6464eac60da96345513964' and s.active is true;
+select s.username , s.password , s.store_id , s.active from staff s where s.username = 'Mike' 
+and s."password" = '8cb2237d0679ca88db6464eac60da96345513964' and s.active is true;
 
 select s.username, s.password, s.store_id , a.address , s.active
                                from staff s
@@ -560,7 +561,8 @@ select
     to_char(rental_date,'YYYY-MM-DD hh:mm:ss') as rental_date ,
     to_char(due_day,'YYYY-MM-DD hh:mm:ss') as due_day ,
     case
-        when due_day < today then 'Overdue'||' ('||replace(date_trunc('day',over_due)::text,'00:00:00','1 days')||')'
+        when due_day < today 
+        then 'Overdue'||' ('||replace(date_trunc('day',over_due)::text,'00:00:00','1 days')||')'
         else 'Unreturned'
     end as status
 from rental_data
@@ -588,7 +590,8 @@ set
 		select	
 			case 
 				when r.return_date::date - r.rental_date::date > f.rental_duration
-				then least(((r.return_date::date - r.rental_date::date) - f.rental_duration) * 1.0 , f.replacement_cost)
+				then least(((r.return_date::date - r.rental_date::date) - f.rental_duration) * 1.0 
+				, f.replacement_cost)
 			else 0
 			end + f.rental_rate
 		from payment p
@@ -621,7 +624,8 @@ inner join film f
 	on i.film_id = f.film_id
 where p.rental_id = 14697
 
-select r.rental_id ,r.days_overdue , r.base_rental_rate , r.est_late_fee , r.total_amount from rental_full_status r where r.return_date is null and r.days_overdue is not null;
+select r.rental_id ,r.days_overdue , r.base_rental_rate , r.est_late_fee , r.total_amount from rental_full_status r 
+where r.return_date is null and r.days_overdue is not null;
 select * from rental_full_status r;
 
 select count(*) from rental; -- 13756
@@ -1000,7 +1004,8 @@ select
 	r.rental_date::date + f.rental_duration as due_date ,
 	case 
 		when r.return_date is null 
-			and current_date > (r.rental_date::date + f.rental_duration) then 'Overdue' || ' (' || (current_date - r.rental_date::date) * interval '1Day' || ')'
+			and current_date > (r.rental_date::date + f.rental_duration) 
+			then 'Overdue' || ' (' || (current_date - r.rental_date::date) * interval '1Day' || ')'
 		when r.return_date is null 
 			and current_date <= (r.rental_date::date + f.rental_duration) then 'Unreturned'
 		else to_char(r.return_date,'YYYY-MM-DD')
@@ -1030,7 +1035,8 @@ set
 		select	
 		    sum(case 
 		        when (coalesce(r.return_date::date, current_date) - r.rental_date::date) > f.rental_duration
-		        	then least(((coalesce(r.return_date::date, current_date) - r.rental_date::date) - f.rental_duration) * 1.0 , f.replacement_cost)
+		        	then least(((coalesce(r.return_date::date, current_date) - r.rental_date::date) - f.rental_duration) * 1.0 
+		        	, f.replacement_cost)
 		    else 0
 		    end + f.rental_rate)
 		from payment p
@@ -1096,3 +1102,22 @@ select i.inventory_id
 from inventory i
 inner join film f on i.film_id = f.film_id
 where f.title ilike 'Iron Lung'
+
+select *
+from city c
+inner join country c2 
+on c.country_id = c2.country_id 
+
+begin;
+with new_address_id as (
+    insert into address (address, city_id, postal_code, phone) 
+    values ('123rv23v', 5, 42345, 2512534)
+    RETURNING address_id
+)
+insert into customer (store_id, first_name, last_name, email, address_id)
+values (1, 'asd', 'asd', '23423@fasd.com', (select address_id from new_address_id))
+RETURNING customer_id;
+commit;
+
+
+
