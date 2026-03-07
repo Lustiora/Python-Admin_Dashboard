@@ -1,11 +1,11 @@
 # -- Import --
 import flet, time
 from monitoring import connect_test
-from class_popup import Popup
+from window_popup import Popup
 from navigation_tile import navigation
 from class_menu.search import view_search_rental, view_search_customer, view_search_payment
 from class_menu.menu_ui import view_home
-from class_window import Colors
+from window_setting import Colors
 
 class MainManager:
     def __init__(self, page: flet.Page, conn, staff_user, staff_store_address, staff_store_id):
@@ -16,7 +16,7 @@ class MainManager:
         self.staff_store_id = staff_store_id
 
         self.page_theme = []
-        self.page.theme_mode = flet.ThemeMode.SYSTEM
+        self.page.theme_mode = flet.ThemeMode.LIGHT
 
         # -- Statusbar --
         self.server_status = flet.Text(value="Server Status", text_align=flet.TextAlign.RIGHT)
@@ -34,6 +34,8 @@ class MainManager:
 
         params = {
             "page": self.page,
+            "staff_user": self.staff_user,
+            "staff_store_address": self.staff_store_address,
             "staff_store_id": self.staff_store_id,
             "conn": self.conn,
             "theme_mode":self.page.theme_mode,
@@ -50,11 +52,9 @@ class MainManager:
         self.theme_switch = flet.Switch(value=True, on_change=self.toggle_theme)
         self.select_theme = flet.Icon(name=flet.Icons.LIGHT_MODE_OUTLINED)
 
-        self.ex_tile = navigation(
-            self.staff_user, self.staff_store_address, self.basic_container, **params)[0]
+        self.ex_tile = navigation(self.basic_container, **params)[0]
 
-        self.basic_content = navigation(
-            self.staff_user, self.staff_store_address, self.basic_container, **params)[1]
+        self.basic_content = navigation(self.basic_container, **params)[1]
 
         self.content = flet.Column([self.basic_content, self.connect_status], expand=True)
 
@@ -106,9 +106,12 @@ class MainManager:
     def toggle_theme(self, e):
         if self.page.theme_mode != flet.ThemeMode.DARK:
             self.page_theme.append(f"{self.page.theme_mode}")
+            # print(f"save {self.page_theme[0]}")
             self.page.theme_mode = flet.ThemeMode.DARK
             self.select_theme.name = flet.Icons.DARK_MODE
         else:
+            # print("not light system")
+            # print(self.page.theme_mode)
             if self.page_theme:
                 self.page.theme_mode = self.page_theme[0]
                 self.select_theme.name = flet.Icons.LIGHT_MODE_OUTLINED

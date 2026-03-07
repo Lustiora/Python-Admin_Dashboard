@@ -1,7 +1,7 @@
 import flet
-from class_window import Colors, Ratios
-from class_query import Search
-from class_popup import Popup
+from window_setting import Colors, Ratios
+from full_query import Search
+from window_popup import Popup
 import material as mat
 
 def build_inventory_ui(**kwargs):

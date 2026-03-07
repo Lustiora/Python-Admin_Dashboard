@@ -1,5 +1,5 @@
 import flet
-from class_window import Colors
+from window_setting import Colors
 
 logo_src = "/logo.png"
 welcome_text = "Welcome to the Sakila Management System"
@@ -52,7 +52,9 @@ def view_home(**kwargs):
         )
     )
 
-def view_status(staff_user, staff_store_address):
+def view_status(**kwargs):
+    staff_store_address = kwargs.get("staff_store_address")
+    staff_user = kwargs.get("staff_user")
     return flet.Column(
         controls=[
             flet.Row([

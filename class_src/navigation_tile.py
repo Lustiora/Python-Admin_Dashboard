@@ -2,10 +2,10 @@ from class_menu.menu_ui import *
 from class_menu.search import *
 from class_menu.add import *
 from class_menu.customer_status import customer
-from class_popup import Popup
+from window_popup import Popup
 from material import list_tile, list_tile_menu
 
-def navigation(staff_user, staff_store_address, basic_content, **kwargs):
+def navigation(basic_content, **kwargs):
     page = kwargs["page"]
     def on_nav_change(index):
         if index == 0: # 메인화면
@@ -33,7 +33,7 @@ def navigation(staff_user, staff_store_address, basic_content, **kwargs):
         elif index == 6: # 관리
             basic_content.content = view_manager()
         elif index == 7: # 접속 상태
-            basic_content.content = view_status(staff_user, staff_store_address)
+            basic_content.content = view_status(**kwargs)
 
         basic_content.update()
 

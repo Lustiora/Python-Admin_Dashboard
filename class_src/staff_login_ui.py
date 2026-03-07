@@ -1,8 +1,8 @@
 import flet
 import time, base64, hashlib
 import psycopg2
-from class_popup import Popup
-from class_window import Font
+from window_popup import Popup
+from window_setting import Font
 
 class LoginManager:
     def __init__(self, page: flet.Page, config, config_file):

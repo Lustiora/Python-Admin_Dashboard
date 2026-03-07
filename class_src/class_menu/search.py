@@ -1,5 +1,5 @@
 import flet
-from class_window import Font, Colors
+from window_setting import Font, Colors
 from .search_customer_ui import build_customer_ui
 from .search_inventory_ui import build_inventory_ui
 from .search_rental_ui import build_rental_ui

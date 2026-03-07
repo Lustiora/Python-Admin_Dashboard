@@ -1,6 +1,27 @@
 ## [README](/README.md)
 
-* payment 영수증 프린트 기능 구현 예정
+## 📅 Roadmap & Improvements (▼)
+
+* 조회된 목록을 엑셀/CSV로 내보내기 기능.
+* 자주 사용하는 메뉴 타일을 빠르게 선택할 수 있는 기능.
+* 시스템 동작 상태(Log) 출력 기능.
+* 신규 인벤토리, 영화, 배우, 장르 생성 기능.
+* 영화 대여 이력 조회 기능.
+
+---
+
+* 기본 조회 페이지는 접속 스태프의 스토어로 고정하고 별도의 관리자 페이지에서 전체를 확인할수있는 기능 추가 예정.
+* 함수에 사용되는 매게변수가 많지만 딕셔너리를 사용하기 곤란한 경우도 존재하여 일부 Class 구조 변경 예정.
+
+* **2026-03-06**
+  1. search_payment_ui.py Fix
+     * Search view date 출력내용 rental_date → payment_date
+     * view_payment_total_text width maxs_line overflow 추가 (total_amount가 밀려서 가려짐)
+     * receipt 결제 내역에 표시되는 영화 타이틀 expand no_wrap maxs_line overflow 추가 (타이틀이 긴경우 가려짐)
+  2. printing.py
+     * Payment Receipt Printing 기능 구현 완료 (ESC/POS). 
+     * Export /Documents → `receipt_10365_2026-03-07_222335.bin`, `receiptline.svg`
+     * Email Receipt 전송 기능은 차후 구현 예정.
 
 * **2026-03-06**
   1. edit.py

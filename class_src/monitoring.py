@@ -1,6 +1,6 @@
 import flet
 import threading, time
-from class_popup import Popup
+from window_popup import Popup
 
 def connect_test(conn, server_status, server_time, connect_status, page: flet.Page):
     popup = Popup(page=page)

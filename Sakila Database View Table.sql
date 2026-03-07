@@ -171,7 +171,7 @@ create or replace view public.view_receipt as (
 with receipt as (
 select 
 	p.payment_id ,
-	to_char(r.rental_date,'YYYY-MM-DD HH24:MI:SS') as rental_date ,
+	to_char(p.payment_date,'YYYY-MM-DD HH24:MI:SS') as payment_date ,
 	c.first_name ||' '||c.last_name as name ,
 	f.poster_path ,
 	f.title ,
@@ -193,23 +193,23 @@ group by
 	r.rental_id ,
 	c.customer_id
 ) , union_teist as (
-select payment_id , rental_date , name , null , null , sum(rental_rate) as total_rental_rate , amount , amount * 0.1 as tax , amount * 1.1 as total , rental_id
+select payment_id , payment_date , name , null , null , sum(rental_rate) as total_rental_rate , amount , amount * 0.1 as tax , amount * 1.1 as total , rental_id
 from receipt
-group by payment_id, rental_date , name , amount , rental_id
+group by payment_id, payment_date , name , amount , rental_id
 ), union_overdue_return as (
-select r2.payment_id , r2.rental_date , r2.name , null , 
+select r2.payment_id , r2.payment_date , r2.name , null , 
 case when r3.return_date is not null then 'Total Payment (Inc. Overdue)'
 else 'Total Payment (Unreturned)' end , r2.total_rental_rate , r2.amount , tax , total
 from union_teist r2
 inner join rental_data r3 on r2.rental_id  = r3.rental_id
 where r3.due_day < coalesce(r3.return_date, current_date)
 union all
-select r2.payment_id , r2.rental_date , r2.name , null , 'Total Payment' , r2.total_rental_rate , r2.amount , tax , total
+select r2.payment_id , r2.payment_date , r2.name , null , 'Total Payment' , r2.total_rental_rate , r2.amount , tax , total
 from union_teist r2
 inner join rental_data r3 on r2.rental_id  = r3.rental_id
 where r3.due_day >= coalesce(r3.return_date, current_date)
 ) , union_receipt as (
-select r.payment_id , r.rental_date , r.name , r.poster_path , r.title , r.rental_rate , null as amount , r.rental_rate * 0.1 as tax , r.rental_rate * 1.1 as total
+select r.payment_id , r.payment_date , r.name , r.poster_path , r.title , r.rental_rate , null as amount , r.rental_rate * 0.1 as tax , r.rental_rate * 1.1 as total
 from receipt r
 union all
 select * from union_overdue_return)

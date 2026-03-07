@@ -5,12 +5,16 @@ Sakila 샘플 데이터베이스를 기반으로 회원 관리, 재고 관리, �
 
 ## 🛠 Tech Stack (Assets)
 
-| Category          | Technology                              |
-|:------------------|:----------------------------------------|
-| **Language**      | Python 3.14                             |
-| **GUI Framework** | Flet 0.28.3                             |
-| **Database**      | PostgreSQL (Sakila Sample DB)           |
-| **OS Support**    | Windows 11, Arch Linux (Cross-platform) |
+| Category          | Technology                           |
+|:------------------|:-------------------------------------|
+| **Language**      | Python 3.14                          |
+| **GUI Framework** | Flet 0.28.3                          |
+| **Database**      | PostgreSQL (Sakila Sample DB Custom) |
+| **OS Support**    | Windows, Linux (Cross-platform)      |
+
+
+## 📜 [Development Log (Workflow)](/WORKFLOW.md)
+<p></p>
 
 ---
 
@@ -18,51 +22,43 @@ Sakila 샘플 데이터베이스를 기반으로 회원 관리, 재고 관리, �
 
 ### 1. System Startup & Authentication
 
-시스템 시작 시 데이터베이스 연결 무결성을 점검하고 보안 로그인을 수행합니다.
+* DB Connect UI
+  * Database, Host, Port, User ID, User Password를 확인하여 로그인합니다.
+  * 로그인 성공 시 로그인에 사용된 정보는 .config로 Windows(Appdata/...), Linux(user/.config/...)에 저장되어 이후 로그인시 DB 접속을 자동으로 실행합니다.
+    * User Password의 경우 Base64로 인코딩하여 저장되며 자동접속시 디코딩되어 실행됩니다.
 
-* **Database Connection (Auto-Config):**
-  * `config.ini` 파일 유무를 확인하여 저장된 정보로 자동 연결을 시도합니다.
-  * **White List Check:** [PostgreSQL Server White List](https://github.com/Lustiora/Python-Sakila/wiki/PostgresSQL-Server-White-List) 설정을 준수합니다.
-  * **Exception Handling:**
-    * 자동 연결 실패 시 `Auto-Login Failed` 팝업 출력 후, 수동 입력 창(Setup Window)으로 전환됩니다.
-* **Staff Login (Access Control):**
-  * `staff` 테이블의 계정 정보(username, password)와 활성 상태(`active=True`)를 대조합니다.
-  * **Security Lock:** 3회 로그인 실패 시 시스템이 잠기며 관리자 문의 메시지를 출력합니다.
+* Staff Login UI
+  * Staff ID, Staff Password를 확인하여 로그인합니다.
+  * 입력된 정보는 DB의 Staff Table을 조회하여 일치여부를 확인합니다.
+    * Staff Password의 경우 SHA1으로 인코딩되어 저장되어있으며 조회시 디코딩 이후 확인합니다.
+  * 성공 시 Staff ID, Staff Store Address & ID를 반환하며 해당 정보는 Main UI에서 정보 조회 시 사용됩니다.  
 
 ### 2. Main Interface & Dashboard
 
-사용자 편의성을 고려한 타일 메뉴와 실시간 상태 모니터링을 제공합니다.
+* Full Query
+  * Main UI 이후 표시되는 모든 화면에 사용되는 Query입니다.
+  * 생성한 View Table을 사용하여 직관적으로 출력되는 정보를 확인할 수 있습니다.
 
-* **Layout Structure:**
-  * **Left Navigation:** 주요 모듈(검색, 등록, 관리)로의 빠른 접근.
-  * **Tile Menu:** 직관적인 아이콘 형태의 메인 대시보드.
-  * **Status Bar:** 하단에 DB 연결 상태(Connected/Disconnected)를 실시간으로 표시.
+* Window Popup
+  * 공통사용되는 팝업구조를 편하게 사용하기 위해 생성되었습니다.
+  * 기본적인 팝업화면, 종료 시 팝업화면이 포합되어 있습니다.
 
-### 3. Search Modules (Core Features)
+* Window Setting
+  * UX 일관성을 위해 생성되었으며 Font Size, Expand Ratios, Color Class가 작성되어 있습니다.
 
-각 업무 목적에 최적화된 검색 로직을 수행합니다.
+* Material
+  * 자주 사용되는 UI를 편하게 사용하기 위해 생성되었습니다.
+  * TextField, Text, Button 등이 포함되어 있습니다.
 
-* **A. Customer Search (고객 관리)**
-  
-  * **Query:** `Customer ID (Barcode)` 또는 `Name` (First/Last) 복합 검색.
-  * **Output:** 고객 기본 정보, 미반납 연체 상태(Normal/Overdue).
-  * ~~**Flow:** 검색 결과 없음(Not Found) 시 **[신규 고객 등록]** 프로세스로 자동 전환.~~
+* Main UI
+  * Monitoring
+    * DB Server 접속을 1초 단위로 확인하여 현재시간을 반환합니다.
+    * 반환되는 정보를 사용하여 상시접속을 구현하며 현재 서버시간을 출력합니다.
+  * 기본이 되는 UI 레이아웃을 구현합니다.
+  * 조회된 데이터 수정 또는 삭제 이후 페이지 업데이트를 위해 사용됩니다.
+  * 기본적으로 라이트모드가 적용되며 다크모드 전환 기능을 지원합니다.
 
-* **B. Inventory Check (재고 확인)**
-  
-  * **Query:** `Inventory ID (Barcode)` 또는 `Title` 복합 검색.
-  * **Output:**
-    * **Film Data:** 영화 제목, 보유 상점, 최근 대여일자, 대여료 정보.
-    * **Rental Status:** 현재 대여 중(`Checked Out`)인지 대여 가능(`In Stock`)인지 판별.
-  * **Logic:** `rental` 테이블의 `return_date`가 `NULL`인 기록 존재 여부로 상태 판단.
-
-* **C. Rental Search (대여 상태)**
-
-  * **Output:**
-    * **Total Rentals:** 대여중인 재고
-    * **Overdue:** 연체중인 재고
-    * **Due Today:** 금일 반납예정인 재고
-    * **Rental Data:** Rental ID, Customer Name, Film Title, Rental Date, Due Date, Status, Action(?) 
+* **작성중** 
 
 ---
 
@@ -96,20 +92,6 @@ Sakila 샘플 데이터베이스를 기반으로 회원 관리, 재고 관리, �
 | **Overdue**  | `return_date IS NULL` AND `Now > Due Date` | 연체 중 (반납 필요)               |
 | **Returned** | `return_date IS NOT NULL`                  | 반납 완료 (정산 종료)              |
 | **Lost**     | `Overdue > Threshold`                      | *분실 처리 (장기 연체 시 대체 비용 청구)* |
-
----
-
-## 📅 Roadmap & Improvements
-
-**Export Data:** 조회된 목록을 엑셀/CSV로 내보내기 기능.
-
-**Console Log UI:** 시스템 동작 상태(Log) 출력 기능.
-
-**Favorites:** 자주 사용하는 메뉴 타일을 빠르게 선택할 수 있는 기능.
-
----
-
-## 📜 [Development Log (Workflow)](/WORKFLOW.md)
 
 ---
 

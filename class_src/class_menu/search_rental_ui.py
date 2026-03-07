@@ -1,8 +1,8 @@
 import flet
 from math import ceil
-from class_window import Colors, Ratios
-from class_query import Search, Rental
-from class_popup import Popup
+from window_setting import Colors, Ratios
+from full_query import Search, Rental
+from window_popup import Popup
 import material as mat
 
 class His:
@@ -159,15 +159,14 @@ def view_table_rental_data(
             rental_data.update()
     else:
         page_num.visible = False
-        if page_num.page:
-            page_num.update()
-        if rental_data.page:
-            rental_data.update()
         rental_data.controls.clear()
         rental_data.controls.append(
             flet.Container(content=flet.Row(controls=[flet.Text("Not Data"), ],
                                             alignment=flet.MainAxisAlignment.CENTER, )))
-        rental_data.update()
+        if page_num.page:
+            page_num.update()
+        if rental_data.page:
+            rental_data.update()
     # print(f"count_pages : {count_pages}")
 
 def history(page, conn, connect_module_page=None, rental_id:int=None, customer_name=None):

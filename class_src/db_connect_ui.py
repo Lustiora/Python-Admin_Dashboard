@@ -2,8 +2,8 @@
 import sys, os, time, configparser, base64
 import psycopg2
 import flet
-from class_window import Font
-from class_popup import Popup
+from window_setting import Font
+from window_popup import Popup
 
 class DBConnect:
     def __init__(self, page: flet.Page, popup: Popup):

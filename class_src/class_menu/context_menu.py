@@ -1,6 +1,6 @@
 import flet
 from class_menu.customer_status import customer, customer_delete
-from class_window import Colors
+from window_setting import Colors
 
 def context_menu(
         content, disabled=False, height=35, color=Colors.status_normal, weight=None,

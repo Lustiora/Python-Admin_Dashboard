@@ -1,5 +1,5 @@
 import flet
-from class_window import Font, Ratios, Colors
+from window_setting import Font, Ratios, Colors
 
 # ================================================
 #   search.py

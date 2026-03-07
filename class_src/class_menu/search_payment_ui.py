@@ -1,11 +1,12 @@
 import flet
-from class_window import Colors, Ratios
-from class_popup import Popup
-from class_query import Search
 from math import ceil
+from window_setting import Colors, Ratios
+from window_popup import Popup
+from full_query import Search
 import material as mat
+from printing import receipt_print
 
-def view_table(conn, row, receipt_details, receipt_container, status_normal, status_color, btn_color, btn_bgcolor):
+def view_table(conn, row, receipt_details, receipt_container, status_normal, status_color, btn_color, btn_bgcolor, store_address, popup):
     if "Overdue" in row[7]:
         status = row[7].split(" (")[0]
         days = row[7].split("due ")[1]
@@ -55,7 +56,7 @@ def view_table(conn, row, receipt_details, receipt_container, status_normal, sta
                 ], expand=Ratios.status, spacing=0),
                 flet.VerticalDivider(width=1),
                 flet.Button(content=receipt_view, expand=Ratios.status,
-                            on_click=lambda e:view_open_receipt(None, conn, receipt_details, receipt_container, payment_id),
+                            on_click=lambda e:view_open_receipt(None, conn, receipt_details, receipt_container, payment_id, store_address, popup),
                             color=btn_color, bgcolor=btn_bgcolor,
                             style=flet.ButtonStyle(shape=flet.RoundedRectangleBorder(radius=5),
                                                    overlay_color=flet.Colors.INVERSE_PRIMARY)),
@@ -85,7 +86,7 @@ def view_header():
     )
 
 def view_table_payment_data(conn, payment_data, payment_id_data, connect_module, connect_module_count,
-                            connect_module_page:int, query, page_num, select_page, receipt_details, receipt_container):
+                            connect_module_page:int, query, page_num, select_page, receipt_details, receipt_container, store_address, popup):
     # print(f"page_num.selected_index : {page_num.selected_index}")
     # print(f"connect_module_page : {connect_module_page}")
     # print(f"connect_module : {connect_module}")
@@ -118,7 +119,7 @@ def view_table_payment_data(conn, payment_data, payment_id_data, connect_module,
                 btn_color = Colors.status_unreturned_btn_color
                 btn_bgcolor = Colors.status_unreturned_btn_bgcolor
             payment_data.controls.append(
-                view_table(conn, row, receipt_details, receipt_container, status_normal, status_color, btn_color, btn_bgcolor)
+                view_table(conn, row, receipt_details, receipt_container, status_normal, status_color, btn_color, btn_bgcolor, store_address, popup)
             )
             connect_module_count.append(row[0])
         connect_module.clear()
@@ -149,14 +150,15 @@ def view_table_payment_data(conn, payment_data, payment_id_data, connect_module,
         payment_data.update()
     # print(f"count_pages : {count_pages}")
 
-def receipt(conn, payment_id:int=None):
+def receipt(conn, store_address, popup, payment_id:int=None):
     payment_film_data = flet.ListView(expand=True, spacing=0)
+    payment_receipt_data = []
     view_payment_id = flet.Text("ID", weight=flet.FontWeight.BOLD)
     view_payment_date = flet.Text("Date", weight=flet.FontWeight.BOLD, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
     view_payment_name = flet.Text("Name", weight=flet.FontWeight.BOLD, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
     view_payment_subtotal = flet.Text("Sub")
     view_payment_tax = flet.Text("TAX")
-    view_payment_total_text = flet.Text("Total:", weight=flet.FontWeight.BOLD)
+    view_payment_total_text = flet.Text("Total:", weight=flet.FontWeight.BOLD, width=170, max_lines=1, overflow=flet.TextOverflow.ELLIPSIS)
     view_payment_total_amount = flet.Text("Total", weight=flet.FontWeight.BOLD)
 
     tmdb_api_image = "https://image.tmdb.org/t/p/w200"
@@ -170,13 +172,14 @@ def receipt(conn, payment_id:int=None):
             view_payment_id.value = data[0]
             view_payment_date.value = data[1]
             view_payment_name.value = data[2]
+            view_payment_total_text.value = f"{data[4]}:"
             view_payment_subtotal.value = f"${data[6]:.2f}"
             view_payment_tax.value = f"${data[7]:.2f}"
-            view_payment_total_text.value = f"{data[4]}:"
             view_payment_total_amount.value = f"${data[8]:.2f}"
         film_data = cursor.fetchall()
         if film_data:
             for row in film_data:
+                payment_receipt_data.append([row[4], str(row[5])])
                 payment_film_data.controls.append(
                     flet.Container(
                         expand=True,
@@ -185,14 +188,28 @@ def receipt(conn, payment_id:int=None):
                             flet.Row([
                                 flet.Image(src=f"{tmdb_api_image}{row[3]}",width=60, height=90),
                                 flet.Column([
-                                    flet.Text(row[4]),
+                                    flet.Text(row[4], expand=True, no_wrap=True, overflow=flet.TextOverflow.ELLIPSIS, max_lines=3),
                                     flet.Text(row[5])
-                                ])
+                                ], expand=True,)
                             ]),
                             flet.Divider(height=1),
                         ], spacing=20)
                     )
                 )
+        def printing(e, action):
+            payment_receipt_print = {
+                "id": data[0],
+                "date": data[1],
+                "name": data[2],
+                "subtotal": f"${data[6]:.2f}",
+                "tax": f"${data[7]:.2f}",
+                "total": f"${data[8]:.2f}",
+                "total_text": f"{data[4]}:",
+                "store_address": store_address,
+                "receipt_data": payment_receipt_data,
+                "popup": popup,
+            }
+            receipt_print(action, **payment_receipt_print)
         if payment_film_data.page:
             payment_film_data.update()
         conn.commit()
@@ -215,17 +232,17 @@ def receipt(conn, payment_id:int=None):
                  width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
         flet.Row([view_payment_total_text, view_payment_total_amount,],
                  width=float('inf'), alignment=flet.MainAxisAlignment.SPACE_BETWEEN),
-        mat.details_btn("Print Receipt"),
-        mat.details_btn("Email Receipt"),
+        mat.details_btn("Print Receipt", action=lambda e: printing(e,"print")),
+        mat.details_btn("Email Receipt", action=lambda e: printing(e,"email")),
     ], expand=True, width=250)
 
-def view_open_receipt(e, conn, receipt_details, receipt_container, payment_id):
+def view_open_receipt(e, conn, receipt_details, receipt_container, payment_id, store_address, popup):
     # print("open receipt")
     if not payment_id:
         return
     else:
         receipt_details.visible = True
-        receipt_container.content = receipt(conn, payment_id)
+        receipt_container.content = receipt(conn, store_address, popup, payment_id)
         receipt_details.update()
 
 def view_close_receipt(e, receipt_details):
@@ -235,7 +252,9 @@ def view_close_receipt(e, receipt_details):
 
 def build_payment_ui(initial_value="", **kwargs):
     page = kwargs.get("page")
+    popup = Popup(page=page)
     store_id = kwargs.get("staff_store_id")
+    store_address = kwargs.get("staff_store_address")
     conn = kwargs.get("conn")
     payment_data = flet.ListView(expand=True, spacing=0)
     view_page = 0
@@ -248,13 +267,12 @@ def build_payment_ui(initial_value="", **kwargs):
             if 0 in connect_module: # 검색 조회
                 # print(f"Search load {select_page}")
                 view_page = int(select_page) * 10
-                payment_search_data_query(None, view_page, select_page)
+                payment_search_data_query(None, view_page, select_page, store_address)
         except:
             print(f"Error select view page {connect_module}")
             return
 
-    def payment_search_data_query(e, view_page, select_page, initial_value=None):
-        popup = Popup(page=page)
+    def payment_search_data_query(e, view_page, select_page, store_address, initial_value=None):
         connect_module_page = 0
         cart_payment_id = []
         connect_count = []
@@ -304,7 +322,7 @@ def build_payment_ui(initial_value="", **kwargs):
                     message=f"Payment ID Not Found [{input_payment.value}]"
                 )
             view_table_payment_data(conn, payment_data, payment_id_data, connect_module, connect_module_count,
-                                    connect_module_page, connect_module_count[0], page_num, select_page, receipt_details, receipt_container)
+                                    connect_module_page, connect_module_count[0], page_num, select_page, receipt_details, receipt_container, store_address, popup)
             conn.commit()
         except Exception as err:
             conn.rollback()
@@ -314,7 +332,7 @@ def build_payment_ui(initial_value="", **kwargs):
         page_num.selected_index = 0
         receipt_details.visible = False
         receipt_details.update()
-        payment_search_data_query(e, view_page, select_page)
+        payment_search_data_query(e, view_page, select_page, store_address)
 
     page_num = flet.CupertinoSlidingSegmentedButton(
         visible=False,  # True = 표시, False = 숨김
@@ -342,7 +360,7 @@ def build_payment_ui(initial_value="", **kwargs):
     )
 
     receipt_container = flet.Container(
-        content=receipt(conn),
+        content=receipt(conn, store_address, popup),
         expand=True,
         padding=10,
         border_radius=5,

@@ -229,7 +229,7 @@ class Search:
         select 
             p.payment_id ,
             r.name ,
-            r.rental_date ,
+            p.payment_date ,
             r.title ,
             p.amount as subtotal ,
             p.amount * 0.1 as tax ,
@@ -252,7 +252,7 @@ class Search:
         = """
         select 
             payment_id ,
-            rental_date ,
+            payment_date ,
             name ,
             poster_path ,
             title ,

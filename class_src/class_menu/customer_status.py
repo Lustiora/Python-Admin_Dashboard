@@ -1,8 +1,8 @@
 import flet
 import time
-from class_popup import Popup
-from class_window import Font, Colors
-from class_query import Customer
+from window_popup import Popup
+from window_setting import Font, Colors
+from full_query import Customer
 
 class Code:
     allowed_extensions = ("com", "net", "org", "edu", "gov", "mil")

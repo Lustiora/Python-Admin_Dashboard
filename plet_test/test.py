@@ -455,7 +455,7 @@ flet_korean_dict = {
 import inspect
 from enum import Enum
 # 텍스트 파일 생성 실행
-with open("flet_widget_korean_deep.txt", "w", encoding='utf-8') as f:
+with open("t_flet_widget_korean_deep.txt", "w", encoding='utf-8') as f:
     # 1. 상단 목차 생성
     count = 1
     print(f"{'=' * 50}\n  목차\n{'=' * 50}", file=f)
