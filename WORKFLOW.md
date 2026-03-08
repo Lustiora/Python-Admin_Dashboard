@@ -10,10 +10,23 @@
 
 ---
 
-* 기본 조회 페이지는 접속 스태프의 스토어로 고정하고 별도의 관리자 페이지에서 전체를 확인할수있는 기능 추가 예정.
-* 함수에 사용되는 매게변수가 많지만 딕셔너리를 사용하기 곤란한 경우도 존재하여 일부 Class 구조 변경 예정.
+* 에러 발생 시 빠른 해결을 위해 except Exception 별 에러코드 탑재 및 문서화 필요.
+* 함수에 사용되는 매게변수가 많지만 딕셔너리를 사용하기 곤란한 경우도 존재하여 일부 Class 구조 변경 및 확인 예정.
 
-* **2026-03-06**
+* **2026-03-08**
+  1. 조회 페이지 Staff Store 기준으로 수정.
+     * DB 등록 점포는 국가별(CA, AU) 하나씩이라 전체 조회 필요성이 없음.
+     * 전체 조회 필요시 별도 페이지에서 확인 가능하게끔 구현 예정.
+     * DB Custom 완료.
+     * 접속 점포명은 첫 화면에서만 표시.
+  2. 재고 조회 페이지 첫화면 공란 → 대여 상황 출력으로 변경.
+     * 대여 상황에 표시된 영화 제목 선택 시 해당 영화 재고 상태 출력. lambda e, r=row[1]:def(e, r)
+  3. Theme Mode.
+     * .config에 저장된 theme 값을 확인하여 실행부터 적용.
+     * 문제 : Key 값을 `flet.ThemeMode.LIGHT` 이렇게 저장하고 명령 적용시 동작하지 않음.
+     * 해결 : Key 값을 단순하게 DARK, LIGHT, SYSTEM 으로 구분하여 저장하고 if문으로 일치하는 값의 명령을 스크립트에서 적용하는것으로 변경.
+
+* **2026-03-07**
   1. search_payment_ui.py Fix
      * Search view date 출력내용 rental_date → payment_date
      * view_payment_total_text width maxs_line overflow 추가 (total_amount가 밀려서 가려짐)

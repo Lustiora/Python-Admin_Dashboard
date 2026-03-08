@@ -1119,5 +1119,47 @@ values (1, 'asd', 'asd', '23423@fasd.com', (select address_id from new_address_i
 RETURNING customer_id;
 commit;
 
+select s.store_id , c.store_id 
+from rental r 
+inner join customer c on r.customer_id = c.customer_id
+inner join staff s on r.staff_id = s.staff_id 
+where s.store_id = c.store_id 
 
+select 
+	f.title as film_title , 
+	max(r.rental_date)::date as last_rental_date ,
+	count(r.rental_id) filter (where r.return_date is null) as rental_inventory ,
+	count(distinct i.inventory_id) as inventory_count
+from rental r
+left join inventory i on i.inventory_id = any(r.inventory_id)
+inner join film f on i.film_id = f.film_id 
+where i.store_id = 1
+group by f.film_id 
+order by last_rental_date desc
 
+select *
+from rental r
+left join inventory i on i.inventory_id = any(r.inventory_id)
+inner join film f on i.film_id = f.film_id 
+where f.film_id = 267
+and i.store_id = 1
+
+WITH unnested_rental AS (
+    SELECT 
+        rental_id, 
+        rental_date, 
+        return_date, 
+        unnest(inventory_id) AS inv_id
+    FROM rental
+)
+SELECT 
+    f.title AS film_title, 
+    MAX(ur.rental_date)::date AS last_rental_date,
+    COUNT(ur.rental_id) FILTER (WHERE ur.return_date IS NULL) AS rental_inventory,
+    COUNT(DISTINCT i.inventory_id) AS inventory_count
+FROM inventory i
+INNER JOIN film f ON i.film_id = f.film_id 
+LEFT JOIN unnested_rental ur ON i.inventory_id = ur.inv_id 
+WHERE i.store_id = 1
+GROUP BY f.film_id, f.title
+ORDER BY last_rental_date DESC NULLS LAST;
