@@ -1,4 +1,4 @@
-import flet
+import flet, os, datetime, csv
 from math import ceil
 from window_setting import Colors, Ratios
 from full_query import Search, Rental
@@ -351,6 +351,23 @@ def view_close_history(e, rental_history):
     rental_history.visible = False
     rental_history.update()
 
+def export_csv(e, export_data, title:str=None):
+    now = datetime.datetime.now()
+    appdata = os.path.join(os.path.expanduser("~"), "Downloads")
+    if not os.path.exists(appdata):
+        try:
+            os.makedirs(appdata)
+        except PermissionError:
+            appdata = os.getcwd()
+    file_path = os.path.join(appdata, f"rental_data_{title}_{now.strftime('%Y-%m-%d')}_{now.strftime('%H%M%S')}.csv")
+
+    column = ["Rental ID", "Name", "Film Title", "Rental Date", "Due Date", "Status", "More", "Full Film title"]
+    with open(file_path, "w", encoding='utf-8', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(column)
+        writer.writerows(export_data)
+        print("Save Rental Data")
+
 def build_rental_ui(index, initial_id, initial_value="", **kwargs):
     page = kwargs.get("page")
     store_id = kwargs.get("staff_store_id")
@@ -401,6 +418,12 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
             view_table_rental_data(page, conn, rental_data, rental_id_data, connect_module, connect_module_count,
                connect_module_page, total_rental_data, page_num, select_page, rental_history, history_container)
             conn.commit()
+            if export_btn.page:
+                export_btn.disabled = False
+                export_btn.color = Colors.status_normal_btn_color
+                export_btn.border_color = Colors.status_normal_btn_color
+                export_btn.on_click = lambda e: export_csv(e, rental_id_data, "total")
+                export_btn.update()
         except Exception as err:
             conn.rollback()
             print(f"Search Rental error : {err}")
@@ -417,6 +440,12 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
             view_table_rental_data(page, conn, rental_data, rental_id_data, connect_module, connect_module_count,
                connect_module_page, overdue_data, page_num, select_page, rental_history, history_container)
             conn.commit()
+            if export_btn.page:
+                export_btn.disabled = False
+                export_btn.color = Colors.status_normal_btn_color
+                export_btn.border_color = Colors.status_normal_btn_color
+                export_btn.on_click = lambda e: export_csv(e, rental_id_data, "overdue")
+                export_btn.update()
         except Exception as err:
             conn.rollback()
             print(f"Search Rental error : {err}")
@@ -433,6 +462,12 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
             view_table_rental_data(page, conn, rental_data, rental_id_data, connect_module, connect_module_count,
                connect_module_page, due_today_data, page_num, select_page, rental_history, history_container)
             conn.commit()
+            if export_btn.page:
+                export_btn.disabled = False
+                export_btn.color = Colors.status_normal_btn_color
+                export_btn.border_color = Colors.status_normal_btn_color
+                export_btn.on_click = lambda e: export_csv(e, rental_id_data, "today")
+                export_btn.update()
         except Exception as err:
             conn.rollback()
             print(f"Search Rental error : {err}")
@@ -442,6 +477,12 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
         connect_module_page = 0
         cart_rental_id = []
         connect_count = []
+        if not input_rental.value.strip():
+            popup.show_popup_open(
+                message="Please enter your rental id or customer name."
+            )
+            input_rental.focus()
+            return
         try:
             cart_rental_id.append(int(input_rental.value))
             # print(f"Search Rental ID {int(input_rental.value)}")
@@ -495,6 +536,12 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
             view_table_rental_data(page, conn, rental_data, rental_id_data, connect_module, connect_module_count,
                connect_module_page, connect_module_count[0], page_num, select_page, rental_history, history_container)
             conn.commit()
+            if export_btn.page:
+                export_btn.disabled = False
+                export_btn.color = Colors.status_normal_btn_color
+                export_btn.border_color = Colors.status_normal_btn_color
+                export_btn.on_click = lambda e: export_csv(e, rental_id_data)
+                export_btn.update()
         except Exception as err:
             conn.rollback()
             print(f"Search Rental error {err}")
@@ -580,6 +627,16 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
         )
     ], spacing=20, visible=False, )
 
+    export_btn = flet.Button(
+        text="Export",
+        color=Colors.status_disabled_btn_color,
+        bgcolor=Colors.status_disabled_btn_bgcolor,
+        disabled=True,
+        style=flet.ButtonStyle(
+            shape=flet.RoundedRectangleBorder(radius=5),
+            overlay_color=flet.Colors.INVERSE_PRIMARY
+        )
+    )
 
     view_rental = flet.Column(
         expand=True,
@@ -614,4 +671,4 @@ def build_rental_ui(index, initial_id, initial_value="", **kwargs):
             rental_history.update()
         input_rental.autofocus = False
 
-    return total_rentals, overdue, due_today, input_rental, view_rental, rental_history
+    return total_rentals, overdue, due_today, input_rental, view_rental, rental_history, export_btn

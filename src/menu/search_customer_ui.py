@@ -1,4 +1,4 @@
-import flet
+import flet, os, datetime, csv
 from window_setting import Colors, Ratios
 from full_query import Search
 from window_popup import Popup
@@ -96,6 +96,23 @@ def view_table(row, input_data, **kwargs):
         ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
     ), margin=5, border_radius=5, expand=True)
 
+def export_csv(e, export_data):
+    now = datetime.datetime.now()
+    appdata = os.path.join(os.path.expanduser("~"), "Downloads")
+    if not os.path.exists(appdata):
+        try:
+            os.makedirs(appdata)
+        except PermissionError:
+            appdata = os.getcwd()
+    file_path = os.path.join(appdata, f"customer_data_{now.strftime('%Y-%m-%d')}_{now.strftime('%H%M%S')}.csv")
+
+    column = ["Customer ID", "Name", "Email", "Phone", "Address", "Last Rental Date", "Status"]
+    with open(file_path, "w", encoding='utf-8', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(column)
+        writer.writerows(export_data)
+        print("Save Customer Data")
+
 def build_customer_ui(initial_value="", **kwargs):
     page = kwargs.get("page")
     conn = kwargs.get("conn")
@@ -105,6 +122,12 @@ def build_customer_ui(initial_value="", **kwargs):
     def query_customer(e, initial_value=None):
         input_data = None
         cart_customer_id = [] # ID 상자
+        if not input_customer.value.strip():
+            popup.show_popup_open(
+                message="Please enter your customer id or name."
+            )
+            input_customer.focus()
+            return
         try:
             cart_customer_id.append(int(input_customer.value)) # ANY(%s) 조회를 위해 상자 보관
             # cart_customer_id = int(input_customer.value) -> ID 상자를 만들지 않는 경우 사용가능 | ANY(%s) -> ERROR
@@ -158,6 +181,12 @@ def build_customer_ui(initial_value="", **kwargs):
                     )
                 if customer_id_data.page:
                     customer_id_data.update()
+                if export_btn.page:
+                    export_btn.disabled = False
+                    export_btn.color = Colors.status_normal_btn_color
+                    export_btn.border_color = Colors.status_normal_btn_color
+                    export_btn.on_click = lambda e: export_csv(e, customer_data)
+                    export_btn.update()
             else:
                 print(f"Customer ID Not Found {input_customer.value}")
                 input_customer.focus()
@@ -179,8 +208,19 @@ def build_customer_ui(initial_value="", **kwargs):
         expand=True, spacing=5
     )
 
+    export_btn = flet.Button(
+        text="Export",
+        color=Colors.status_disabled_btn_color,
+        bgcolor=Colors.status_disabled_btn_bgcolor,
+        disabled=True,
+        style=flet.ButtonStyle(
+            shape=flet.RoundedRectangleBorder(radius=5),
+            overlay_color=flet.Colors.INVERSE_PRIMARY
+        )
+    )
+
     if initial_value:
         query_customer(None, initial_value)
         input_customer.autofocus = False
 
-    return input_customer, view_customer
+    return input_customer, view_customer, export_btn

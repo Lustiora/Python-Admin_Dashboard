@@ -1,4 +1,4 @@
-import flet
+import flet, os, datetime, csv
 from window_setting import Colors, Ratios
 from full_query import Search
 from window_popup import Popup
@@ -36,6 +36,23 @@ def view_header(case=None):
             ), margin=5
         )
 
+def export_csv(e, export_data):
+    now = datetime.datetime.now()
+    appdata = os.path.join(os.path.expanduser("~"), "Downloads")
+    if not os.path.exists(appdata):
+        try:
+            os.makedirs(appdata)
+        except PermissionError:
+            appdata = os.getcwd()
+    file_path = os.path.join(appdata, f"inventory_data_{now.strftime('%Y-%m-%d')}_{now.strftime('%H%M%S')}.csv")
+
+    column = ["Inventory ID", "Film Title", "Status", "Last Rental Date", "Rental Rate"]
+    with open(file_path, "w", encoding='utf-8', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(column)
+        writer.writerows(export_data)
+        print("Save Inventory Data")
+
 def build_inventory_ui(**kwargs):
     page = kwargs.get("page")
     conn = kwargs.get("conn")
@@ -43,10 +60,14 @@ def build_inventory_ui(**kwargs):
     popup = Popup(page=page)
     inventory_id_data = flet.ListView(expand=True, spacing=0)
     def query_inventory(e, initial_value=None):
-        if view_inventory.page:
-            view_inventory.controls[0] = view_header(case=1)
-            view_inventory.update()
         cart_inventory_id = [] # ID 상자
+        if not initial_value:
+            if not input_inventory.value.strip():
+                popup.show_popup_open(
+                    message="Please enter your inventory id or film title or film tag."
+                )
+                input_inventory.focus()
+                return
         try:
             cart_inventory_id.append(int(input_inventory.value)) # ANY(%s) 조회를 위해 상자 보관
             # print(f"Search Inventory ID : {int(input_inventory.value)}")
@@ -118,6 +139,15 @@ def build_inventory_ui(**kwargs):
                         )
                     )
                 inventory_id_data.update()
+                if view_inventory.page:
+                    view_inventory.controls[0] = view_header(case=1)
+                    view_inventory.update()
+                if export_btn.page:
+                    export_btn.disabled = False
+                    export_btn.color = Colors.status_normal_btn_color
+                    export_btn.border_color = Colors.status_normal_btn_color
+                    export_btn.on_click = lambda e: export_csv(e, inventory_data)
+                    export_btn.update()
             else:
                 print(f"Inventory ID Not Found {input_inventory.value.strip()}")
                 input_inventory.focus()
@@ -165,6 +195,17 @@ def build_inventory_ui(**kwargs):
     input_inventory = mat.input_text(
         " Inventory ID or Film Title or Tag ↵", on_submit=query_inventory, hint_text=" Press Enter to Search")
 
+    export_btn = flet.Button(
+        text="Export",
+        color=Colors.status_disabled_btn_color,
+        bgcolor=Colors.status_disabled_btn_bgcolor,
+        disabled=True,
+        style=flet.ButtonStyle(
+            shape=flet.RoundedRectangleBorder(radius=5),
+            overlay_color=flet.Colors.INVERSE_PRIMARY
+        )
+    )
+
     view_inventory = flet.Column(
         controls=[
             view_header(None), inventory_id_data
@@ -175,4 +216,4 @@ def build_inventory_ui(**kwargs):
     first_view_inventory(None)
 
 
-    return input_inventory, view_inventory
+    return input_inventory, view_inventory, export_btn

@@ -68,7 +68,7 @@ class MainManager:
         }
 
         self.basic_container = flet.Container(
-            content=view_home(**params),
+            content=view_search_customer(**params),
             alignment=flet.alignment.center,
             expand=True,
             border_radius=5,

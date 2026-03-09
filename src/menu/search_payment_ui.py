@@ -1,4 +1,4 @@
-import flet
+import flet, os, datetime, csv
 from math import ceil
 from window_setting import Colors, Ratios
 from window_popup import Popup
@@ -250,6 +250,23 @@ def view_close_receipt(e, receipt_details):
     receipt_details.visible = False
     receipt_details.update()
 
+def export_csv(e, export_data):
+    now = datetime.datetime.now()
+    appdata = os.path.join(os.path.expanduser("~"), "Downloads")
+    if not os.path.exists(appdata):
+        try:
+            os.makedirs(appdata)
+        except PermissionError:
+            appdata = os.getcwd()
+    file_path = os.path.join(appdata, f"payment_data_{now.strftime('%Y-%m-%d')}_{now.strftime('%H%M%S')}.csv")
+
+    column = ["Payment ID", "Name", "Payment Date", "Film Title", "Total Amount", "Status"]
+    with open(file_path, "w", encoding='utf-8', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(column)
+        writer.writerows(export_data)
+        print("Save Payment Data")
+
 def build_payment_ui(initial_value="", **kwargs):
     page = kwargs.get("page")
     popup = Popup(page=page)
@@ -276,6 +293,12 @@ def build_payment_ui(initial_value="", **kwargs):
         connect_module_page = 0
         cart_payment_id = []
         connect_count = []
+        if not input_payment.value.strip():
+            popup.show_popup_open(
+                message="Please enter your payment id or customer name."
+            )
+            input_payment.focus()
+            return
         try:
             cart_payment_id.append(int(input_payment.value))
         except:
@@ -295,7 +318,7 @@ def build_payment_ui(initial_value="", **kwargs):
                 else:
                     print(f"Customer not found or no Payment history at this location. : {input_data}")
                     popup.show_popup_open(
-                        message=f"Customer not found or no Payment history at this location."
+                        message="Customer not found or no Payment history at this location."
                     )
                     if not initial_value:
                         input_payment.focus()
@@ -324,6 +347,12 @@ def build_payment_ui(initial_value="", **kwargs):
             view_table_payment_data(conn, payment_data, payment_id_data, connect_module, connect_module_count,
                                     connect_module_page, connect_module_count[0], page_num, select_page, receipt_details, receipt_container, store_address, popup)
             conn.commit()
+            if export_btn.page:
+                export_btn.disabled = False
+                export_btn.color = Colors.status_normal_btn_color
+                export_btn.border_color = Colors.status_normal_btn_color
+                export_btn.on_click = lambda e: export_csv(e, payment_id_data)
+                export_btn.update()
         except Exception as err:
             conn.rollback()
             print(f"Search Payment error : {err}")
@@ -392,6 +421,17 @@ def build_payment_ui(initial_value="", **kwargs):
         )
     ], spacing=20, visible=False,)
 
+    export_btn = flet.Button(
+        text="Export",
+        color=Colors.status_disabled_btn_color,
+        bgcolor=Colors.status_disabled_btn_bgcolor,
+        disabled=True,
+        style=flet.ButtonStyle(
+            shape=flet.RoundedRectangleBorder(radius=5),
+            overlay_color=flet.Colors.INVERSE_PRIMARY
+        )
+    )
+
     view_payment = flet.Column(
         expand=True,
         spacing=5,
@@ -402,4 +442,4 @@ def build_payment_ui(initial_value="", **kwargs):
         payment_search_data_query(None, 0, 0, initial_value)
         input_payment.autofocus = False
 
-    return input_payment, view_payment, receipt_details
+    return input_payment, view_payment, receipt_details, export_btn

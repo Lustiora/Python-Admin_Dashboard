@@ -1163,3 +1163,8 @@ LEFT JOIN unnested_rental ur ON i.inventory_id = ur.inv_id
 WHERE i.store_id = 1
 GROUP BY f.film_id, f.title
 ORDER BY last_rental_date DESC NULLS LAST;
+
+select * from inventory i
+inner join film f on i.film_id = f.film_id 
+
+insert into inventory (film_id, store_id) values (1,1);
