@@ -1,7 +1,7 @@
 import flet
 from .search_customer_ui import build_customer_ui
 from .search_inventory_ui import build_inventory_ui
-from .search_rental_ui import build_rental_ui
+from .search_returns_ui import build_rental_ui
 from .search_payment_ui import build_payment_ui
 from material import view_container
 

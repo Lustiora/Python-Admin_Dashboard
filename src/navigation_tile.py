@@ -2,6 +2,7 @@ from menu.menu_ui import *
 from menu.search import *
 from menu.add import *
 from menu.customer_status import customer
+from menu.rent import view_rent
 from window_popup import Popup
 from material import list_tile, list_tile_menu
 
@@ -10,6 +11,8 @@ def navigation(basic_content, **kwargs):
     def on_nav_change(index):
         if index == 0: # 메인화면
             basic_content.content = view_home(**kwargs)
+        elif index == 0.1: # 고객 조회
+            basic_content.content = view_rent(**kwargs)
         elif index == 1.1: # 고객 조회
             basic_content.content = view_search_customer(**kwargs)
         elif index == 1.2: # 재고 조회
@@ -52,7 +55,9 @@ def tile_column(page: flet.Page, on_nav_change):
     return flet.Column(
         controls=[
             list_tile(icon=flet.Icons.HOME, title="Home", event=on_nav_change, index=0),
-            list_tile(title="Rental", event=on_nav_change, index=1.3, icon=flet.Icons.SHOPPING_CART),
+            list_tile(title="Rent", event=on_nav_change, index=0.1, icon=flet.Icons.MOVIE_FILTER),
+            flet.Divider(),
+            list_tile(title="Returns", event=on_nav_change, index=1.3, icon=flet.Icons.SHOPPING_CART),
             list_tile(title="Payment", event=on_nav_change, index=1.4, icon=flet.Icons.PAYMENT),
             list_tile(title="Customer", event=on_nav_change, index=1.1, icon=flet.Icons.PEOPLE),
             list_tile(title="Inventory", event=on_nav_change, index=1.2, icon=flet.Icons.INVENTORY),
@@ -85,5 +90,5 @@ def tile_column(page: flet.Page, on_nav_change):
                 title=flet.Text("Exit"),
                 on_click=lambda e: (setattr(e, "data", "close"), popup.show_open(e))
             )
-        ]
+        ], spacing=0
     )

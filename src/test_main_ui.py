@@ -111,7 +111,7 @@ class MainManager:
         }
         # -- Main Content --
         if index == 0:
-            print(f"Page Update 'Rental' {page_index}")
+            print(f"Page Update 'Returns' {page_index}")
             self.basic_content.content = view_search_rental(page_index, rental_id, customer_name, **params)
             self.basic_content.update()
         elif index == 1:

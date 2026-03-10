@@ -29,7 +29,8 @@ class Code:
         alignment=flet.CrossAxisAlignment.START,
         expand=True,
         options=country_box,
-        border_color=Colors.border_color
+        border_color=Colors.border_color,
+        on_change=None,
     )
 
     active_switch = flet.Switch(expand=4, value=False, disabled=True, label="Active   ",
@@ -40,8 +41,12 @@ class Code:
                                               border_color=Colors.border_color)
     page_content_phone = flet.TextField(label="Phone Number :", expand=True, content_padding=10, max_length=20,
                                         border_color=Colors.border_color)
+
+    city_ref = flet.Ref[flet.Dropdown]()
+
     city_box = []
     city_list_filter = flet.Dropdown(
+        ref=city_ref,
         label="City :",
         alignment=flet.CrossAxisAlignment.START,
         expand=True,
@@ -56,6 +61,11 @@ class Code:
         page_content_address,
         page_content_postal_code,
         page_content_phone,
+    ]
+
+    address_required = [
+        country_list_filter,
+        city_list_filter,
     ]
 
     page_content_left = flet.Column(
@@ -99,6 +109,14 @@ def page_content_clear():
     Code.page_content_phone.value = None
     Code.city_list_filter.value = None
     Code.country_list_filter.value = None
+    Code.city_box.clear()
+    Code.city_box.append(flet.DropdownOption(text="Please select a country", key=None, disabled=True), )
+    if Code.city_list_filter.page:
+        Code.city_list_filter.update()
+
+def test(e):
+    print(f"select city id: {e.control.value}")
+    pass
 
 def customer(setting:str, **kwargs):
     page = kwargs["page"]
@@ -106,9 +124,31 @@ def customer(setting:str, **kwargs):
     staff_store_id = kwargs["staff_store_id"]
     popup = Popup(page=page)
 
-    try: # 등록된 국가, 도시 목록 리스트
-        cursor = conn.cursor()
+    def city_list(e):
+        # print(f"select country id: {e.control.value}")
+        Code.city_ref.current.key = str(time.time())
+        select_country_id = e.control.value
+        try:  # 등록된 도시 목록 리스트
+            cursor = conn.cursor()
+            cursor.execute(Customer.city_list_query,(select_country_id,))
+            city_list = cursor.fetchall()
+            Code.city_box.clear()
+            Code.city_list_filter.on_change = test
+            for row in city_list:
+                city_row = f"{row[0]}"
+                city_id_row = f"{row[1]}"
+                city = city_row.replace('(\'', '').replace('\',)', '')
+                city_id = city_id_row.replace('(\'', '').replace('\',)', '')
+                Code.city_box.append(flet.DropdownOption(text=city, key=city_id), )
+            if Code.city_list_filter.page:
+                Code.city_list_filter.update()
+            conn.commit()
+        except Exception as err:
+            conn.rollback()
+            print(err)
 
+    try: # 등록된 국가 목록 리스트
+        cursor = conn.cursor()
         cursor.execute(Customer.country_list_query)
         country_list = cursor.fetchall()
         for row in country_list:
@@ -116,19 +156,9 @@ def customer(setting:str, **kwargs):
             country = country_row.replace('(\'','').replace('\',)','')
             country_id = f"{row[1]}"
             Code.country_box.append(flet.DropdownOption(text=country, key=country_id),)
+        Code.country_list_filter.on_change = city_list
         if Code.country_list_filter.page:
             Code.country_list_filter.update()
-
-        cursor.execute(Customer.city_list_query)
-        city_list = cursor.fetchall()
-        for row in city_list:
-            city_row = f"{row[0]}"
-            city_id_row = f"{row[1]}"
-            city = city_row.replace('(\'','').replace('\',)','')
-            city_id = city_id_row.replace('(\'','').replace('\',)','')
-            Code.city_box.append(flet.DropdownOption(text=city, key=city_id),)
-        if Code.city_list_filter.page:
-            Code.city_list_filter.update()
         conn.commit()
     except Exception as err:
         conn.rollback()
@@ -176,13 +206,14 @@ def customer(setting:str, **kwargs):
         if setting == "edit":
             c_active = Code.active_switch.value
             c_id = Code.page_content_id.value
-        c_city_id = Code.city_list_filter.value
-        c_country_id = Code.country_list_filter.value
 
         # 입력값 공란 필터링
         empty_found = False
         for input_text in Code.required_controls:
             if not input_text.value or not input_text.value.strip():
+                empty_found = True
+        for input_text in Code.address_required:
+            if not input_text.value:
                 empty_found = True
         if not empty_found:
             c_first_name = Code.page_content_first_name.value.strip()
@@ -191,6 +222,8 @@ def customer(setting:str, **kwargs):
             c_address = Code.page_content_address.value.strip()
             c_postal_code = Code.page_content_postal_code.value.strip()
             c_phone = Code.page_content_phone.value.strip()
+            c_city_id = Code.city_list_filter.value
+            c_country_id = Code.country_list_filter.value
         else:
             failed_event("Please fill in all required fields.")
             return

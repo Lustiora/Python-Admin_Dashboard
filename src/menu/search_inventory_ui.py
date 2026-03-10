@@ -167,6 +167,7 @@ def build_inventory_ui(**kwargs):
             if inventory_data:
                 inventory_id_data.controls.clear()
                 for row in inventory_data:
+                    title = flet.Container(content=mat.data_text(content=row[1]))
                     inventory_id_data.controls.append(
                         flet.Container(
                             content=flet.Row(
@@ -176,7 +177,7 @@ def build_inventory_ui(**kwargs):
                                 controls=[
                                     mat.data_text(str(row[0]), expand=Ratios.id),
                                     flet.VerticalDivider(width=1),
-                                    flet.TextButton(row[1], expand=Ratios.title, on_click=lambda e, r=row[1]:query_inventory(e, r)),
+                                    flet.TextButton(content=title, expand=Ratios.title, on_click=lambda e, r=row[1]:query_inventory(e, r)),
                                     flet.VerticalDivider(width=1),
                                     mat.data_text(str(row[2]), expand=Ratios.date),
                                     flet.VerticalDivider(width=1),

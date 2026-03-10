@@ -368,6 +368,7 @@ class Customer:
         = """
         select city, city_id
         from city
+        where country_id = %s
         """
 
     country_list_query\

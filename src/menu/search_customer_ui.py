@@ -1,4 +1,4 @@
-import flet, os, datetime, csv
+import flet, os, datetime, csv, sys
 from window_setting import Colors, Ratios
 from full_query import Search
 from window_popup import Popup
@@ -96,7 +96,7 @@ def view_table(row, input_data, **kwargs):
         ], alignment=flet.MainAxisAlignment.START, spacing=5, height=38
     ), margin=5, border_radius=5, expand=True)
 
-def export_csv(e, export_data):
+def export_csv(e, export_data, popup):
     now = datetime.datetime.now()
     appdata = os.path.join(os.path.expanduser("~"), "Downloads")
     if not os.path.exists(appdata):
@@ -106,12 +106,38 @@ def export_csv(e, export_data):
             appdata = os.getcwd()
     file_path = os.path.join(appdata, f"customer_data_{now.strftime('%Y-%m-%d')}_{now.strftime('%H%M%S')}.csv")
 
+    def csv_open(e):
+        os.startfile(file_path)
+
     column = ["Customer ID", "Name", "Email", "Phone", "Address", "Last Rental Date", "Status"]
     with open(file_path, "w", encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(column)
         writer.writerows(export_data)
         print("Save Customer Data")
+        if sys.platform == "win32":
+            popup.show_popup_open(
+                title="CSV Export",
+                content=flet.Text(
+                    spans=[
+                        flet.TextSpan(f"Customer Data CSV Export Success.\n\n"),
+                        flet.TextSpan(file_path, style=flet.TextStyle(color="green")),
+                    ]
+                ),actions=[
+                    flet.Button("OPEN", on_click=lambda e:csv_open),
+                    flet.Button("OK", on_click=popup.show_popup_close, autofocus=True)
+                ],
+            )
+        else:
+            popup.show_popup_open(
+                title="CSV Export",
+                content=flet.Text(
+                    spans=[
+                        flet.TextSpan(f"Customer Data CSV Export Success.\n\n"),
+                        flet.TextSpan(file_path, style=flet.TextStyle(color="green")),
+                    ]
+                )
+            )
 
 def build_customer_ui(initial_value="", **kwargs):
     page = kwargs.get("page")
@@ -185,7 +211,7 @@ def build_customer_ui(initial_value="", **kwargs):
                     export_btn.disabled = False
                     export_btn.color = Colors.status_normal_btn_color
                     export_btn.border_color = Colors.status_normal_btn_color
-                    export_btn.on_click = lambda e: export_csv(e, customer_data)
+                    export_btn.on_click = lambda e: export_csv(e, customer_data, popup)
                     export_btn.update()
             else:
                 print(f"Customer ID Not Found {input_customer.value}")
