@@ -16,10 +16,10 @@ if exist ".venv\Scripts\activate.bat" (
 
 echo ---------------------------------------------------
 echo 🚀 Flet Hot Reload (Source Isolated & PYTHONPATH Fixed)
-echo [Web Mode] http://localhost:34636
+echo [Web Mode] http://localhost:34637
 echo ---------------------------------------------------
 
-start http://localhost:34636
+start http://localhost:34637
 set FLET_NO_BROWSER=1
 
 watchfiles "python src/test_main_ui.py" src

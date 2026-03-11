@@ -33,10 +33,10 @@ def list_tile_menu(title, event, index):
 # ================================================
 #   search_...ui.py
 # ================================================
-def input_text(content=None, on_submit=None, hint_text=None, value=None, autofocus=True):
+def input_text(content=None, on_submit=None, hint_text=None, value=None, height=None, autofocus=True):
     return flet.TextField(label=content, on_submit=on_submit, hint_text=hint_text, value=value,
         text_size=Font.big_fontsize, expand=Ratios.id, content_padding=10, max_length=30, autofocus=autofocus,
-        border_color=Colors.border_color
+        border_color=Colors.border_color, height=height
     )
 
 def header_text(content=None, expand=None):

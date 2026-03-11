@@ -19,6 +19,7 @@ from window_popup import Popup
 from navigation_tile import navigation
 from menu.search import view_search_rental, view_search_customer, view_search_payment
 from menu.menu_ui import view_home
+from menu.rent import rent
 from material import Colors
 
 class MainManager:
@@ -44,6 +45,17 @@ class MainManager:
             self.theme_switch = flet.Switch(value=True, on_change=self.toggle_theme)
             self.select_theme = flet.Icon(name=flet.Icons.LIGHT_MODE_OUTLINED)
 
+        params = {
+            "page": self.page,
+            "staff_user": self.staff_user,
+            "staff_store_address": self.staff_store_address,
+            "staff_store_id": self.staff_store_id,
+            "conn": self.conn,
+            "theme_mode": self.page.theme_mode,
+        }
+
+        self.content = rent(**params)
+
             # -- Statusbar --
         self.server_status = flet.Text(value="Server Status", text_align=flet.TextAlign.RIGHT)
         self.server_time = flet.Text(value="Server Time", text_align=flet.TextAlign.LEFT)
@@ -58,17 +70,8 @@ class MainManager:
             border=flet.border.all(color=Colors.border_color)
         )
 
-        params = {
-            "page": self.page,
-            "staff_user": self.staff_user,
-            "staff_store_address": self.staff_store_address,
-            "staff_store_id": self.staff_store_id,
-            "conn": self.conn,
-            "theme_mode":self.page.theme_mode,
-        }
-
         self.basic_container = flet.Container(
-            content=view_search_customer(**params),
+            content=self.content,
             alignment=flet.alignment.center,
             expand=True,
             border_radius=5,
@@ -209,4 +212,4 @@ if __name__ == "__main__":
     import webbrowser
     if os.getenv("FLET_NO_BROWSER"):
         webbrowser.open = lambda *args, **kwargs: None
-    flet.app(target=run_main, assets_dir="assets", view=flet.WEB_BROWSER, port=34636) # test
+    flet.app(target=run_main, assets_dir="assets", view=flet.WEB_BROWSER, port=34637) # 점유(또는 사용중인)포트 사용불가

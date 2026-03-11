@@ -12,7 +12,7 @@ fi
 
 echo "---------------------------------------------------"
 echo "🚀 Flet Hot Reload Mode Starting..."
-echo "[Web Mode] http://localhost:34636"
+echo "[Web Mode] http://localhost:34637"
 echo "[Exit] Ctrl + C"
 echo "---------------------------------------------------"
 

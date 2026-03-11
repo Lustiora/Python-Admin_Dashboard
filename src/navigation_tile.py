@@ -2,7 +2,7 @@ from menu.menu_ui import *
 from menu.search import *
 from menu.add import *
 from menu.customer_status import customer
-from menu.rent import view_rent
+from menu.rent import rent
 from window_popup import Popup
 from material import list_tile, list_tile_menu
 
@@ -12,7 +12,7 @@ def navigation(basic_content, **kwargs):
         if index == 0: # 메인화면
             basic_content.content = view_home(**kwargs)
         elif index == 0.1: # 고객 조회
-            basic_content.content = view_rent(**kwargs)
+            rent(**kwargs)
         elif index == 1.1: # 고객 조회
             basic_content.content = view_search_customer(**kwargs)
         elif index == 1.2: # 재고 조회
