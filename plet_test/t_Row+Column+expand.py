@@ -1,6 +1,4 @@
 import flet as ft
-import inspect
-from window import Ratios
 
 # DataTable 대체 -> Row + Column + expand
 
@@ -15,13 +13,13 @@ def main(page: ft.Page):
     header_row = ft.Container(
         content=ft.Row(
             controls=[
-                ft.Text("Store", weight="bold", expand=Ratios.store, text_align="center"),
-                ft.Text("ID", weight="bold", expand=Ratios.id, text_align="center"),
-                ft.Text("Name", weight="bold", expand=Ratios.name, text_align="center"),
-                ft.Text("Email", weight="bold", expand=Ratios.email, text_align="center"),
-                ft.Text("Address", weight="bold", expand=Ratios.address, text_align="center"),
-                ft.Text("Date", weight="bold", expand=Ratios.date, text_align="center"),
-                ft.Text("Status", weight="bold", expand=Ratios.status, text_align="center"),
+                ft.Text("Store", weight="bold", text_align="center"),
+                ft.Text("ID", weight="bold", text_align="center"),
+                ft.Text("Name", weight="bold", text_align="center"),
+                ft.Text("Email", weight="bold", text_align="center"),
+                ft.Text("Address", weight="bold", text_align="center"),
+                ft.Text("Date", weight="bold", text_align="center"),
+                ft.Text("Status", weight="bold", text_align="center"),
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=10  # 컬럼 사이 간격
@@ -42,15 +40,15 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     # expand=... 설정을 헤더와 똑같이 맞춥니다.
-                    ft.Text(f"ST-{i % 2 + 1}", expand=Ratios.store, text_align="center"),
-                    ft.Text(f"{1000 + i}", expand=Ratios.id, text_align="center"),
-                    ft.Text(f"User Name {i}", expand=Ratios.name, no_wrap=True, overflow=ft.TextOverflow.ELLIPSIS),
-                    ft.Text(f"user{i}@example.com", expand=Ratios.email, no_wrap=True,
+                    ft.Text(f"ST-{i % 2 + 1}", text_align="center"),
+                    ft.Text(f"{1000 + i}", text_align="center"),
+                    ft.Text(f"User Name {i}", no_wrap=True, overflow=ft.TextOverflow.ELLIPSIS),
+                    ft.Text(f"user{i}@example.com", no_wrap=True,
                             overflow=ft.TextOverflow.ELLIPSIS),
                     # 아주 긴 주소 테스트
                     ft.Text(f"South Korea Seoul Gangnam-gu Teheran-ro 123, Building No.{i} (Very Long Address Test)",
-                            expand=Ratios.address, no_wrap=True, overflow=ft.TextOverflow.ELLIPSIS),
-                    ft.Text("2023-10-25", expand=Ratios.date, text_align="center"),
+                            no_wrap=True, overflow=ft.TextOverflow.ELLIPSIS),
+                    ft.Text("2023-10-25", text_align="center"),
 
                     # 상태값에 따른 색상/뱃지 처리
                     ft.Container(
@@ -58,7 +56,6 @@ def main(page: ft.Page):
                                         color=ft.Colors.WHITE, size=12, weight="bold"),
                         bgcolor=ft.Colors.GREEN if i % 3 != 0 else ft.Colors.RED,
                         padding=5, border_radius=5, alignment=ft.alignment.center,
-                        expand=Ratios.status
                     ),
                 ],
                 alignment=ft.MainAxisAlignment.START,
